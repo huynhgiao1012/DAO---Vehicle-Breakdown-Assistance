@@ -6,4 +6,5 @@ export const themeColors = {
   black: '#000000',
   white: '#FFFFFF',
   blue: '#100444',
+  gray60: '#999999',
 };

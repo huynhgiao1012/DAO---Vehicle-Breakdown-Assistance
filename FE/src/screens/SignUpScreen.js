@@ -1,4 +1,11 @@
-import {View, Text, TouchableOpacity, Image, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  StyleSheet,
+} from 'react-native';
 import React from 'react';
 import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -8,7 +15,7 @@ import {useNavigation} from '@react-navigation/native';
 export default function SignUpScreen() {
   const navigation = useNavigation();
   return (
-    <View className="flex-1 bg-white" style={{backgroundColor: themeColors.bg}}>
+    <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <SafeAreaView className="flex">
         <View className="flex-row justify-start">
           <TouchableOpacity
@@ -17,72 +24,133 @@ export default function SignUpScreen() {
         </View>
         <View className="flex-row justify-center">
           <Image
-            source={require('../../assets/images/signup.png')}
-            style={{width: 165, height: 110}}
+            source={require('../../assets/images/logo2.png')}
+            style={{
+              width: 100,
+              height: 100,
+              marginVertical: 20,
+              alignSelf: 'center',
+            }}
           />
         </View>
       </SafeAreaView>
       <View
-        className="flex-1 bg-white px-8 pt-8"
-        style={{borderTopLeftRadius: 50, borderTopRightRadius: 50}}>
-        <View className="form space-y-2">
-          <Text className="text-gray-700 ml-4">Full Name</Text>
-          <TextInput
-            className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
-            value="john snow"
-            placeholder="Enter Name"
-          />
-          <Text className="text-gray-700 ml-4">Email Address</Text>
-          <TextInput
-            className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-3"
-            value="john@gmail.com"
-            placeholder="Enter Email"
-          />
-          <Text className="text-gray-700 ml-4">Password</Text>
-          <TextInput
-            className="p-4 bg-gray-100 text-gray-700 rounded-2xl mb-7"
-            secureTextEntry
-            value="test12345"
-            placeholder="Enter Password"
-          />
-          <TouchableOpacity className="py-3 bg-yellow-400 rounded-xl">
-            <Text className="font-xl font-bold text-center text-gray-700">
+        style={{
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
+          backgroundColor: themeColors.white,
+          flex: 1,
+        }}>
+        <View style={styles.form}>
+          <Text style={styles.title}>Full Name</Text>
+          <TextInput style={styles.input} value="" placeholder="Jonh" />
+          <Text style={styles.title}>Email Address</Text>
+          <TextInput style={styles.input} placeholder="example@gmail.com" />
+          <Text style={styles.title}>Phone</Text>
+          <TextInput style={styles.input} value="" placeholder="08320111XXX" />
+          <Text style={styles.title}>Password</Text>
+          <TextInput style={styles.input} secureTextEntry value="" />
+          <TouchableOpacity
+            style={{
+              alignSelf: 'center',
+              backgroundColor: themeColors.primaryColor,
+              padding: 10,
+              width: '90%',
+              borderRadius: 2,
+              marginTop: 10,
+            }}>
+            <Text
+              style={{
+                color: themeColors.white,
+                textAlign: 'center',
+                fontSize: 18,
+                fontWeight: 'bold',
+              }}>
               Sign Up
             </Text>
           </TouchableOpacity>
         </View>
-        <Text className="text-xl text-gray-700 font-bold text-center py-5">
+        <Text
+          style={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            color: themeColors.black,
+          }}>
           Or
         </Text>
-        <View className="flex-row justify-center space-x-12">
-          <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignContent: 'center',
+            flexDirection: 'row',
+            marginTop: 5,
+          }}>
+          <TouchableOpacity style={{paddingHorizontal: 10}}>
             <Image
               source={require('../../assets/icons/google.png')}
               className="w-10 h-10"
             />
           </TouchableOpacity>
-          <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
+          <TouchableOpacity style={{paddingHorizontal: 10}}>
             <Image
               source={require('../../assets/icons/apple.png')}
               className="w-10 h-10"
             />
           </TouchableOpacity>
-          <TouchableOpacity className="p-2 bg-gray-100 rounded-2xl">
+          <TouchableOpacity style={{paddingHorizontal: 10}}>
             <Image
               source={require('../../assets/icons/facebook.png')}
               className="w-10 h-10"
             />
           </TouchableOpacity>
         </View>
-        <View className="flex-row justify-center mt-7">
-          <Text className="text-gray-500 font-semibold">
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignContent: 'center',
+            flexDirection: 'row',
+            marginVertical: 8,
+          }}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: themeColors.blue,
+              fontSize: 18,
+            }}>
             Already have an account?
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text className="font-semibold text-yellow-500"> Login</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                color: themeColors.primaryColor,
+                fontSize: 18,
+              }}>
+              {' '}
+              Login
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 }
+const styles = StyleSheet.create({
+  form: {
+    marginHorizontal: 40,
+    marginVertical: 20,
+  },
+  title: {
+    fontSize: 18,
+    color: themeColors.primaryColor,
+    fontWeight: '700',
+  },
+  input: {
+    borderBottomWidth: 2,
+    borderBottomColor: themeColors.primaryColor2,
+    marginBottom: 10,
+    padding: 3,
+  },
+});

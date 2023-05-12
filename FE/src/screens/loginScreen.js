@@ -75,6 +75,7 @@ export default function LoginScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => navigation.navigate('Home')}
             style={{
               alignSelf: 'center',
               backgroundColor: themeColors.blue,
