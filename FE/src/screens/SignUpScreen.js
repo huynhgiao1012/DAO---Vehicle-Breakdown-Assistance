@@ -16,13 +16,12 @@ export default function SignUpScreen() {
   const navigation = useNavigation();
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
-      <SafeAreaView className="flex">
-        <View className="flex-row justify-start">
+      <SafeAreaView>
+        <View>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            className="bg-yellow-400 p-2 rounded-tr-2xl rounded-bl-2xl ml-4"></TouchableOpacity>
+            onPress={() => navigation.goBack()}></TouchableOpacity>
         </View>
-        <View className="flex-row justify-center">
+        <View>
           <Image
             source={require('../../assets/images/logo2.png')}
             style={{

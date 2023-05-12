@@ -6,30 +6,61 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme';
 import MapScreen from './MapScreen';
+import ListScreen from './ListScreen';
+import {useNavigation} from '@react-navigation/native';
 
 export default function HomeScreen() {
+  const [isMap, setIsMap] = useState(true);
+  const navigation = useNavigation();
+
+  const setMap = () => {
+    if (isMap) {
+      setIsMap(false);
+    } else {
+      setIsMap(true);
+    }
+  };
   return (
-    <ScrollView>
-      <SafeAreaView forceInset={{top: 'always'}}>
+    <View>
+      <View>
         <View style={styles.bar}>
-          <TouchableOpacity
-            style={{
-              alignSelf: 'flex-start',
-            }}>
-            <Image
-              source={require('../../assets/icons/map.png')}
+          {isMap ? (
+            <TouchableOpacity
+              onPress={setMap}
               style={{
-                width: 25,
-                height: 25,
-                marginVertical: 10,
-                alignSelf: 'center',
-              }}
-            />
-          </TouchableOpacity>
+                alignSelf: 'flex-start',
+              }}>
+              <Image
+                source={require('../../assets/icons/list.png')}
+                style={{
+                  width: 25,
+                  height: 25,
+                  marginVertical: 10,
+                  alignSelf: 'center',
+                }}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={setMap}
+              style={{
+                alignSelf: 'flex-start',
+              }}>
+              <Image
+                source={require('../../assets/icons/map.png')}
+                style={{
+                  width: 25,
+                  height: 25,
+                  marginVertical: 10,
+                  alignSelf: 'center',
+                }}
+              />
+            </TouchableOpacity>
+          )}
           <Text
             style={{
               color: themeColors.white,
@@ -40,6 +71,7 @@ export default function HomeScreen() {
             Nearby
           </Text>
           <TouchableOpacity
+            onPress={() => navigation.navigate('AppInfo')}
             style={{
               alignSelf: 'flex-start',
             }}>
@@ -68,9 +100,9 @@ export default function HomeScreen() {
             <Text style={styles.textButton}>30</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
-      <MapScreen />
-    </ScrollView>
+      </View>
+      {isMap ? <MapScreen /> : <ListScreen />}
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -87,13 +119,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: themeColors.primaryColor,
+    paddingVertical: 10,
   },
   distancebutton: {
-    backgroundColor: themeColors.gray60,
+    backgroundColor: themeColors.primaryColor2,
     width: 70,
-    borderColor: themeColors.gray,
+    borderColor: themeColors.primaryColor,
     borderWidth: 1,
     borderRadius: 5,
+    marginHorizontal: 3,
   },
   textButton: {
     color: themeColors.white,

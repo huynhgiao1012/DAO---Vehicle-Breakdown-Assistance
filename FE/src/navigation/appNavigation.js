@@ -6,7 +6,8 @@ import HomeScreen from '../screens/HomeScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/loginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-
+import GarageScreen from '../screens/GarageScreen';
+import InfoScreen from '../screens/InfoScreen';
 const Stack = createStackNavigator();
 export default function AppNavigation() {
   return (
@@ -31,6 +32,16 @@ export default function AppNavigation() {
           name="SignUp"
           options={{headerShown: false}}
           component={SignUpScreen}
+        />
+        <Stack.Screen
+          name="GarageDetail"
+          options={{headerShown: false}}
+          component={GarageScreen}
+        />
+        <Stack.Screen
+          name="AppInfo"
+          options={{headerShown: false}}
+          component={InfoScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

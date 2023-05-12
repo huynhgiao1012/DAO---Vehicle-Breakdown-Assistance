@@ -5,6 +5,7 @@ import {
   Platform,
   StyleSheet,
   View,
+  Dimensions,
 } from 'react-native';
 import {useEffect, useState} from 'react';
 import MapView, {Marker} from 'react-native-maps';
@@ -67,12 +68,12 @@ const MapScreen = () => {
   if (loading)
     return (
       <View style={styles.container}>
-        <ActivityIndicator size={55} color="grey" />
+        <ActivityIndicator size={40} color="grey" />
       </View>
     );
 
   return (
-    <View style={{flex: 1}}>
+    <View>
       <MapView ref={mapRef} style={styles.map} initialRegion={region}>
         {[
           {
@@ -89,8 +90,7 @@ const MapScreen = () => {
           />
         ))}
       </MapView>
-      <ExploreScreen />
-      {/* <Rating /> */}
+      {/* <ExploreScreen /> */}
     </View>
   );
 };
@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    // ...StyleSheet.absoluteFillObject,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
 });
 
