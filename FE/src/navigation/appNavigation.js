@@ -8,16 +8,13 @@ import LoginScreen from '../screens/loginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import GarageScreen from '../screens/GarageScreen';
 import InfoScreen from '../screens/InfoScreen';
+import MainScreen from '../screens/MainScreen';
+
 const Stack = createStackNavigator();
 export default function AppNavigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          options={{headerShown: false}}
-          component={HomeScreen}
-        />
+      <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen
           name="Welcome"
           options={{headerShown: false}}
@@ -42,6 +39,11 @@ export default function AppNavigation() {
           name="AppInfo"
           options={{headerShown: false}}
           component={InfoScreen}
+        />
+        <Stack.Screen
+          name="Main"
+          options={{headerShown: false}}
+          component={MainScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -12,7 +12,10 @@ import {themeColors} from '../theme';
 import MapScreen from './MapScreen';
 import ListScreen from './ListScreen';
 import {useNavigation} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import MyServiceScreen from './MyServiceScreen';
 
+const Tab = createBottomTabNavigator();
 export default function HomeScreen() {
   const [isMap, setIsMap] = useState(true);
   const navigation = useNavigation();
@@ -25,7 +28,7 @@ export default function HomeScreen() {
     }
   };
   return (
-    <View>
+    <SafeAreaView>
       <View>
         <View style={styles.bar}>
           {isMap ? (
@@ -102,9 +105,10 @@ export default function HomeScreen() {
         </View>
       </View>
       {isMap ? <MapScreen /> : <ListScreen />}
-    </View>
+    </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   bar: {
     display: 'flex',

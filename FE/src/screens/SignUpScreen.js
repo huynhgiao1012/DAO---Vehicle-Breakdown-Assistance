@@ -120,7 +120,7 @@ export default function SignUpScreen() {
             }}>
             Already have an account?
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text
               style={{
                 fontWeight: 'bold',
