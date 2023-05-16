@@ -31,18 +31,6 @@ export default function HomeScreen() {
     <SafeAreaView>
       <View>
         <View style={styles.bar}>
-          <TouchableOpacity onPress={() => navigation.navigate('AppInfo')}>
-            <Image />
-          </TouchableOpacity>
-          <Text
-            style={{
-              color: themeColors.white,
-              textAlign: 'center',
-              fontSize: 20,
-              fontWeight: 'bold',
-            }}>
-            Nearby
-          </Text>
           {isMap ? (
             <TouchableOpacity
               onPress={setMap}
@@ -51,7 +39,7 @@ export default function HomeScreen() {
               }}>
               <Icon
                 name="list-ul"
-                size={24}
+                size={26}
                 color={themeColors.white}
                 style={{marginVertical: 10}}
               />
@@ -64,12 +52,29 @@ export default function HomeScreen() {
               }}>
               <Icon
                 name="map"
-                size={24}
+                size={26}
                 color={themeColors.white}
                 style={{marginVertical: 10}}
               />
             </TouchableOpacity>
           )}
+          <Text
+            style={{
+              color: themeColors.white,
+              textAlign: 'center',
+              fontSize: 20,
+              fontWeight: 'bold',
+            }}>
+            Nearby
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AppInfo')}>
+            <Icon
+              name="user-circle-o"
+              size={26}
+              color={themeColors.white}
+              style={{marginVertical: 10}}
+            />
+          </TouchableOpacity>
         </View>
         <View style={styles.distancebar}>
           <TouchableOpacity style={styles.distancebutton}>
@@ -99,6 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: themeColors.primaryColor,
     paddingHorizontal: 20,
+    paddingVertical: 8,
   },
   distancebar: {
     display: 'flex',
@@ -106,7 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: themeColors.primaryColor,
-    paddingVertical: 10,
+    paddingBottom: 10,
   },
   distancebutton: {
     backgroundColor: themeColors.primaryColor2,
@@ -114,7 +120,7 @@ const styles = StyleSheet.create({
     borderColor: themeColors.primaryColor,
     borderWidth: 1,
     borderRadius: 5,
-    marginHorizontal: 3,
+    marginHorizontal: 2,
   },
   textButton: {
     color: themeColors.white,

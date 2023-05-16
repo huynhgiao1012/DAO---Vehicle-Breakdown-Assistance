@@ -1,8 +1,6 @@
 import * as React from 'react';
-import {Image} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 // Screens
 import HomeScreen from './HomeScreen';
 import InfoScreen from './InfoScreen';
@@ -10,6 +8,7 @@ import GarageScreen from './GarageScreen';
 import MyInfo from './MyInfo';
 import {themeColors} from '../theme';
 import MyServiceScreen from './MyServiceScreen';
+import NotiScreen from './NotiScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,28 +16,52 @@ function MainScreen() {
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
-      tabBarOptions={{
-        activeTintColor: themeColors.primaryColor,
-        inactiveTintColor: themeColors.gray60,
-        labelStyle: {paddingBottom: 10, fontSize: 16, fontWeight: '700'},
-        style: {
-          padding: 10,
-          height: 70,
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+          let rn = route.name;
+
+          if (rn === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (rn === 'My Service') {
+            iconName = focused ? 'ios-create' : 'ios-create-outline';
+          } else if (rn === 'Notification') {
+            iconName = focused ? 'notifications' : 'notifications-outline';
+          } else if (rn === 'Information') {
+            iconName = focused
+              ? 'information-circle'
+              : 'information-circle-outline';
+          }
+          // You can return any component that you like here!
+          return <Icon name={iconName} size={size} color={color} />;
         },
-      }}>
+        tabBarStyle: {
+          height: 45,
+          backgroundColor: themeColors.primaryColor,
+        },
+        tabBarActiveTintColor: themeColors.primaryColor,
+        tabBarInactiveTintColor: themeColors.white,
+        tabBarActiveBackgroundColor: themeColors.white,
+        tabBarShowLabel: false,
+      })}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="Profile"
-        component={MyInfo}
+        name="My Service"
+        component={MyServiceScreen}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="My Service"
-        component={MyServiceScreen}
+        name="Notification"
+        component={NotiScreen}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Information"
+        component={InfoScreen}
         options={{headerShown: false}}
       />
     </Tab.Navigator>

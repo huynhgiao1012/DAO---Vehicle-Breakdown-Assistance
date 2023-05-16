@@ -96,10 +96,12 @@ export default function ListScreen() {
           <View
             style={{
               paddingHorizontal: 20,
-              paddingVertical: 20,
-              borderBottomWidth: 1,
+              paddingVertical: 10,
+              borderWidth: 1,
               marginHorizontal: 20,
-              borderBottomColor: themeColors.primaryColor2,
+              borderColor: themeColors.gray,
+              marginVertical: 10,
+              borderRadius: 20,
             }}>
             <Text
               style={{

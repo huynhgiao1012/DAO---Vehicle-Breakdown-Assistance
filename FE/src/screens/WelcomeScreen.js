@@ -85,8 +85,9 @@ const styles = StyleSheet.create({
     fontWeight: 600,
   },
   text4: {
-    fontSize: 18,
+    fontSize: 16,
     color: themeColors.primaryColor,
     fontWeight: 700,
+    paddingLeft: 8,
   },
 });
