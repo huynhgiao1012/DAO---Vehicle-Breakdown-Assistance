@@ -13,7 +13,7 @@ import MapScreen from './MapScreen';
 import ListScreen from './ListScreen';
 import {useNavigation} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import MyServiceScreen from './MyServiceScreen';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Tab = createBottomTabNavigator();
 export default function HomeScreen() {
@@ -31,39 +31,9 @@ export default function HomeScreen() {
     <SafeAreaView>
       <View>
         <View style={styles.bar}>
-          {isMap ? (
-            <TouchableOpacity
-              onPress={setMap}
-              style={{
-                alignSelf: 'flex-start',
-              }}>
-              <Image
-                source={require('../../assets/icons/list.png')}
-                style={{
-                  width: 25,
-                  height: 25,
-                  marginVertical: 10,
-                  alignSelf: 'center',
-                }}
-              />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={setMap}
-              style={{
-                alignSelf: 'flex-start',
-              }}>
-              <Image
-                source={require('../../assets/icons/map.png')}
-                style={{
-                  width: 25,
-                  height: 25,
-                  marginVertical: 10,
-                  alignSelf: 'center',
-                }}
-              />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={() => navigation.navigate('AppInfo')}>
+            <Image />
+          </TouchableOpacity>
           <Text
             style={{
               color: themeColors.white,
@@ -73,21 +43,33 @@ export default function HomeScreen() {
             }}>
             Nearby
           </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('AppInfo')}
-            style={{
-              alignSelf: 'flex-start',
-            }}>
-            <Image
-              source={require('../../assets/icons/info.png')}
+          {isMap ? (
+            <TouchableOpacity
+              onPress={setMap}
               style={{
-                width: 25,
-                height: 25,
-                marginVertical: 10,
-                alignSelf: 'center',
-              }}
-            />
-          </TouchableOpacity>
+                alignSelf: 'flex-start',
+              }}>
+              <Icon
+                name="list-ul"
+                size={24}
+                color={themeColors.white}
+                style={{marginVertical: 10}}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={setMap}
+              style={{
+                alignSelf: 'flex-start',
+              }}>
+              <Icon
+                name="map"
+                size={24}
+                color={themeColors.white}
+                style={{marginVertical: 10}}
+              />
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.distancebar}>
           <TouchableOpacity style={styles.distancebutton}>
