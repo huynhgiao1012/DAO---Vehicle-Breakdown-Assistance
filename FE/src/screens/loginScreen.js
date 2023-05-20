@@ -10,6 +10,7 @@ import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme/index';
 import {useNavigation} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -22,14 +23,11 @@ export default function LoginScreen() {
             justifyContent: 'flex-start',
           }}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Image
-              source={require('../../assets/images/arrow.png')}
-              style={{
-                width: 30,
-                height: 30,
-                marginLeft: 20,
-                marginTop: 20,
-              }}
+            <Icon
+              name="arrow-left"
+              size={26}
+              color={themeColors.white}
+              style={{marginVertical: 10, marginHorizontal: 20}}
             />
           </TouchableOpacity>
         </View>

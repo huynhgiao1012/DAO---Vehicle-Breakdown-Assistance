@@ -3,10 +3,12 @@ import React from 'react';
 import {themeColors} from '../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ServiceList from '../screens/ServiceList';
-import Rating from './Rating';
+import Rating from '../Components/Rating';
+import Header from '../Components/Header';
 export default function GarageScreen() {
   return (
     <ScrollView>
+      <Header />
       <View style={styles.headerView}>
         <View>
           <Image
@@ -146,6 +148,52 @@ export default function GarageScreen() {
             FEEDBACK
           </Text>
         </View>
+        <View style={styles.feedback}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}>
+            <Icon
+              name="user-circle-o"
+              size={35}
+              color={themeColors.blue}
+              style={{marginVertical: 10, marginLeft: 20, marginRight: 10}}
+            />
+            <Text style={{fontWeight: '800', color: themeColors.blue}}>
+              John Smith
+            </Text>
+          </View>
+          <Text style={{marginHorizontal: 20, marginBottom: 15}}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry.
+          </Text>
+        </View>
+        <View style={styles.feedback}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+            }}>
+            <Icon
+              name="user-circle-o"
+              size={35}
+              color={themeColors.blue}
+              style={{marginVertical: 10, marginLeft: 20, marginRight: 10}}
+            />
+            <Text style={{fontWeight: '800', color: themeColors.blue}}>
+              John Smith
+            </Text>
+          </View>
+          <Text style={{marginHorizontal: 20, marginBottom: 15}}>
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry.
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -182,5 +230,11 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  feedback: {
+    backgroundColor: themeColors.white,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    marginVertical: 10,
   },
 });

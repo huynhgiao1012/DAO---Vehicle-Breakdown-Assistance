@@ -9,6 +9,8 @@ import SignUpScreen from '../screens/SignUpScreen';
 import GarageScreen from '../screens/GarageScreen';
 import InfoScreen from '../screens/InfoScreen';
 import MainScreen from '../screens/MainScreen';
+import BookingScreen from '../screens/BookingScreen';
+import OTPScreen from '../screens/OTPScreen';
 
 const Stack = createStackNavigator();
 export default function AppNavigation() {
@@ -44,6 +46,16 @@ export default function AppNavigation() {
           name="Main"
           options={{headerShown: false}}
           component={MainScreen}
+        />
+        <Stack.Screen
+          name="BookingScreen"
+          options={{headerShown: false}}
+          component={BookingScreen}
+        />
+        <Stack.Screen
+          name="OTPScreen"
+          options={{headerShown: false}}
+          component={OTPScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

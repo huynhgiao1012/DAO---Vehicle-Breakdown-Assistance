@@ -84,7 +84,7 @@ export default function ServiceList() {
       renderItem={({item, index, separators}) => (
         <TouchableOpacity
           key={item.id}
-          onPress={() => navigation.navigate('GarageDetail')}>
+          onPress={() => navigation.navigate('BookingScreen')}>
           <View
             style={{
               width: 100,
