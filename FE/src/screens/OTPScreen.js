@@ -20,6 +20,7 @@ export default function OTPScreen() {
   const [pin2, setPin2] = useState('');
   const [pin3, setPin3] = useState('');
   const [pin4, setPin4] = useState('');
+  const verify = () => {};
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <Header />
@@ -122,7 +123,7 @@ export default function OTPScreen() {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('OTPScreen')}
+          onPress={verify()}
           style={{
             alignSelf: 'center',
             backgroundColor: themeColors.primaryColor,

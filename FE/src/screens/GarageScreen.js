@@ -106,6 +106,7 @@ export default function GarageScreen() {
             fontSize: 14,
             fontStyle: 'italic',
             color: themeColors.gray60,
+            textAlign: 'justify',
           }}>
           Hà Thành có đội ngũ nhân viên chăm sóc khách hàng và kỹ thuật có nhiều
           kinh nghiệm trong lĩnh vực. Hà Thành có diện tích gara rất rộng thông
