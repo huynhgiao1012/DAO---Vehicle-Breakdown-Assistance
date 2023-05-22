@@ -11,6 +11,8 @@ import InfoScreen from '../screens/InfoScreen';
 import MainScreen from '../screens/MainScreen';
 import BookingScreen from '../screens/BookingScreen';
 import OTPScreen from '../screens/OTPScreen';
+import MyInfo from '../screens/MyInfo';
+import RatingScreen from '../screens/RatingScreen';
 
 const Stack = createStackNavigator();
 export default function AppNavigation() {
@@ -56,6 +58,16 @@ export default function AppNavigation() {
           name="OTPScreen"
           options={{headerShown: false}}
           component={OTPScreen}
+        />
+        <Stack.Screen
+          name="MyInfo"
+          options={{headerShown: false}}
+          component={MyInfo}
+        />
+        <Stack.Screen
+          name="RatingScreen"
+          options={{headerShown: false}}
+          component={RatingScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -9,8 +9,11 @@ import {
 import React, {useState, useRef} from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
+import {useNavigation} from '@react-navigation/native';
 
 export default function OTPScreen() {
+  const navigation = useNavigation();
+
   const pin1Ref = useRef(null);
   const pin2Ref = useRef(null);
   const pin3Ref = useRef(null);
@@ -20,7 +23,10 @@ export default function OTPScreen() {
   const [pin2, setPin2] = useState('');
   const [pin3, setPin3] = useState('');
   const [pin4, setPin4] = useState('');
-  const verify = () => {};
+
+  const verify = () => {
+    navigation.navigate('RatingScreen');
+  };
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <Header />
@@ -123,7 +129,7 @@ export default function OTPScreen() {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={verify()}
+          onPress={verify}
           style={{
             alignSelf: 'center',
             backgroundColor: themeColors.primaryColor,

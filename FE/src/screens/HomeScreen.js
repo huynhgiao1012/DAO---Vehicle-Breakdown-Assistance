@@ -67,7 +67,7 @@ export default function HomeScreen() {
             }}>
             Nearby
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('AppInfo')}>
+          <TouchableOpacity onPress={() => navigation.navigate('MyInfo')}>
             <Icon
               name="user-circle-o"
               size={26}

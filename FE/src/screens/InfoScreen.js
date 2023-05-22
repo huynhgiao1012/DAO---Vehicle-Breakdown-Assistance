@@ -1,17 +1,11 @@
-import {View, Image, Text} from 'react-native';
+import {View, Image, Text, ScrollView} from 'react-native';
 import React from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
 
 export default function InfoScreen() {
-  const images = [
-    require('../../assets/images/image1.jpg'),
-    require('../../assets/images/image2.jpg'),
-    require('../../assets/images/image3.jpg'),
-    require('../../assets/images/image4.jpg'),
-  ];
   return (
-    <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
+    <ScrollView style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <Header />
       <Image
         source={require('../../assets/images/logo2.png')}
@@ -35,7 +29,55 @@ export default function InfoScreen() {
           locations which will help them in an unexpected situations raised by
           the mechanical issues of their vehicles.
         </Text>
+        <Image
+          source={require('../../assets/images/image4.jpg')}
+          style={{
+            width: '100%',
+            height: 200,
+            marginVertical: 10,
+            alignSelf: 'center',
+            borderRadius: 20,
+            borderColor: themeColors.primaryColor,
+            borderWidth: 2,
+          }}
+        />
+        <Image
+          source={require('../../assets/images/image3.jpg')}
+          style={{
+            width: '100%',
+            height: 200,
+            marginVertical: 10,
+            alignSelf: 'center',
+            borderRadius: 20,
+            borderColor: themeColors.primaryColor,
+            borderWidth: 2,
+          }}
+        />
+        <Image
+          source={require('../../assets/images/image2.jpg')}
+          style={{
+            width: '100%',
+            height: 200,
+            marginVertical: 10,
+            alignSelf: 'center',
+            borderRadius: 20,
+            borderColor: themeColors.primaryColor,
+            borderWidth: 2,
+          }}
+        />
       </View>
-    </View>
+
+      <Text
+        style={{
+          fontStyle: 'italic',
+          color: themeColors.blue,
+          fontSize: 16,
+          alignSelf: 'center',
+          marginVertical: 10,
+          fontWeight: '600',
+        }}>
+        Published: 2023
+      </Text>
+    </ScrollView>
   );
 }
