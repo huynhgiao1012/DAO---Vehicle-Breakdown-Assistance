@@ -7,10 +7,10 @@ import {
   StyleSheet,
 } from 'react-native';
 import React from 'react';
+import {Formik} from 'formik';
 import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-
 // subscribe for more videos like this :)
 export default function SignUpScreen() {
   const navigation = useNavigation();
@@ -40,35 +40,60 @@ export default function SignUpScreen() {
           backgroundColor: themeColors.white,
           flex: 1,
         }}>
-        <View style={styles.form}>
-          <Text style={styles.title}>Full Name</Text>
-          <TextInput style={styles.input} value="" placeholder="Jonh" />
-          <Text style={styles.title}>Email Address</Text>
-          <TextInput style={styles.input} placeholder="example@gmail.com" />
-          <Text style={styles.title}>Phone</Text>
-          <TextInput style={styles.input} value="" placeholder="08320111XXX" />
-          <Text style={styles.title}>Password</Text>
-          <TextInput style={styles.input} secureTextEntry value="" />
-          <TouchableOpacity
-            style={{
-              alignSelf: 'center',
-              backgroundColor: themeColors.primaryColor,
-              padding: 10,
-              width: '90%',
-              borderRadius: 2,
-              marginTop: 10,
-            }}>
-            <Text
-              style={{
-                color: themeColors.white,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: 'bold',
-              }}>
-              Sign Up
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Formik
+          onSubmit={values => console.log(values)}
+          initialValues={{name: '', email: '', phone: '', password: ''}}>
+          {({errors, handleChange, handleBlur, handleSubmit, values}) => {
+            return (
+              <View style={styles.form}>
+                <Text style={styles.title}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Jonh"
+                  onChangeText={handleChange('name')}
+                />
+                <Text style={styles.title}>Email Address</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="example@gmail.com"
+                  onChangeText={handleChange('email')}
+                />
+                <Text style={styles.title}>Phone</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="08320111XXX"
+                  onChangeText={handleChange('phone')}
+                />
+                <Text style={styles.title}>Password</Text>
+                <TextInput
+                  style={styles.input}
+                  secureTextEntry
+                  onChangeText={handleChange('password')}
+                />
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  style={{
+                    alignSelf: 'center',
+                    backgroundColor: themeColors.primaryColor,
+                    padding: 10,
+                    width: '90%',
+                    borderRadius: 2,
+                    marginTop: 10,
+                  }}>
+                  <Text
+                    style={{
+                      color: themeColors.white,
+                      textAlign: 'center',
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                    }}>
+                    Sign Up
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        </Formik>
         <Text
           style={{
             textAlign: 'center',
