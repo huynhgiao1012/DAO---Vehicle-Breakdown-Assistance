@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit';
-import reduxSlices from './src/screens/reduxToolkit/reduxSlices';
+import ReduxSlices from './src/reduxToolkit/ReduxSlices';
 
 export const store = configureStore({
   reducer: {
-    reduxSlices,
+    reduxReducer: ReduxSlices,
   },
 });

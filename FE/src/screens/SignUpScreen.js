@@ -12,7 +12,8 @@ import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {signUp} from './reduxToolkit/reduxThunk';
+import {signUp} from '../reduxToolkit/ReduxThunk';
+
 // subscribe for more videos like this :)
 export default function SignUpScreen() {
   const navigation = useNavigation();
