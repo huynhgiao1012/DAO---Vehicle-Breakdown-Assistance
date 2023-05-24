@@ -11,9 +11,16 @@ import {Formik} from 'formik';
 import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {signUp} from './reduxToolkit/reduxThunk';
 // subscribe for more videos like this :)
 export default function SignUpScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const Register = data => {
+    console.log(data);
+    dispatch(signUp(data));
+  };
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <SafeAreaView>
@@ -41,7 +48,7 @@ export default function SignUpScreen() {
           flex: 1,
         }}>
         <Formik
-          onSubmit={values => console.log(values)}
+          onSubmit={values => Register(values)}
           initialValues={{name: '', email: '', phone: '', password: ''}}>
           {({errors, handleChange, handleBlur, handleSubmit, values}) => {
             return (

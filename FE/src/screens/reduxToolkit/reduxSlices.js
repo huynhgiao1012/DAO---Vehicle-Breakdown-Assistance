@@ -2,8 +2,9 @@ import {createSlice} from '@reduxjs/toolkit';
 import {signUp} from './reduxThunk';
 const initialState = {
   result: [],
+  isLoading: false,
 };
-const ReduxSlices = createSlice({
+const reduxSlices = createSlice({
   name: 'reduxSlices',
   initialState: initialState,
   extraReducers: builder => {
@@ -18,4 +19,4 @@ const ReduxSlices = createSlice({
   },
 });
 
-export default ReduxSlices.reducer;
+export default reduxSlices.reducer;

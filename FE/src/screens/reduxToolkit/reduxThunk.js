@@ -17,11 +17,18 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 // );
 
 export const signUp = createAsyncThunk('auth/signUp', async params => {
-  const response = await fetch(
-    'http://localhost:3000/api/v1/auth/register',
-    params,
-  );
-  const json = response.json();
+  const response = await fetch('http://localhost:3000/api/v1/auth/register', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    credentials: 'same-origin',
+    body: JSON.stringify({
+      email: params.email,
+      password: params.password,
+      name: params.name,
+      phone: params.phone,
+    }),
+  });
+  let json = await response.json();
   console.log(json);
   // return json;
 });

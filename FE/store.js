@@ -3,6 +3,6 @@ import reduxSlices from './src/screens/reduxToolkit/reduxSlices';
 
 export const store = configureStore({
   reducer: {
-    reduxReducer: reduxSlices,
+    reduxSlices,
   },
 });

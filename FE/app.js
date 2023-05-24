@@ -12,7 +12,8 @@ import {useEffect, useState} from 'react';
 import socketService from './src/utils/socketService';
 import {createStackNavigator} from '@react-navigation/stack';
 import AppNavigation from './src/navigation/appNavigation';
-
+import {Provider} from 'react-redux';
+import {store} from './store';
 const Stack = createStackNavigator();
 const App = () => {
   const [message, setMessage] = useState('');
@@ -28,7 +29,11 @@ const App = () => {
   const sendMessage = () => {
     socketService.emit('send_message', message);
   };
-  return <AppNavigation />;
+  return (
+    <Provider store={store}>
+      <AppNavigation />
+    </Provider>
+  );
 };
 const styles = StyleSheet.create({
   container: {
