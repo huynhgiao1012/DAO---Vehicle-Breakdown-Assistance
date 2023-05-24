@@ -18,7 +18,6 @@ export default function SignUpScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const Register = data => {
-    console.log(data);
     dispatch(signUp(data));
   };
   return (
