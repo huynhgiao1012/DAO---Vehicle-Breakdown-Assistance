@@ -5,15 +5,54 @@ import {
   Image,
   TextInput,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme/index';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {Formik} from 'formik';
+import {useLoginMutation} from '../services/Auth';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const [login] = useLoginMutation();
+  const Login = data => {
+    login({email: data.email, password: data.password})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          navigation.navigate('Main');
+        } else {
+          if (payload.customerId.isActive === false) {
+            Alert.alert(
+              'Your account have not been verified',
+              payload.message,
+              [
+                {
+                  text: 'OK',
+                  onPress: () =>
+                    navigation.navigate('OTPScreen', {
+                      id: payload.customerId._id,
+                    }),
+                },
+              ],
+            );
+          }
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        if (error) {
+          Alert.alert('Notification', error.data.message.duplicate, [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
+        }
+      });
+  };
+
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <SafeAreaView>
@@ -47,51 +86,59 @@ export default function LoginScreen() {
           borderTopRightRadius: 50,
           marginHorizontal: 40,
         }}>
-        <View>
-          <TextInput
-            placeholder="Email"
-            value=""
-            style={styles.input}
-            placeholderTextColor={themeColors.white}
-          />
-          <TextInput
-            secureTextEntry
-            placeholder="Password"
-            value=""
-            style={styles.input}
-            placeholderTextColor={themeColors.white}
-          />
-          <TouchableOpacity className="flex items-end">
-            <Text
-              style={{
-                alignSelf: 'flex-end',
-                padding: 10,
-                color: themeColors.white,
-                fontStyle: 'italic',
-              }}>
-              Forgot Password?
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Main')}
-            style={{
-              alignSelf: 'center',
-              backgroundColor: themeColors.blue,
-              padding: 15,
-              width: '80%',
-              borderRadius: 30,
-            }}>
-            <Text
-              style={{
-                color: themeColors.white,
-                textAlign: 'center',
-                fontSize: 18,
-                fontWeight: 'bold',
-              }}>
-              Login
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Formik
+          onSubmit={values => Login(values)}
+          initialValues={{email: '', password: ''}}>
+          {({errors, handleChange, handleBlur, handleSubmit, values}) => {
+            return (
+              <View>
+                <TextInput
+                  placeholder="Email"
+                  style={styles.input}
+                  placeholderTextColor={themeColors.white}
+                  onChangeText={handleChange('email')}
+                />
+                <TextInput
+                  secureTextEntry
+                  placeholder="Password"
+                  style={styles.input}
+                  placeholderTextColor={themeColors.white}
+                  onChangeText={handleChange('password')}
+                />
+                <TouchableOpacity className="flex items-end">
+                  <Text
+                    style={{
+                      alignSelf: 'flex-end',
+                      padding: 10,
+                      color: themeColors.white,
+                      fontStyle: 'italic',
+                    }}>
+                    Forgot Password?
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleSubmit}
+                  style={{
+                    alignSelf: 'center',
+                    backgroundColor: themeColors.blue,
+                    padding: 15,
+                    width: '80%',
+                    borderRadius: 30,
+                  }}>
+                  <Text
+                    style={{
+                      color: themeColors.white,
+                      textAlign: 'center',
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                    }}>
+                    Login
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        </Formik>
         <Text
           style={{
             textAlign: 'center',

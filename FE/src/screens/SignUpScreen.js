@@ -5,6 +5,7 @@ import {
   Image,
   TextInput,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import React from 'react';
 import {Formik} from 'formik';
@@ -12,15 +13,31 @@ import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {signUp, getProduct} from '../reduxToolkit/ReduxThunk';
+import {useRegisterMutation} from '../services/Auth';
 
 // subscribe for more videos like this :)
 export default function SignUpScreen() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const [registerQuery, result] = useRegisterMutation();
   const Register = data => {
-    dispatch(signUp(data));
+    registerQuery(data)
+      .unwrap()
+      .then(payload =>
+        Alert.alert(
+          payload.message,
+          'Please check your mail to verify your account !',
+          [{text: 'OK', onPress: () => navigation.navigate('OTPScreen')}],
+        ),
+      )
+      .catch(error => {
+        if (error) {
+          Alert.alert('Notification', error.data.message.duplicate, [
+            {text: 'OK', onPress: () => console.log('OK Pressed')},
+          ]);
+        }
+      });
   };
+  console.log(result);
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
       <SafeAreaView>

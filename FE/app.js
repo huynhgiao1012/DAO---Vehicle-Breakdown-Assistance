@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   SafeAreaView,
+  LogBox,
 } from 'react-native';
 import React from 'react';
 import {useEffect, useState} from 'react';
@@ -13,11 +14,12 @@ import socketService from './src/utils/socketService';
 import {createStackNavigator} from '@react-navigation/stack';
 import AppNavigation from './src/navigation/appNavigation';
 import {Provider} from 'react-redux';
-import {store} from './store';
+import {store} from './src/store/index.js';
 const Stack = createStackNavigator();
 const App = () => {
   const [message, setMessage] = useState('');
   const [data, setData] = useState([]);
+  LogBox.ignoreLogs(['Warning: ...']);
   useEffect(() => {
     socketService.initializeSocket();
   }, []);

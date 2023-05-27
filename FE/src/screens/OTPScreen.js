@@ -5,15 +5,18 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
 import {useNavigation} from '@react-navigation/native';
+import {useOTPVerifyMutation} from '../services/Auth';
 
-export default function OTPScreen() {
+export default function OTPScreen({route}) {
   const navigation = useNavigation();
-
+  const {id} = route.params;
+  const [OTPverify] = useOTPVerifyMutation();
   const pin1Ref = useRef(null);
   const pin2Ref = useRef(null);
   const pin3Ref = useRef(null);
@@ -25,7 +28,29 @@ export default function OTPScreen() {
   const [pin4, setPin4] = useState('');
 
   const verify = () => {
-    navigation.navigate('RatingScreen');
+    const otpString = [pin1, pin2, pin3, pin4];
+    const body = {id: id, otp: otpString.join('')};
+    OTPverify(body)
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          navigation.navigate('Main');
+        }
+      })
+      .catch(error => {
+        // if (error) {
+        //   Alert.alert('Notification', error.data.message.duplicate, [
+        //     {text: 'OK', onPress: () => console.log('OK Pressed')},
+        //   ]);
+        // }
+        Alert.alert('Notification', error.data.message, [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('Login'),
+          },
+        ]);
+      });
   };
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
@@ -69,6 +94,7 @@ export default function OTPScreen() {
                 pin2Ref.current.focus();
               }
             }}
+            onChangeText={newText => setPin1(newText)}
           />
           <TextInput
             maxLength={1}
@@ -76,11 +102,12 @@ export default function OTPScreen() {
             keyboardType="number-pad"
             ref={pin2Ref}
             onChange={pin2 => {
-              setPin1(pin2);
+              setPin2(pin2);
               if (pin2 !== '') {
                 pin3Ref.current.focus();
               }
             }}
+            onChangeText={newText => setPin2(newText)}
           />
           <TextInput
             maxLength={1}
@@ -88,17 +115,19 @@ export default function OTPScreen() {
             keyboardType="number-pad"
             ref={pin3Ref}
             onChange={pin3 => {
-              setPin1(pin3);
+              setPin3(pin3);
               if (pin3 !== '') {
                 pin4Ref.current.focus();
               }
             }}
+            onChangeText={newText => setPin3(newText)}
           />
           <TextInput
             maxLength={1}
             style={styles.input}
             keyboardType="number-pad"
             ref={pin4Ref}
+            onChangeText={newText => setPin4(newText)}
           />
         </View>
         <View
