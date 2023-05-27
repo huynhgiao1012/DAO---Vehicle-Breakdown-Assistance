@@ -21,7 +21,7 @@ exports.register = catchAsync(async (req, res) => {
     phone,
     password,
   });
-  var otpcode = otpGenerator.generate(6, {
+  var otpcode = otpGenerator.generate(4, {
     upperCaseAlphabets: false,
     specialChars: false,
     digits: true,
@@ -127,7 +127,7 @@ exports.login = catchAsync(async (req, res) => {
     const isOtp = await Otp.findOne({ accountId: existEmail._id });
     console.log(isOtp);
     if (!isOtp) {
-      var otpcode = otpGenerator.generate(6, {
+      var otpcode = otpGenerator.generate(4, {
         upperCaseAlphabets: false,
         specialChars: false,
         digits: true,
@@ -150,7 +150,7 @@ exports.login = catchAsync(async (req, res) => {
         customerId: existEmail,
       });
     } else {
-      var otpcode = otpGenerator.generate(6, {
+      var otpcode = otpGenerator.generate(4, {
         upperCaseAlphabets: false,
         specialChars: false,
         digits: true,
