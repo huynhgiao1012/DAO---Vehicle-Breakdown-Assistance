@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import {AsyncStorage} from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme/index';
@@ -24,6 +25,7 @@ export default function LoginScreen() {
       .then(payload => {
         console.log(payload);
         if (payload.success === true) {
+          AsyncStorage.setItem('TOKEN', payload.token);
           navigation.navigate('Main');
         } else {
           if (payload.customerId.isActive === false) {
@@ -45,11 +47,11 @@ export default function LoginScreen() {
       })
       .catch(error => {
         console.log(error);
-        if (error) {
-          Alert.alert('Notification', error.data.message.duplicate, [
-            {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ]);
-        }
+        // if (error) {
+        //   Alert.alert('Notification', error.data.message.duplicate, [
+        //     {text: 'OK', onPress: () => console.log('OK Pressed')},
+        //   ]);
+        // }
       });
   };
 

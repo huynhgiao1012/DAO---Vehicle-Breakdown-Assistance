@@ -1,11 +1,10 @@
 import * as React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {AsyncStorage} from 'react-native';
 // Screens
 import HomeScreen from './HomeScreen';
 import InfoScreen from './InfoScreen';
-import GarageScreen from './GarageScreen';
-import MyInfo from './MyInfo';
 import {themeColors} from '../theme';
 import MyServiceScreen from './MyServiceScreen';
 import NotiScreen from './NotiScreen';
@@ -13,6 +12,8 @@ import NotiScreen from './NotiScreen';
 const Tab = createBottomTabNavigator();
 
 function MainScreen() {
+  const value = AsyncStorage.getItem('TOKEN');
+  console.log(value);
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
