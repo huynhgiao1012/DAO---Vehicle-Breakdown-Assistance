@@ -3,8 +3,14 @@ import React from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useGetUserDetailQuery} from '../services/User';
+import {useEffect} from 'react';
 
 export default function MyInfo() {
+  const getDetail = useGetUserDetailQuery();
+  useEffect(() => {
+    console.log(getDetail);
+  }, []);
   return (
     <View
       style={{

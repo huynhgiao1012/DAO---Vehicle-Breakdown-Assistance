@@ -1,25 +1,21 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-} from 'react-native';
-import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme';
 import MapScreen from './MapScreen';
 import ListScreen from './ListScreen';
 import {useNavigation} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const Tab = createBottomTabNavigator();
 export default function HomeScreen() {
   const [isMap, setIsMap] = useState(true);
+  const [token, setToken] = useState('');
   const navigation = useNavigation();
-
+  useEffect(() => {
+    const value = AsyncStorage.getItem('TOKEN');
+    setToken(value);
+  }, []);
   const setMap = () => {
     if (isMap) {
       setIsMap(false);
@@ -28,71 +24,73 @@ export default function HomeScreen() {
     }
   };
   return (
-    <SafeAreaView>
-      <View>
-        <View style={styles.bar}>
-          {isMap ? (
-            <TouchableOpacity
-              onPress={setMap}
+    token && (
+      <SafeAreaView>
+        <View>
+          <View style={styles.bar}>
+            {isMap ? (
+              <TouchableOpacity
+                onPress={setMap}
+                style={{
+                  alignSelf: 'flex-start',
+                }}>
+                <Icon
+                  name="list-ul"
+                  size={26}
+                  color={themeColors.white}
+                  style={{marginVertical: 10}}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={setMap}
+                style={{
+                  alignSelf: 'flex-start',
+                }}>
+                <Icon
+                  name="map"
+                  size={26}
+                  color={themeColors.white}
+                  style={{marginVertical: 10}}
+                />
+              </TouchableOpacity>
+            )}
+            <Text
               style={{
-                alignSelf: 'flex-start',
+                color: themeColors.white,
+                textAlign: 'center',
+                fontSize: 20,
+                fontWeight: 'bold',
               }}>
+              Nearby
+            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('MyInfo')}>
               <Icon
-                name="list-ul"
+                name="user-circle-o"
                 size={26}
                 color={themeColors.white}
                 style={{marginVertical: 10}}
               />
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={setMap}
-              style={{
-                alignSelf: 'flex-start',
-              }}>
-              <Icon
-                name="map"
-                size={26}
-                color={themeColors.white}
-                style={{marginVertical: 10}}
-              />
+          </View>
+          <View style={styles.distancebar}>
+            <TouchableOpacity style={styles.distancebutton}>
+              <Text style={styles.textButton}>5</Text>
             </TouchableOpacity>
-          )}
-          <Text
-            style={{
-              color: themeColors.white,
-              textAlign: 'center',
-              fontSize: 20,
-              fontWeight: 'bold',
-            }}>
-            Nearby
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('MyInfo')}>
-            <Icon
-              name="user-circle-o"
-              size={26}
-              color={themeColors.white}
-              style={{marginVertical: 10}}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.distancebutton}>
+              <Text style={styles.textButton}>10</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.distancebutton}>
+              <Text style={styles.textButton}>20</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.distancebutton}>
+              <Text style={styles.textButton}>30</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.distancebar}>
-          <TouchableOpacity style={styles.distancebutton}>
-            <Text style={styles.textButton}>5</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.distancebutton}>
-            <Text style={styles.textButton}>10</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.distancebutton}>
-            <Text style={styles.textButton}>20</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.distancebutton}>
-            <Text style={styles.textButton}>30</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {isMap ? <MapScreen /> : <ListScreen />}
-    </SafeAreaView>
+        {isMap ? <MapScreen /> : <ListScreen />}
+      </SafeAreaView>
+    )
   );
 }
 
