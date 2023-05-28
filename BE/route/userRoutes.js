@@ -9,7 +9,7 @@ router.get("/detail/:id", jwtAuth, authorize("admin"), userController.getUser);
 router.get(
   "/detail",
   jwtAuth,
-  authorize("user"),
+  authorize("customer", "company"),
   userController.getUserDetails
 );
 router.patch("/:id", jwtAuth, authorize("admin"), userController.updateUser);
