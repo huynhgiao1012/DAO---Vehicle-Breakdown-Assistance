@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", jwtAuth, authorize("admin"), userController.getAllUser);
 router.get("/detail/:id", jwtAuth, authorize("admin"), userController.getUser);
 router.get(
-  "/detail",
+  "/userDetail",
   jwtAuth,
   authorize("customer", "company"),
   userController.getUserDetails
