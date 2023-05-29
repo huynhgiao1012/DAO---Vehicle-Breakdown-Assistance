@@ -8,6 +8,7 @@ import {useEffect} from 'react';
 
 export default function MyInfo() {
   const getDetail = useGetUserDetailQuery();
+
   useEffect(() => {
     console.log(getDetail);
   }, []);

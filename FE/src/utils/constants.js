@@ -1,11 +1,11 @@
-import { Dimensions } from "react-native";
+import {Dimensions} from 'react-native';
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 export const OUTER_CARD_HEIGHT = 170;
 export const OUTER_CARD_WIDTH = width;
 
-export const INNER_CARD_HEIGHT = 160
+export const INNER_CARD_HEIGHT = 160;
 export const INNER_CARD_WIDTH = width * 0.8;
 
 export const initialRegion = {
@@ -14,3 +14,6 @@ export const initialRegion = {
   latitudeDelta: 0.04864195044303443,
   longitudeDelta: 0.040142817690068,
 };
+
+export const KEY_TOKEN = 'token';
+export const IP = '192.168.0.109';

@@ -10,69 +10,64 @@ import MyServiceScreen from './MyServiceScreen';
 import NotiScreen from './NotiScreen';
 import {useEffect} from 'react';
 import {useState} from 'react';
+import {getLocalStorageByKey} from '../common/LocalStorage';
+import {KEY_TOKEN} from '../utils/constants';
 
 const Tab = createBottomTabNavigator();
 
 const MainScreen = () => {
-  const [token, setToken] = useState('');
-  useEffect(() => {
-    const value = AsyncStorage.getItem('TOKEN');
-    setToken(value);
-  }, []);
   return (
-    token && (
-      <Tab.Navigator
-        initialRouteName="HomeScreen"
-        screenOptions={({route}) => ({
-          tabBarIcon: ({focused, color, size}) => {
-            let iconName;
-            let rn = route.name;
+    <Tab.Navigator
+      initialRouteName="HomeScreen"
+      screenOptions={({route}) => ({
+        tabBarIcon: ({focused, color, size}) => {
+          let iconName;
+          let rn = route.name;
 
-            if (rn === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (rn === 'My Service') {
-              iconName = focused ? 'ios-create' : 'ios-create-outline';
-            } else if (rn === 'Notification') {
-              iconName = focused ? 'notifications' : 'notifications-outline';
-            } else if (rn === 'Information') {
-              iconName = focused
-                ? 'information-circle'
-                : 'information-circle-outline';
-            }
-            // You can return any component that you like here!
-            return <Icon name={iconName} size={size} color={color} />;
-          },
-          tabBarStyle: {
-            height: 45,
-            backgroundColor: themeColors.primaryColor,
-          },
-          tabBarActiveTintColor: themeColors.primaryColor,
-          tabBarInactiveTintColor: themeColors.white,
-          tabBarActiveBackgroundColor: themeColors.white,
-          tabBarShowLabel: false,
-        })}>
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{headerShown: false}}
-        />
-        <Tab.Screen
-          name="My Service"
-          component={MyServiceScreen}
-          options={{headerShown: false}}
-        />
-        <Tab.Screen
-          name="Notification"
-          component={NotiScreen}
-          options={{headerShown: false}}
-        />
-        <Tab.Screen
-          name="Information"
-          component={InfoScreen}
-          options={{headerShown: false}}
-        />
-      </Tab.Navigator>
-    )
+          if (rn === 'Home') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (rn === 'My Service') {
+            iconName = focused ? 'ios-create' : 'ios-create-outline';
+          } else if (rn === 'Notification') {
+            iconName = focused ? 'notifications' : 'notifications-outline';
+          } else if (rn === 'Information') {
+            iconName = focused
+              ? 'information-circle'
+              : 'information-circle-outline';
+          }
+          // You can return any component that you like here!
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+        tabBarStyle: {
+          height: 45,
+          backgroundColor: themeColors.primaryColor,
+        },
+        tabBarActiveTintColor: themeColors.primaryColor,
+        tabBarInactiveTintColor: themeColors.white,
+        tabBarActiveBackgroundColor: themeColors.white,
+        tabBarShowLabel: false,
+      })}>
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="My Service"
+        component={MyServiceScreen}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Notification"
+        component={NotiScreen}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Information"
+        component={InfoScreen}
+        options={{headerShown: false}}
+      />
+    </Tab.Navigator>
   );
 };
 

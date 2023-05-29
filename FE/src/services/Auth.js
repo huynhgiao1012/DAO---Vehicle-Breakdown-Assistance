@@ -1,9 +1,10 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import {IP} from '../utils/constants';
 
 // Define a service using a base URL and expected endpoints
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({baseUrl: 'http://192.168.1.4:3000/api/v1/auth'}),
+  baseQuery: fetchBaseQuery({baseUrl: `http://${IP}:3000/api/v1/auth`}),
   tagTypes: ['Post'],
   endpoints: builder => ({
     register: builder.mutation({

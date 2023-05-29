@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme/index';
@@ -15,20 +14,21 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Formik} from 'formik';
 import {useLoginMutation} from '../services/Auth';
-import {useDispatch} from 'react-redux';
-import {setToken} from '../slices/authSlice';
+import {getLocalStorageByKey, saveStorage} from '../common/LocalStorage';
+import {KEY_TOKEN} from '../utils/constants';
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
   const [login] = useLoginMutation();
   const Login = data => {
     login({email: data.email, password: data.password})
       .unwrap()
       .then(async payload => {
-        console.log(payload);
         if (payload.success === true) {
-          dispatch(setToken(payload.token));
-          navigation.navigate('Main');
+          saveStorage(KEY_TOKEN, payload.token);
+          const token = await getLocalStorageByKey(KEY_TOKEN);
+          if (token) {
+            navigation.navigate('Main');
+          }
         } else {
           if (payload.customerId.isActive === false) {
             Alert.alert(
