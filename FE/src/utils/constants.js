@@ -17,4 +17,4 @@ export const initialRegion = {
 
 export const KEY_TOKEN = 'token';
 export const IP = '192.168.0.109';
-export const API_KEY = 'AAX8PcsBCd0ka1lAq1ftCBhNK2wIYhctn7cysYk8';
+export const API_KEY = '9Icy3mrshOwEqiL7fX9e8dV8rza1aX340AMpGMyV';

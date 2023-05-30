@@ -1,19 +1,26 @@
 import React, {useRef} from 'react';
 import {
-  ActivityIndicator,
-  PermissionsAndroid,
-  Platform,
   StyleSheet,
   View,
+  Animated,
+  Platform,
+  PermissionsAndroid,
+  ActivityIndicator,
+  TouchableOpacity,
+  Text,
+  Image,
   Dimensions,
 } from 'react-native';
 import {useEffect, useState} from 'react';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import GetLocation from 'react-native-get-location';
+import {useDistanceMatrixMutation} from '../services/Map';
+
 const MapScreen = () => {
   const [loading, setLoading] = useState(true);
   const [distanceNum, setDistanceNum] = useState(50);
   const [markers, setMarkers] = React.useState([]);
+  const [distanceMatrix] = useDistanceMatrixMutation();
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
@@ -64,8 +71,8 @@ const MapScreen = () => {
 
   const getCurrentLocation = () => {
     GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-      timeout: 20000,
+      enableHighAccuracy: false,
+      timeout: 10000,
     })
       .then(location => {
         setRegion({
@@ -73,12 +80,83 @@ const MapScreen = () => {
           latitude: location.latitude,
           longitude: location.longitude,
         });
+        apiCall(location.latitude, location.longitude);
       })
       .catch(error => {
-        const {code, message} = error;
-        console.warn(code, message);
+        return error;
       });
     setLoading(false);
+  };
+  const apiCall = async (latitude, longitude) => {
+    try {
+      var string = '';
+      let markerList = [];
+      let places = [];
+      coordinates.map(val => {
+        if (string.length === 0) {
+          string = val.latitude + ',' + val.longitude;
+        } else {
+          string = string + '%7C' + val.latitude + ',' + val.longitude;
+        }
+      });
+      distanceMatrix({
+        latitude: latitude,
+        longitude: longitude,
+        string: string,
+      })
+        .unwrap()
+        .then(async payload => {
+          const withIndex = payload.rows[0].elements
+            .map((val, index) => {
+              const num = index + 1;
+              return {index: num, ...val};
+            })
+            .sort((a, b) => a.distance.value - b.distance.value);
+          console.log('withIndex' + ' ' + withIndex);
+          if (distanceNum === 10) {
+            const showedMarker = sortedList.filter(
+              val => val.distance.value <= 10000,
+            );
+            console.log(showedMarker);
+            coordinates.map(val => {
+              showedMarker.map(value => {
+                if (val.index === value.index) {
+                  markerList.push(val);
+                }
+              });
+            });
+          } else if (distanceNum === 100) {
+            const showedMarker = sortedList.filter(
+              val => val.distance.value <= 100000,
+            );
+            coordinates.map(val => {
+              showedMarker.map(value => {
+                if (val.index === value.index) {
+                  markerList.push(val);
+                }
+              });
+            });
+          } else {
+            const showedMarker = sortedList.filter(
+              val => val.distance.value <= 50000,
+            );
+            coordinates.map(val => {
+              showedMarker.map(value => {
+                if (val.index === value.index) {
+                  markerList.push(val);
+                }
+              });
+            });
+          }
+          console.log('markerList' + ' ' + JSON.stringify(markerList));
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      console.log(withIndex);
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   if (loading)
@@ -107,6 +185,16 @@ const MapScreen = () => {
     if (mapIndex.current >= markers.length - 1) return;
     let newIndex = parseInt(mapIndex.current) + 1;
     flatlistRef.current?.scrollToIndex({index: newIndex, animate: true});
+  };
+  const onMapReady = () => {
+    if (!markers.length) return;
+    setTimeout(() => {
+      _map.current.animateToRegion({
+        ...(markers[0] ? markers[0].coordinate : region),
+        latitudeDelta: region.latitudeDelta,
+        longitudeDelta: region.longitudeDelta,
+      });
+    }, 10);
   };
 
   const onScroll = event => {
