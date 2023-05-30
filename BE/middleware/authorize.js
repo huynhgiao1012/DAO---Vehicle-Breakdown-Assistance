@@ -4,7 +4,6 @@ exports.authorize =
   (req, res, next) => {
     // roles: tham số truyền vào authorize bên bookRoutes
     const role = req.user.role;
-    console.log(roles);
     if (!role || !roles.includes(role)) {
       throw new ApiError(403, "Don't have permission");
     }
