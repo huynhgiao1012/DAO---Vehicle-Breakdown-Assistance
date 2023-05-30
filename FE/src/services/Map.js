@@ -15,9 +15,25 @@ export const mapApi = createApi({
       }),
       invalidatesTags: ['Map'],
     }),
+    reverseGeo: builder.mutation({
+      query: ({latitude, longitude}) => ({
+        url: `/Geocode?latlng=${latitude},%20${longitude}&api_key=${API_KEY}`,
+      }),
+      invalidatesTags: ['Map'],
+    }),
+    detailPlace: builder.mutation({
+      query: ({placeId}) => ({
+        url: `/Place/Detail?place_id=${placeId}&api_key=${API_KEY}`,
+      }),
+      invalidatesTags: ['Map'],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useDistanceMatrixMutation} = mapApi;
+export const {
+  useDistanceMatrixMutation,
+  useReverseGeoMutation,
+  useDetailPlaceMutation,
+} = mapApi;

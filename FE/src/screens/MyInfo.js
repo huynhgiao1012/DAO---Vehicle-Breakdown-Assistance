@@ -11,9 +11,9 @@ export default function MyInfo() {
   const userPoint = useGetUserPointQuery();
 
   useEffect(() => {
-    console.log(userPoint, userData);
+    console.log('userData', userData);
   }, []);
-  return userData.status !== 'fulfilled' && userPoint.status !== 'fulfilled' ? (
+  return !userData.isSuccess && !userPoint.isSuccess ? (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size="large" color={themeColors.primaryColor} />
     </View>
@@ -51,7 +51,7 @@ export default function MyInfo() {
             color: themeColors.white,
             fontWeight: 'bold',
           }}>
-          HELLO ! {userData.data.data.name}
+          HELLO ! {userData.currentData.data.name}
         </Text>
       </View>
       <View style={{marginHorizontal: 20}}>
@@ -85,7 +85,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Email: {userData.data.data.email}
+          Email: {userData.currentData.data.email}
         </Text>
         <Text
           style={{
@@ -94,7 +94,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Phone: {userData.data.data.phone}
+          Phone: {userData.currentData.data.phone}
         </Text>
       </View>
       <View
@@ -115,7 +115,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Point: {userPoint.data.data.point}
+          Point:
         </Text>
         <Text
           style={{
@@ -124,7 +124,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          0
+          {userPoint.currentData.data.point}
         </Text>
       </View>
     </View>

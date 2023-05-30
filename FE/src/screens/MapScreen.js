@@ -14,13 +14,22 @@ import {
 import {useEffect, useState} from 'react';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import GetLocation from 'react-native-get-location';
-import {useDistanceMatrixMutation} from '../services/Map';
+import CustomMarker from '../Components/CustomMarker';
+import Card from '../Components/Card';
+import {
+  useDistanceMatrixMutation,
+  useReverseGeoMutation,
+  useDetailPlaceMutation,
+} from '../services/Map';
+import {OUTER_CARD_WIDTH} from '../utils/constants';
 
 const MapScreen = () => {
   const [loading, setLoading] = useState(true);
   const [distanceNum, setDistanceNum] = useState(50);
   const [markers, setMarkers] = React.useState([]);
   const [distanceMatrix] = useDistanceMatrixMutation();
+  const [reverseGeo] = useReverseGeoMutation();
+  const [detailPlace] = useDetailPlaceMutation();
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
@@ -106,18 +115,19 @@ const MapScreen = () => {
       })
         .unwrap()
         .then(async payload => {
-          const withIndex = payload.rows[0].elements
-            .map((val, index) => {
-              const num = index + 1;
-              return {index: num, ...val};
-            })
-            .sort((a, b) => a.distance.value - b.distance.value);
-          console.log('withIndex' + ' ' + withIndex);
+          const withIndex = payload.rows[0].elements.map((val, index) => {
+            const num = index + 1;
+            return {index: num, ...val};
+          });
+          const sortedList = withIndex.sort(
+            (a, b) => a.distance.value - b.distance.value,
+          );
+          // console.log(sortedList);
           if (distanceNum === 10) {
             const showedMarker = sortedList.filter(
               val => val.distance.value <= 10000,
             );
-            console.log(showedMarker);
+            // console.log('showedMarker' + showedMarker);
             coordinates.map(val => {
               showedMarker.map(value => {
                 if (val.index === value.index) {
@@ -129,6 +139,7 @@ const MapScreen = () => {
             const showedMarker = sortedList.filter(
               val => val.distance.value <= 100000,
             );
+            // console.log('showedMarker' + showedMarker);
             coordinates.map(val => {
               showedMarker.map(value => {
                 if (val.index === value.index) {
@@ -137,23 +148,69 @@ const MapScreen = () => {
               });
             });
           } else {
-            const showedMarker = sortedList.filter(
-              val => val.distance.value <= 50000,
-            );
+            const showedMarker = [
+              ...sortedList.map(val => {
+                if (val.distance.value <= 50000) return val;
+              }),
+            ];
             coordinates.map(val => {
               showedMarker.map(value => {
                 if (val.index === value.index) {
+                  // console.log(val);
                   markerList.push(val);
                 }
               });
             });
           }
-          console.log('markerList' + ' ' + JSON.stringify(markerList));
+          // console.log('markerList', markerList);
+          if (!markerList.length) {
+            setMarkers([]);
+          } else {
+            markerList.map(async val => {
+              reverseGeo({latitude: val.latitude, longitude: val.longitude})
+                .unwrap()
+                .then(async payload => {
+                  places.push(payload.results[0]);
+                  if (places) {
+                    let newMarkers = await Promise.all(
+                      places.map(async place => {
+                        let detail = {};
+                        try {
+                          await detailPlace({placeId: place.place_id})
+                            .unwrap()
+                            .then(payload => {
+                              detail = payload;
+                            });
+                        } catch (error) {
+                          console.log('err', error);
+                        }
+                        // console.log('detail', detail);
+                        return {
+                          coordinate: {
+                            latitude: detail.result.geometry.location.lat,
+                            longitude: detail.result.geometry.location.lng,
+                          },
+                          title: detail.result.name,
+                          description:
+                            detail.result.formatted_address || 'Not Available',
+                          image: 'NA',
+                        };
+                      }),
+                    );
+                    // console.log(newMarkers);
+                    setMarkers(newMarkers);
+                  }
+                })
+                .catch(error => {
+                  return error;
+                });
+              // places.push(JSON.stringify(reverseGeo).data.results[0]);
+            });
+          }
         })
         .catch(error => {
           console.log(error);
         });
-      console.log(withIndex);
     } catch (error) {
       setLoading(false);
     }
@@ -255,7 +312,52 @@ const MapScreen = () => {
         ))}
         {markers.map(renderMarker)}
       </MapView>
-      {/* <ExploreScreen /> */}
+      <View style={styles.outerCard}>
+        <TouchableOpacity
+          hitSlop={styles.hitslop}
+          onPress={onPressLeft}
+          style={styles.left}>
+          <Image
+            source={require('../../assets/images/caret-left.png')}
+            style={{width: 30, height: 30}}
+          />
+        </TouchableOpacity>
+        <Animated.FlatList
+          initialNumToRender={markers.length}
+          ref={flatlistRef}
+          horizontal
+          pagingEnabled
+          scrollEventThrottle={1}
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={OUTER_CARD_WIDTH}
+          snapToAlignment="center"
+          keyExtractor={(item, index) => index.toString()}
+          style={styles.scrollView}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: scrollAnimation,
+                  },
+                },
+              },
+            ],
+            {useNativeDriver: true, listener: onScroll},
+          )}
+          data={markers}
+          renderItem={renderCard}
+        />
+        <TouchableOpacity
+          hitSlop={styles.hitslop}
+          onPress={onPressRight}
+          style={styles.right}>
+          <Image
+            source={require('../../assets/images/caret-right.png')}
+            style={{width: 30, height: 30}}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -271,6 +373,47 @@ const styles = StyleSheet.create({
     // ...StyleSheet.absoluteFillObject,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+  },
+  outerCard: {
+    height: 160,
+    width: OUTER_CARD_WIDTH,
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    bottom: 0,
+  },
+  boxHeader: {
+    height: 160,
+    width: OUTER_CARD_WIDTH,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    top: -30,
+  },
+  hitslop: {
+    top: 30,
+    right: 30,
+    left: 30,
+    bottom: 30,
+  },
+  icon: {fontSize: 22, color: 'grey'},
+  left: {position: 'absolute', left: 5, zIndex: 10},
+  right: {position: 'absolute', right: 5},
+  distance: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    margin: 10,
+    width: 70,
+    padding: 8,
+    borderRadius: 8,
+    borderColor: '#c8c8c8',
+  },
+  text: {
+    color: 'black',
+    textAlign: 'center',
   },
 });
 

@@ -1,7 +1,7 @@
 import React, {memo, useEffect, useRef, useState} from 'react';
 import {Animated, Dimensions, StyleSheet, View, Text} from 'react-native';
 import {Callout, Marker} from 'react-native-maps';
-
+import {themeColors} from '../theme/index';
 const OUTER_CARD_WIDTH = Dimensions.get('window').width;
 
 const CustomMarker = memo(({index, marker, onMarkerPress, scrollAnimation}) => {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   ring: {
-    backgroundColor: '#FF6A6A',
+    backgroundColor: themeColors.primaryColor,
     position: 'absolute',
     borderWidth: 1,
     borderColor: 'white',
