@@ -25,9 +25,14 @@ export const userApi = createApi({
         url: '/userDetail',
       }),
     }),
+    getUserPoint: builder.query({
+      query: () => ({
+        url: '/userPoint',
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetUserDetailQuery} = userApi;
+export const {useGetUserDetailQuery, useGetUserPointQuery} = userApi;

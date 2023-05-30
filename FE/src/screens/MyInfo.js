@@ -1,23 +1,29 @@
-import {View, Image, Text, TouchableOpacity} from 'react-native';
+import {View, Image, Text, ActivityIndicator} from 'react-native';
 import React from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useGetUserDetailQuery} from '../services/User';
+import {useGetUserDetailQuery, useGetUserPointQuery} from '../services/User';
 import {useEffect} from 'react';
 
 export default function MyInfo() {
-  const getDetail = useGetUserDetailQuery();
+  const userData = useGetUserDetailQuery();
+  const userPoint = useGetUserPointQuery();
 
   useEffect(() => {
-    console.log(getDetail);
+    console.log(userPoint, userData);
   }, []);
-  return (
+  return userData.status !== 'fulfilled' && userPoint.status !== 'fulfilled' ? (
+    <View style={{flex: 1, justifyContent: 'center'}}>
+      <ActivityIndicator size="large" color={themeColors.primaryColor} />
+    </View>
+  ) : (
     <View
       style={{
         flex: 1,
         backgroundColor: themeColors.primaryColor,
         alignSelf: 'center',
+        width: '100%',
       }}>
       <Header />
       <View
@@ -45,7 +51,7 @@ export default function MyInfo() {
             color: themeColors.white,
             fontWeight: 'bold',
           }}>
-          HELLO ! Jonh{' '}
+          HELLO ! {userData.data.data.name}
         </Text>
       </View>
       <View style={{marginHorizontal: 20}}>
@@ -79,7 +85,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Email:
+          Email: {userData.data.data.email}
         </Text>
         <Text
           style={{
@@ -88,7 +94,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Phone:
+          Phone: {userData.data.data.phone}
         </Text>
       </View>
       <View
@@ -109,7 +115,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Point:
+          Point: {userPoint.data.data.point}
         </Text>
         <Text
           style={{

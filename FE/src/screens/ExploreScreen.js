@@ -9,9 +9,11 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  Dimensions,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import axios from 'axios';
+import {API_KEY} from '../utils/constants';
 import Card from '../Components/Card';
 import CustomMarker from '../Components/CustomMarker';
 import GetLocation from 'react-native-get-location';
@@ -27,7 +29,6 @@ const ExploreScreen = () => {
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121,
   });
-  const API_KEY = '9Icy3mrshOwEqiL7fX9e8dV8rza1aX340AMpGMyV';
   const coordinates = [
     {index: 1, latitude: 10.5272726, longitude: 106.6644055},
     {index: 2, latitude: 10.5445635, longitude: 106.5034389},
@@ -99,15 +100,18 @@ const ExploreScreen = () => {
       const distanceMatrix = await axios.get(
         `https://rsapi.goong.io/DistanceMatrix?origins=${latitude},${longitude}&destinations=${string}&vehicle=truck&api_key=${API_KEY}`,
       );
-      const withIndex = distanceMatrix.data.rows[0].elements.map(
-        (val, index) => {
-          const num = index + 1;
-          return {index: num, ...val};
-        },
-      );
+      console.log('dis' + ' ' + distanceMatrix);
+      const withIndex = JSON.stringify(
+        distanceMatrix,
+      ).data.rows[0].elements.map((val, index) => {
+        const num = index + 1;
+        return {index: num, ...val};
+      });
+      console.log('withIndex' + ' ' + withIndex);
       const sortedList = withIndex.sort(
         (a, b) => a.distance.value - b.distance.value,
       );
+      console.log('sortedList' + ' ' + sortedList);
       if (distanceNum === 10) {
         const showedMarker = sortedList.filter(
           val => val.distance.value <= 10000,
@@ -142,7 +146,7 @@ const ExploreScreen = () => {
           });
         });
       }
-      console.log(markerList);
+      console.log('markerList' + ' ' + markerList);
       if (!markerList.length) {
         setMarkers([]);
       } else {
@@ -150,7 +154,7 @@ const ExploreScreen = () => {
           const reverseGeo = await axios.get(
             `https://rsapi.goong.io/Geocode?latlng=${val.latitude},%20${val.longitude}&api_key=${API_KEY}`,
           );
-          places.push(reverseGeo.data.results[0]);
+          places.push(JSON.stringify(reverseGeo).data.results[0]);
           if (places) {
             let newMarkers = await Promise.all(
               places.map(async place => {
@@ -164,12 +168,15 @@ const ExploreScreen = () => {
                 }
                 return {
                   coordinate: {
-                    latitude: details.data.result.geometry.location.lat,
-                    longitude: details.data.result.geometry.location.lng,
+                    latitude:
+                      JSON.stringify(details).data.result.geometry.location.lat,
+                    longitude:
+                      JSON.stringify(details).data.result.geometry.location.lng,
                   },
-                  title: details.data.result.name,
+                  title: JSON.stringify(details).data.result.name,
                   description:
-                    details.data.result.formatted_address || 'Not Available',
+                    JSON.stringify(details).data.result.formatted_address ||
+                    'Not Available',
                   image: 'NA',
                 };
               }),
@@ -312,7 +319,7 @@ const ExploreScreen = () => {
           onPress={onPressLeft}
           style={styles.left}>
           <Image
-            source={require('../../assets/icons/caret-left.png')}
+            source={require('../../assets/images/caret-left.png')}
             style={{width: 30, height: 30}}
           />
         </TouchableOpacity>
@@ -347,7 +354,7 @@ const ExploreScreen = () => {
           onPress={onPressRight}
           style={styles.right}>
           <Image
-            source={require('../../assets/icons/caret-left.png')}
+            source={require('../../assets/images/caret-right.png')}
             style={{width: 30, height: 30}}
           />
         </TouchableOpacity>
@@ -367,7 +374,8 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    ...StyleSheet.absoluteFill,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   scrollView: {
     position: 'absolute',
