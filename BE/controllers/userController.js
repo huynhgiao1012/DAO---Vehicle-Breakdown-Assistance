@@ -1,7 +1,5 @@
 const catchAsync = require("../middleware/async");
 const User = require("../models/account");
-const Ticket = require("../models/ticket");
-const Recharge = require("../models/recharge");
 var generator = require("generate-password");
 const EmailService = require("../utils/EmailService");
 const Customer = require("../models/customer");
@@ -84,6 +82,17 @@ exports.getUser = catchAsync(async (req, res) => {
 exports.getUserDetails = catchAsync(async (req, res) => {
   const id = req.user.id;
   const data = await User.findById(id);
+  if (!data) {
+    throw new ApiError(400, "This user is not available");
+  }
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+exports.getUserPoint = catchAsync(async (req, res) => {
+  const id = req.user.id;
+  const data = await Customer.findOne({ accountId: id });
   if (!data) {
     throw new ApiError(400, "This user is not available");
   }
