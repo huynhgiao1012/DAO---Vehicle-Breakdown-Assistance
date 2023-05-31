@@ -10,12 +10,14 @@ import {
   Text,
   Image,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import {useEffect, useState} from 'react';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import GetLocation from 'react-native-get-location';
 import CustomMarker from '../Components/CustomMarker';
 import Card from '../Components/Card';
+import {themeColors} from '../theme';
 import {
   useDistanceMatrixMutation,
   useReverseGeoMutation,
@@ -50,6 +52,7 @@ const MapScreen = () => {
   const mapRef = useRef(null);
   let flatlistRef = useRef(null);
   let mapIndex = useRef(0);
+  let _map = React.useRef(null);
   let scrollAnimation = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     requestPermission();
@@ -289,7 +292,7 @@ const MapScreen = () => {
     />
   );
   return (
-    <View>
+    <View style={styles.container}>
       <MapView
         ref={mapRef}
         style={styles.map}
@@ -364,10 +367,8 @@ const MapScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   map: {
     // ...StyleSheet.absoluteFillObject,
@@ -375,16 +376,16 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
   },
   outerCard: {
-    height: 160,
+    height: 100,
     width: OUTER_CARD_WIDTH,
     alignItems: 'center',
     flexDirection: 'row',
     backgroundColor: 'transparent',
     position: 'absolute',
-    bottom: 0,
+    top: 450,
   },
   boxHeader: {
-    height: 160,
+    height: 100,
     width: OUTER_CARD_WIDTH,
     alignItems: 'center',
     flexDirection: 'row',
@@ -393,6 +394,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -30,
   },
+  scrollView: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 10,
+  },
   hitslop: {
     top: 30,
     right: 30,
@@ -400,8 +408,8 @@ const styles = StyleSheet.create({
     bottom: 30,
   },
   icon: {fontSize: 22, color: 'grey'},
-  left: {position: 'absolute', left: 5, zIndex: 10},
-  right: {position: 'absolute', right: 5},
+  left: {position: 'absolute', left: 5, zIndex: 10, top: 0},
+  right: {position: 'absolute', right: 5, top: 0},
   distance: {
     backgroundColor: 'white',
     borderWidth: 1,

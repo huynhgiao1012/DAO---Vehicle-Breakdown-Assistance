@@ -64,7 +64,7 @@ const Card = ({item}) => (
 const styles = StyleSheet.create({
   outerCard: {
     flex: 1,
-    height: OUTER_CARD_HEIGHT,
+    height: 180,
     width: OUTER_CARD_WIDTH,
     paddingHorizontal: 10,
     justifyContent: 'center',
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     shadowOpacity: 0.3,
     shadowOffset: {x: 2, y: -2},
-    height: INNER_CARD_HEIGHT,
+    height: 150,
     width: INNER_CARD_WIDTH,
     overflow: 'hidden',
     elevation: 6,
