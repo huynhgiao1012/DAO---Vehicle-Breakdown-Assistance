@@ -1,19 +1,30 @@
-import {View, Image, Text, ActivityIndicator} from 'react-native';
+import {View, Image, Text, ActivityIndicator, LogBox} from 'react-native';
 import React from 'react';
 import Header from '../Components/Header';
 import {themeColors} from '../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {useGetUserDetailQuery, useGetUserPointQuery} from '../services/User';
 import {useEffect} from 'react';
+import {useState} from 'react';
 
 export default function MyInfo() {
   const userData = useGetUserDetailQuery();
   const userPoint = useGetUserPointQuery();
-
+  const [isLoading, setIsLoading] = useState(true);
+  LogBox.ignoreAllLogs();
   useEffect(() => {
-    console.log('userData', userData);
+    try {
+      if (userPoint.isSuccess === true && userData.isSuccess === true) {
+        setIsLoading(false);
+      }
+    } catch (error) {
+      return '';
+    }
   }, []);
-  return !userData.isSuccess && !userPoint.isSuccess ? (
+  return userData.isLoading === true &&
+    userPoint.isLoading === true &&
+    !userData.data &&
+    !userPoint.data ? (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size="large" color={themeColors.primaryColor} />
     </View>
@@ -51,7 +62,7 @@ export default function MyInfo() {
             color: themeColors.white,
             fontWeight: 'bold',
           }}>
-          HELLO ! {userData.currentData.data.name}
+          HELLO ! {userData.data ? userData.currentData.data.name : ''}
         </Text>
       </View>
       <View style={{marginHorizontal: 20}}>
@@ -85,7 +96,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Email: {userData.currentData.data.email}
+          Email: {userData.data ? userData.currentData.data.email : ''}
         </Text>
         <Text
           style={{
@@ -94,7 +105,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          Phone: {userData.currentData.data.phone}
+          Phone: {userData.data ? userData.currentData.data.phone : ''}
         </Text>
       </View>
       <View
@@ -124,7 +135,7 @@ export default function MyInfo() {
             fontWeight: 'bold',
             paddingVertical: 10,
           }}>
-          {userPoint.currentData.data.point}
+          {userPoint.data ? userPoint.currentData.data.point : ''}
         </Text>
       </View>
     </View>

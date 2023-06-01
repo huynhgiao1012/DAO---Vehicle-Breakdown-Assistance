@@ -32,7 +32,7 @@ import {useNavigation} from '@react-navigation/native';
 const MapScreen = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
-  const [distanceNum, setDistanceNum] = useState(10);
+  const [distanceNum, setDistanceNum] = useState(0);
   const [markers, setMarkers] = React.useState([]);
   const [distanceMatrix] = useDistanceMatrixMutation();
   const getCorCompany = useGetCorCompanyQuery();
@@ -49,22 +49,26 @@ const MapScreen = () => {
   let mapIndex = useRef(0);
   let _map = React.useRef(null);
   let scrollAnimation = useRef(new Animated.Value(0)).current;
+  // useEffect(() => {
+  //   getCorCompany;
+  //   if (getCorCompany.isSuccess) {
+  //     console.log('data', getCorCompany.data.data);
+  //     getCorCompany.data.data.map(val => {
+  //       const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
+  //       companyCoordinates.push(obj);
+  //     });
+  //   } else {
+  //     <View style={{flex: 1, justifyContent: 'center'}}>
+  //       <ActivityIndicator size="large" color={themeColors.primaryColor} />
+  //     </View>;
+  //   }
+  // }, []);
   useEffect(() => {
     requestPermission();
-    if (getCorCompany.isSuccess) {
-      console.log('data', getCorCompany.data.data);
-      getCorCompany.data.data.map(val => {
-        const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
-        companyCoordinates.push(obj);
-      });
-    } else {
-      <View style={{flex: 1, justifyContent: 'center'}}>
-        <ActivityIndicator size="large" color={themeColors.primaryColor} />
-      </View>;
-    }
   }, []);
   useEffect(() => {
     console.log('distanceNum', distanceNum);
+    setMarkers([]);
     if (getCorCompany.isSuccess) {
       console.log('data', getCorCompany.data.data);
       getCorCompany.data.data.map(val => {
@@ -117,6 +121,7 @@ const MapScreen = () => {
     setLoading(false);
   };
   const apiCall = async (latitude, longitude) => {
+    setMarkers([]);
     try {
       var string = '';
       let markerList = [];
@@ -160,7 +165,7 @@ const MapScreen = () => {
               }
             });
           });
-          console.log('markerList', markerList);
+          // console.log('markerList', markerList);
           if (!markerList.length) {
             setMarkers([]);
           } else {
@@ -261,7 +266,8 @@ const MapScreen = () => {
   };
   const renderCard = ({item}) => {
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('GarageDetail')}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('GarageDetail', {id: item.id})}>
         <Card item={item} />
       </TouchableOpacity>
     );
@@ -287,8 +293,7 @@ const MapScreen = () => {
         {[
           {
             latLong: {latitude: region.latitude, longitude: region.longitude},
-            title: 'You Current Location',
-            description: 'This is your location',
+            title: 'Your Current Location',
           },
         ].map((marker, index) => (
           <Marker.Animated
@@ -300,52 +305,57 @@ const MapScreen = () => {
         ))}
         {markers.map(renderMarker)}
       </MapView>
-      <View style={styles.outerCard}>
-        <TouchableOpacity
-          hitSlop={styles.hitslop}
-          onPress={onPressLeft}
-          style={styles.left}>
-          <Image
-            source={require('../../assets/images/caret-left.png')}
-            style={{width: 30, height: 30}}
-          />
-        </TouchableOpacity>
-        <Animated.FlatList
-          initialNumToRender={markers.length}
-          ref={flatlistRef}
-          horizontal
-          pagingEnabled
-          scrollEventThrottle={1}
-          showsHorizontalScrollIndicator={false}
-          snapToInterval={OUTER_CARD_WIDTH}
-          snapToAlignment="center"
-          keyExtractor={(item, index) => index.toString()}
-          style={styles.scrollView}
-          onScroll={Animated.event(
-            [
-              {
-                nativeEvent: {
-                  contentOffset: {
-                    x: scrollAnimation,
+      {console.log(markers)}
+      {!markers.length ? (
+        <View></View>
+      ) : (
+        <View style={styles.outerCard}>
+          <TouchableOpacity
+            hitSlop={styles.hitslop}
+            onPress={onPressLeft}
+            style={styles.left}>
+            <Image
+              source={require('../../assets/images/caret-left.png')}
+              style={{width: 30, height: 30}}
+            />
+          </TouchableOpacity>
+          <Animated.FlatList
+            initialNumToRender={markers.length}
+            ref={flatlistRef}
+            horizontal
+            pagingEnabled
+            scrollEventThrottle={1}
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={OUTER_CARD_WIDTH}
+            snapToAlignment="center"
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.scrollView}
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      x: scrollAnimation,
+                    },
                   },
                 },
-              },
-            ],
-            {useNativeDriver: true, listener: onScroll},
-          )}
-          data={markers}
-          renderItem={renderCard}
-        />
-        <TouchableOpacity
-          hitSlop={styles.hitslop}
-          onPress={onPressRight}
-          style={styles.right}>
-          <Image
-            source={require('../../assets/images/caret-right.png')}
-            style={{width: 30, height: 30}}
+              ],
+              {useNativeDriver: true, listener: onScroll},
+            )}
+            data={markers}
+            renderItem={renderCard}
           />
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            hitSlop={styles.hitslop}
+            onPress={onPressRight}
+            style={styles.right}>
+            <Image
+              source={require('../../assets/images/caret-right.png')}
+              style={{width: 30, height: 30}}
+            />
+          </TouchableOpacity>
+        </View>
+      )}
       <View style={styles.boxHeader}>
         <TouchableOpacity
           onPress={() => {

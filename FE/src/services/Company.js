@@ -29,9 +29,18 @@ export const companyApi = createApi({
         url: `/getCompanyDetail/${id}`,
       }),
     }),
+    getCompanyService: builder.mutation({
+      query: ({id}) => ({
+        url: `/getAllService/${id}`,
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetCorCompanyQuery, useGetCompanyDetailMutation} = companyApi;
+export const {
+  useGetCorCompanyQuery,
+  useGetCompanyDetailMutation,
+  useGetCompanyServiceMutation,
+} = companyApi;

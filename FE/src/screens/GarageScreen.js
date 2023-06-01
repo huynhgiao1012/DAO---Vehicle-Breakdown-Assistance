@@ -5,7 +5,40 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ServiceList from '../screens/ServiceList';
 import Rating from '../Components/Rating';
 import Header from '../Components/Header';
-export default function GarageScreen() {
+import {useEffect} from 'react';
+import {
+  useGetCompanyDetailMutation,
+  useGetCompanyServiceMutation,
+} from '../services/Company';
+import {useState} from 'react';
+
+export default function GarageScreen({route}) {
+  const [getCompanyDetail] = useGetCompanyDetailMutation();
+  const [getCompanyService] = useGetCompanyServiceMutation();
+
+  const {id} = route.params;
+  const [data, setData] = useState({});
+  const getDetail = async () => {
+    let detail = {};
+    await getCompanyDetail({id: id})
+      .unwrap()
+      .then(payload => {
+        detail = payload;
+      })
+      .catch(error => {
+        return error;
+      });
+    return detail;
+  };
+  useEffect(() => {
+    getDetail().then(payload => {
+      setData(payload);
+    });
+    console.log('data', data);
+  }, []);
+  useEffect(() => {
+    window.location.reload(true);
+  }, [data]);
   return (
     <ScrollView>
       <Header />
@@ -19,16 +52,16 @@ export default function GarageScreen() {
         </View>
         <View
           style={{
-            paddingLeft: 20,
+            paddingLeft: 15,
             width: 200,
           }}>
           <Text
             style={{
-              fontSize: 26,
+              fontSize: 20,
               fontWeight: 'bold',
               color: themeColors.primaryColor,
             }}>
-            ABC GARAGE
+            {/* {data ? data.data.name : ''} */}
           </Text>
           <View style={styles.iconTextHeader}>
             <Icon
@@ -44,7 +77,7 @@ export default function GarageScreen() {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              0235678929
+              {/* {data ? data.data.phone : ''} */}
             </Text>
           </View>
           <View style={styles.iconTextHeader}>
@@ -61,7 +94,7 @@ export default function GarageScreen() {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              Số 110 Lạc Long Quân, Tây Hồ, Hà Nội
+              {/* {data ? data.companyDetail.address : ''} */}
             </Text>
           </View>
           <View style={styles.iconTextHeader}>
@@ -78,7 +111,7 @@ export default function GarageScreen() {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              info@otohathanh.com
+              {/* {data ? data.data.email : ''} */}
             </Text>
           </View>
         </View>
@@ -108,13 +141,15 @@ export default function GarageScreen() {
             color: themeColors.gray60,
             textAlign: 'justify',
           }}>
-          Hà Thành có đội ngũ nhân viên chăm sóc khách hàng và kỹ thuật có nhiều
-          kinh nghiệm trong lĩnh vực. Hà Thành có diện tích gara rất rộng thông
-          thoáng, sạch sẽ với đầy đủ trang thiết bị, hệ thống máy móc hiện đại
-          đáp như nhu cầu phục vụ cho khách hàng. Sau khi sơn xe xong, Hà Thành
-          còn hướng dẫn khách hàng cách chăm sóc xe khi sử dụng để đảm bảo lớp
-          sơn được mới lâu hơn. Bên cạnh đó thợ ở đây cũng sẽ tiến hành bọc, che
-          chắn phần vỏ ngoài xe bằng lớp nilon dán xe chuyên dụng.
+          {/* {data ? data.data.name : ''} là một địa chỉ chuyên cung cấp dịch vụ */}
+          dịch vụ bảo trì, bảo dưỡng và sửa chữa xe ô tô. Uy tín, chất lượng,
+          chuyên nghiệp, tận tình, nhanh chóng, giá tốt nhất. Với đội ngũ nhân
+          viên chuyên nghiệp kỹ thuật cao có tinh thần trách nhiệm với nghề
+          nghiệp của mình được đào tạo về dịch vụ sửa chữa bảo trì thay thế phụ
+          tùng xe ô tô một cách bài bản. Cùng với đó là những thiết bị dụng cụ,
+          trang thiết bị máy móc cho sửa chữa hiện đại, được đầu tư mới và cải
+          tiến thường xuyên nhằm phục vụ đầy đủ nhất, toàn diện nhất cho quý
+          khách hàng.
         </Text>
         <View style={styles.title}>
           <Icon
@@ -132,7 +167,7 @@ export default function GarageScreen() {
             SERVICE
           </Text>
         </View>
-        <ServiceList />
+        <ServiceList id />
         <View style={styles.title}>
           <Icon
             name="gratipay"
