@@ -21,7 +21,6 @@ export const getLocalStorageByKey = async key => {
       autoSync: true,
       syncInBackground: true,
     });
-    console.log('DATA' + ' ' + data);
     return data;
   } catch (error) {
     return error;

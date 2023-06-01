@@ -24,31 +24,26 @@ import {
   useDetailPlaceMutation,
 } from '../services/Map';
 import {OUTER_CARD_WIDTH} from '../utils/constants';
-
+import {
+  useGetCompanyDetailMutation,
+  useGetCorCompanyQuery,
+} from '../services/Company';
+import {useNavigation} from '@react-navigation/native';
 const MapScreen = () => {
+  const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
-  const [distanceNum, setDistanceNum] = useState(50);
+  const [distanceNum, setDistanceNum] = useState(10);
   const [markers, setMarkers] = React.useState([]);
   const [distanceMatrix] = useDistanceMatrixMutation();
-  const [reverseGeo] = useReverseGeoMutation();
-  const [detailPlace] = useDetailPlaceMutation();
+  const getCorCompany = useGetCorCompanyQuery();
+  const [getCompanyDetail] = useGetCompanyDetailMutation();
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121,
   });
-  const coordinates = [
-    {index: 1, latitude: 10.5272726, longitude: 106.6644055},
-    {index: 2, latitude: 10.5445635, longitude: 106.5034389},
-    {index: 3, latitude: 10.5580642, longitude: 106.4835262},
-    {index: 4, latitude: 10.5347751, longitude: 106.4622402},
-    {index: 5, latitude: 10.5600893, longitude: 106.4900494},
-    {index: 6, latitude: 10.6021061, longitude: 106.5375996},
-    {index: 7, latitude: 10.6323496, longitude: 106.5415478},
-    {index: 8, latitude: 10.6389294, longitude: 106.5670395},
-    {index: 9, latitude: 10.6145076, longitude: 106.6314983},
-  ];
+  const companyCoordinates = [];
   const mapRef = useRef(null);
   let flatlistRef = useRef(null);
   let mapIndex = useRef(0);
@@ -56,9 +51,31 @@ const MapScreen = () => {
   let scrollAnimation = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     requestPermission();
+    if (getCorCompany.isSuccess) {
+      console.log('data', getCorCompany.data.data);
+      getCorCompany.data.data.map(val => {
+        const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
+        companyCoordinates.push(obj);
+      });
+    } else {
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" color={themeColors.primaryColor} />
+      </View>;
+    }
   }, []);
   useEffect(() => {
-    console.log('change');
+    console.log('distanceNum', distanceNum);
+    if (getCorCompany.isSuccess) {
+      console.log('data', getCorCompany.data.data);
+      getCorCompany.data.data.map(val => {
+        const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
+        companyCoordinates.push(obj);
+      });
+    } else {
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" color={themeColors.primaryColor} />
+      </View>;
+    }
     getCurrentLocation();
   }, [distanceNum]);
   useEffect(() => {
@@ -103,14 +120,14 @@ const MapScreen = () => {
     try {
       var string = '';
       let markerList = [];
-      let places = [];
-      coordinates.map(val => {
+      companyCoordinates.map(val => {
         if (string.length === 0) {
           string = val.latitude + ',' + val.longitude;
         } else {
           string = string + '%7C' + val.latitude + ',' + val.longitude;
         }
       });
+
       distanceMatrix({
         latitude: latitude,
         longitude: longitude,
@@ -118,97 +135,59 @@ const MapScreen = () => {
       })
         .unwrap()
         .then(async payload => {
-          const withIndex = payload.rows[0].elements.map((val, index) => {
-            const num = index + 1;
-            return {index: num, ...val};
+          console.log('payload', payload.rows[0].elements);
+          const withIndex = await payload.rows[0].elements.map((val, index) => {
+            while (index <= companyCoordinates.length) {
+              const id = companyCoordinates[index].id;
+              return {id: id, ...val};
+            }
           });
           const sortedList = withIndex.sort(
             (a, b) => a.distance.value - b.distance.value,
           );
-          // console.log(sortedList);
-          if (distanceNum === 10) {
-            const showedMarker = sortedList.filter(
-              val => val.distance.value <= 10000,
-            );
-            // console.log('showedMarker' + showedMarker);
-            coordinates.map(val => {
-              showedMarker.map(value => {
-                if (val.index === value.index) {
-                  markerList.push(val);
-                }
-              });
+
+          const showedMarker = [];
+          sortedList.map(val => {
+            if (val.distance.value <= distanceNum * 1000)
+              showedMarker.push(val);
+          });
+          console.log('showedMarker', showedMarker);
+          companyCoordinates.map(val => {
+            showedMarker.map(value => {
+              if (val.id === value.id) {
+                // console.log(val);
+                markerList.push(val);
+              }
             });
-          } else if (distanceNum === 100) {
-            const showedMarker = sortedList.filter(
-              val => val.distance.value <= 100000,
-            );
-            // console.log('showedMarker' + showedMarker);
-            coordinates.map(val => {
-              showedMarker.map(value => {
-                if (val.index === value.index) {
-                  markerList.push(val);
-                }
-              });
-            });
-          } else {
-            const showedMarker = [
-              ...sortedList.map(val => {
-                if (val.distance.value <= 50000) return val;
-              }),
-            ];
-            coordinates.map(val => {
-              showedMarker.map(value => {
-                if (val.index === value.index) {
-                  // console.log(val);
-                  markerList.push(val);
-                }
-              });
-            });
-          }
-          // console.log('markerList', markerList);
+          });
+          console.log('markerList', markerList);
           if (!markerList.length) {
             setMarkers([]);
           } else {
-            markerList.map(async val => {
-              reverseGeo({latitude: val.latitude, longitude: val.longitude})
-                .unwrap()
-                .then(async payload => {
-                  places.push(payload.results[0]);
-                  if (places) {
-                    let newMarkers = await Promise.all(
-                      places.map(async place => {
-                        let detail = {};
-                        try {
-                          await detailPlace({placeId: place.place_id})
-                            .unwrap()
-                            .then(payload => {
-                              detail = payload;
-                            });
-                        } catch (error) {
-                          console.log('err', error);
-                        }
-                        // console.log('detail', detail);
-                        return {
-                          coordinate: {
-                            latitude: detail.result.geometry.location.lat,
-                            longitude: detail.result.geometry.location.lng,
-                          },
-                          title: detail.result.name,
-                          description:
-                            detail.result.formatted_address || 'Not Available',
-                          image: 'NA',
-                        };
-                      }),
-                    );
-                    // console.log(newMarkers);
-                    setMarkers(newMarkers);
-                  }
-                })
-                .catch(error => {
-                  return error;
-                });
-              // places.push(JSON.stringify(reverseGeo).data.results[0]);
-            });
+            let newMarkers = await Promise.all(
+              markerList.map(async val => {
+                let detail = {};
+                await getCompanyDetail({id: val.id})
+                  .unwrap()
+                  .then(payload => (detail = payload))
+                  .catch(error => {
+                    return error;
+                  });
+                return {
+                  id: detail.data._id,
+                  coordinate: {
+                    latitude: detail.companyDetail.lat,
+                    longitude: detail.companyDetail.long,
+                  },
+                  title: detail.data.name,
+                  address: detail.companyDetail.address || 'Not Available',
+                  image: 'NA',
+                  phoneNo: detail.data.phone,
+                  email: detail.data.email,
+                };
+              }),
+            );
+            setMarkers(newMarkers);
           }
         })
         .catch(error => {
@@ -280,7 +259,13 @@ const MapScreen = () => {
       );
     }
   };
-  const renderCard = ({item}) => <Card item={item} />;
+  const renderCard = ({item}) => {
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('GarageDetail')}>
+        <Card item={item} />
+      </TouchableOpacity>
+    );
+  };
 
   const renderMarker = (item, index) => (
     <CustomMarker
@@ -361,6 +346,29 @@ const MapScreen = () => {
           />
         </TouchableOpacity>
       </View>
+      <View style={styles.boxHeader}>
+        <TouchableOpacity
+          onPress={() => {
+            setDistanceNum(10);
+          }}
+          style={styles.distance}>
+          <Text style={styles.text}>10 km</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setDistanceNum(30);
+          }}
+          style={styles.distance}>
+          <Text style={styles.text}>30 km</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setDistanceNum(50);
+          }}
+          style={styles.distance}>
+          <Text style={styles.text}>50 km</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -389,10 +397,10 @@ const styles = StyleSheet.create({
     width: OUTER_CARD_WIDTH,
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     backgroundColor: 'transparent',
     position: 'absolute',
-    top: -30,
+    top: -20,
   },
   scrollView: {
     position: 'absolute',
@@ -411,17 +419,19 @@ const styles = StyleSheet.create({
   left: {position: 'absolute', left: 5, zIndex: 10, top: 0},
   right: {position: 'absolute', right: 5, top: 0},
   distance: {
-    backgroundColor: 'white',
+    backgroundColor: themeColors.primaryColor,
     borderWidth: 1,
     margin: 10,
     width: 70,
     padding: 8,
     borderRadius: 8,
-    borderColor: '#c8c8c8',
+    borderColor: themeColors.primaryColor,
   },
   text: {
-    color: 'black',
+    color: themeColors.white,
     textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

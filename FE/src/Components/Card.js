@@ -8,6 +8,7 @@ import {
   OUTER_CARD_HEIGHT,
   OUTER_CARD_WIDTH,
 } from '../utils/constants';
+import {themeColors} from '../theme';
 
 const Card = ({item}) => (
   <View style={styles.outerCard}>
@@ -47,7 +48,7 @@ const Card = ({item}) => (
             </Text>
           </View>
           <Text numberOfLines={2} style={styles.status}>
-            Description: <Text style={styles.black}>{item?.description}</Text>
+            Email: <Text style={styles.black}>{item?.email}</Text>
           </Text>
           <Text style={styles.status} numberOfLines={1}>
             Phone No: <Text style={styles.black}>{item?.phoneNo}</Text>
@@ -107,7 +108,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#E5E5E5',
   },
-  name: {fontFamily: 'Montserrat-SemiBold', fontSize: 14.5},
+  name: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 14.5,
+    fontWeight: 'bold',
+    color: themeColors.blue,
+  },
   bottom: {flex: 1, alignItems: 'flex-start'},
   rating: {
     flexDirection: 'row',
@@ -118,15 +124,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-SemiBold',
     fontSize: 12.5,
     marginLeft: 5,
-    color: 'rgb(33,186,69)',
+    color: themeColors.primaryColor2,
   },
   status: {
     fontFamily: 'Montserrat-Medium',
     fontSize: 11,
-    color: 'grey',
+    color: themeColors.blue,
+    fontWeight: 'bold',
     marginVertical: 1,
   },
-  black: {color: 'black'},
+  black: {color: themeColors.blue, fontWeight: 400},
 });
 
 export default memo(Card);

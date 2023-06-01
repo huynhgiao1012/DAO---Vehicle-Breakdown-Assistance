@@ -7,10 +7,10 @@ import ListScreen from './ListScreen';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 export default function HomeScreen() {
   const [isMap, setIsMap] = useState(true);
   const [token, setToken] = useState('');
+  const [distanceNum, setDistanceNum] = useState(0);
   const navigation = useNavigation();
   useEffect(() => {
     const value = AsyncStorage.getItem('TOKEN');
@@ -73,22 +73,8 @@ export default function HomeScreen() {
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.distancebar}>
-            <TouchableOpacity style={styles.distancebutton}>
-              <Text style={styles.textButton}>5</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.distancebutton}>
-              <Text style={styles.textButton}>10</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.distancebutton}>
-              <Text style={styles.textButton}>20</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.distancebutton}>
-              <Text style={styles.textButton}>30</Text>
-            </TouchableOpacity>
-          </View>
         </View>
-        {isMap ? <MapScreen /> : <ListScreen />}
+        {isMap ? <MapScreen distanceNum={distanceNum} /> : <ListScreen />}
       </SafeAreaView>
     )
   );
