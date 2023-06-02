@@ -85,7 +85,10 @@ exports.login = catchAsync(async (req, res) => {
           userId: existEmail._id,
           times: 1,
         });
-        throw new ApiError(400, "Wrong password. You have 6 times more");
+        throw new ApiError(
+          400,
+          "Email or password is incorrect. You have 6 times more"
+        );
       } else {
         if (timeAccess.times === 6) {
           throw new ApiError(400, "Account is disabled for a while");
@@ -94,7 +97,9 @@ exports.login = catchAsync(async (req, res) => {
           await timeAccess.save();
           throw new ApiError(
             400,
-            `Wrong password. You have ${6 - timeAccess.times + 1} times more`
+            `Email or password is incorrect. You have ${
+              6 - timeAccess.times + 1
+            } times more`
           );
         }
       }
