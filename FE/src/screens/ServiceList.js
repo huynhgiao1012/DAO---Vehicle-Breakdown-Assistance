@@ -14,62 +14,25 @@ import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import {useGetCompanyServiceMutation} from '../services/Service';
+import {useState, useEffect} from 'react';
 // subscribe for more videos like this :)
-export default function ServiceList() {
+export default function ServiceList(props) {
   const navigation = useNavigation();
-  const data = [
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 1,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 2,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 3,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 4,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 5,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 6,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 7,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 8,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 9,
-    },
-    {
-      name: 'Jonh Garage',
-      price: 20,
-      id: 10,
-    },
-  ];
+  const [getCompanyService] = useGetCompanyServiceMutation();
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    getCompanyService({id: props.id})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        setData([...payload.data]);
+        console.log('data', data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
   return (
     <FlatList
       horizontal={true}
@@ -83,8 +46,15 @@ export default function ServiceList() {
       data={data}
       renderItem={({item, index, separators}) => (
         <TouchableOpacity
-          key={item.id}
-          onPress={() => navigation.navigate('BookingScreen')}>
+          key={item._id}
+          onPress={() =>
+            navigation.navigate('BookingScreen', {
+              id: item._id,
+              accountId: item.accountId,
+              serviceName: item.type,
+              servicePrice: item.price,
+            })
+          }>
           <View
             style={{
               width: 100,
@@ -112,7 +82,7 @@ export default function ServiceList() {
                 color: themeColors.blue,
                 textAlign: 'center',
               }}>
-              {item.name}
+              {item.type}
             </Text>
             <Text
               style={{
@@ -122,7 +92,7 @@ export default function ServiceList() {
                 paddingBottom: 10,
                 fontWeight: '600',
               }}>
-              {item.price}$
+              {item.price}
             </Text>
           </View>
         </TouchableOpacity>

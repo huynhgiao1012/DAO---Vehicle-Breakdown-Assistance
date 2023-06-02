@@ -25,8 +25,8 @@ export default function SignUpScreen() {
       .then(payload =>
         Alert.alert(
           payload.message,
-          'Please check your mail to verify your account !',
-          [{text: 'OK', onPress: () => navigation.navigate('OTPScreen')}],
+          'Please verify your account before login!',
+          [{text: 'OK', onPress: () => console.log('hi')}],
         ),
       )
       .catch(error => {

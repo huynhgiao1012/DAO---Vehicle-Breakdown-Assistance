@@ -6,39 +6,58 @@ import ServiceList from '../screens/ServiceList';
 import Rating from '../Components/Rating';
 import Header from '../Components/Header';
 import {useEffect} from 'react';
-import {
-  useGetCompanyDetailMutation,
-  useGetCompanyServiceMutation,
-} from '../services/Company';
+import {useGetCompanyDetailMutation} from '../services/Company';
+
 import {useState} from 'react';
 
 export default function GarageScreen({route}) {
   const [getCompanyDetail] = useGetCompanyDetailMutation();
-  const [getCompanyService] = useGetCompanyServiceMutation();
 
   const {id} = route.params;
-  const [data, setData] = useState({});
-  const getDetail = async () => {
-    let detail = {};
-    await getCompanyDetail({id: id})
+  const [data, setData] = useState({
+    companyDetail: {
+      __v: 0,
+      _id: '',
+      accountId: '',
+      address: '',
+      closeTime: '',
+      createAt: '',
+      createdAt: '',
+      lat: 0,
+      long: 0,
+      openTime: '',
+      updatedAt: '',
+    },
+    data: {
+      __v: 0,
+      _id: '',
+      createdAt: '',
+      email: '',
+      isActive: false,
+      name: '',
+      password: '',
+      phone: '',
+      role: '',
+      updatedAt: '',
+    },
+    success: true,
+  });
+
+  useEffect(() => {
+    getCompanyDetail({id: id})
       .unwrap()
       .then(payload => {
-        detail = payload;
+        setData(data => ({
+          ...data,
+          ...payload,
+        }));
+        console.log('data', data);
       })
       .catch(error => {
         return error;
       });
-    return detail;
-  };
-  useEffect(() => {
-    getDetail().then(payload => {
-      setData(payload);
-    });
-    console.log('data', data);
   }, []);
-  useEffect(() => {
-    window.location.reload(true);
-  }, [data]);
+
   return (
     <ScrollView>
       <Header />
@@ -61,7 +80,7 @@ export default function GarageScreen({route}) {
               fontWeight: 'bold',
               color: themeColors.primaryColor,
             }}>
-            {/* {data ? data.data.name : ''} */}
+            {data ? data.data.name : ''}
           </Text>
           <View style={styles.iconTextHeader}>
             <Icon
@@ -77,7 +96,7 @@ export default function GarageScreen({route}) {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              {/* {data ? data.data.phone : ''} */}
+              {data ? data.data.phone : ''}
             </Text>
           </View>
           <View style={styles.iconTextHeader}>
@@ -94,7 +113,7 @@ export default function GarageScreen({route}) {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              {/* {data ? data.companyDetail.address : ''} */}
+              {data ? data.companyDetail.address : ''}
             </Text>
           </View>
           <View style={styles.iconTextHeader}>
@@ -111,7 +130,7 @@ export default function GarageScreen({route}) {
                 color: themeColors.blue,
                 fontStyle: 'italic',
               }}>
-              {/* {data ? data.data.email : ''} */}
+              {data ? data.data.email : ''}
             </Text>
           </View>
         </View>
@@ -141,7 +160,7 @@ export default function GarageScreen({route}) {
             color: themeColors.gray60,
             textAlign: 'justify',
           }}>
-          {/* {data ? data.data.name : ''} là một địa chỉ chuyên cung cấp dịch vụ */}
+          {data ? data.data.name : ''} là một địa chỉ chuyên cung cấp dịch vụ
           dịch vụ bảo trì, bảo dưỡng và sửa chữa xe ô tô. Uy tín, chất lượng,
           chuyên nghiệp, tận tình, nhanh chóng, giá tốt nhất. Với đội ngũ nhân
           viên chuyên nghiệp kỹ thuật cao có tinh thần trách nhiệm với nghề
@@ -167,7 +186,7 @@ export default function GarageScreen({route}) {
             SERVICE
           </Text>
         </View>
-        <ServiceList id />
+        <ServiceList id={id} />
         <View style={styles.title}>
           <Icon
             name="gratipay"

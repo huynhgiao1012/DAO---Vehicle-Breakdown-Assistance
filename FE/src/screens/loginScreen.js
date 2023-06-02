@@ -17,6 +17,21 @@ import {Formik} from 'formik';
 import {useLoginMutation} from '../services/Auth';
 import {getLocalStorageByKey, saveStorage} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
+import * as yup from 'yup';
+
+const loginValidationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email('Please enter valid email')
+    .required('Email Address is Required'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      'Must Contain 8 Characters, Uppercase, Lowercase, Number and Special Case Character',
+    ),
+});
 export default function LoginScreen() {
   const navigation = useNavigation();
   const [login] = useLoginMutation();
@@ -50,11 +65,14 @@ export default function LoginScreen() {
       })
       .catch(error => {
         console.log(error);
-        // if (error) {
-        //   Alert.alert('Notification', error.data.message.duplicate, [
-        //     {text: 'OK', onPress: () => console.log('OK Pressed')},
-        //   ]);
-        // }
+        if (error) {
+          Alert.alert('Login Failed !', error.data.message, [
+            {
+              text: 'OK',
+              onPress: () => console.log(''),
+            },
+          ]);
+        }
       });
   };
 
@@ -78,9 +96,9 @@ export default function LoginScreen() {
         <Image
           source={require('../../assets/images/logo2.png')}
           style={{
-            width: 250,
-            height: 250,
-            marginVertical: 20,
+            width: 200,
+            height: 200,
+            marginVertical: 10,
             alignSelf: 'center',
           }}
         />
@@ -89,27 +107,53 @@ export default function LoginScreen() {
         style={{
           borderTopLeftRadius: 50,
           borderTopRightRadius: 50,
-          marginHorizontal: 40,
+          marginHorizontal: 30,
         }}>
         <Formik
+          validationSchema={loginValidationSchema}
           onSubmit={values => Login(values)}
           initialValues={{email: '', password: ''}}>
-          {({errors, handleChange, handleBlur, handleSubmit, values}) => {
+          {({errors, handleChange, handleBlur, handleSubmit, touched}) => {
             return (
               <View>
+                <View style={styles.title}>
+                  <Text
+                    style={{
+                      color: themeColors.white,
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                    }}>
+                    Email
+                  </Text>
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorText}>*{errors.email}*</Text>
+                  )}
+                </View>
                 <TextInput
-                  placeholder="Email"
                   style={styles.input}
                   placeholderTextColor={themeColors.white}
                   onChangeText={handleChange('email')}
                 />
+                <View style={styles.title}>
+                  <Text
+                    style={{
+                      color: themeColors.white,
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                    }}>
+                    Password
+                  </Text>
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorText}>*{errors.password}*</Text>
+                  )}
+                </View>
                 <TextInput
                   secureTextEntry
-                  placeholder="Password"
                   style={styles.input}
                   placeholderTextColor={themeColors.white}
                   onChangeText={handleChange('password')}
                 />
+
                 <TouchableOpacity className="flex items-end">
                   <Text
                     style={{
@@ -208,6 +252,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: themeColors.white,
     fontSize: 16,
-    color: themeColors.blue,
+    color: themeColors.white,
+    height: 40,
+    paddingHorizontal: 10,
+  },
+  errorText: {
+    fontSize: 12,
+    color: themeColors.white,
+    paddingLeft: 10,
+    fontStyle: 'italic',
+  },
+  title: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+    width: '70%',
+    marginTop: 10,
   },
 });

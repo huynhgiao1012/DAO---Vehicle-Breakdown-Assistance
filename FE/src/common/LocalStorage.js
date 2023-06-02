@@ -14,6 +14,11 @@ export const saveStorage = (key, data) => {
     data: data,
   });
 };
+export const clearStorage = key => {
+  storage.remove({
+    key: key,
+  });
+};
 export const getLocalStorageByKey = async key => {
   try {
     const data = await storage.load({

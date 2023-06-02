@@ -4,10 +4,10 @@ import {getLocalStorageByKey} from '../common/LocalStorage';
 
 // Define a service using a base URL and expected endpoints
 
-export const companyApi = createApi({
-  reducerPath: 'companyApi',
+export const serviceApi = createApi({
+  reducerPath: 'serviceApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://${IP}:3000/api/v1/company`,
+    baseUrl: `http://${IP}:3000/api/v1/service`,
     prepareHeaders: async (headers, query) => {
       const Token = await getLocalStorageByKey(KEY_TOKEN);
       if (Token) {
@@ -19,14 +19,9 @@ export const companyApi = createApi({
     },
   }),
   endpoints: builder => ({
-    getCorCompany: builder.query({
-      query: () => ({
-        url: '/getCorCompany',
-      }),
-    }),
-    getCompanyDetail: builder.mutation({
+    getCompanyService: builder.mutation({
       query: ({id}) => ({
-        url: `/getCompanyDetail/${id}`,
+        url: `/getAllService/${id}`,
       }),
     }),
   }),
@@ -34,4 +29,4 @@ export const companyApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetCorCompanyQuery, useGetCompanyDetailMutation} = companyApi;
+export const {useGetCompanyServiceMutation} = serviceApi;
