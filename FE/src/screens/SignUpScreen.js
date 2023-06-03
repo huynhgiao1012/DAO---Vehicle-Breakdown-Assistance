@@ -6,30 +6,57 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {Formik} from 'formik';
 import {themeColors} from '../theme';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-import {useDispatch, useSelector} from 'react-redux';
 import {useRegisterMutation} from '../services/Auth';
-
+import * as yup from 'yup';
+const signUpValidationSchema = yup.object().shape({
+  name: yup.string().required('Name is Required'),
+  email: yup
+    .string()
+    .email('Please enter valid email')
+    .required('Email Address is Required'),
+  password: yup
+    .string()
+    .required('Password is Required')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      'Must Contain 8 Characters, Uppercase, Lowercase, Number and Special Case Character',
+    ),
+  phone: yup
+    .string()
+    .required('Phone is required')
+    .matches(/^(84|0[3|5|7|8|9])+([0-9]{8})\b/, 'Must be a valid phone'),
+});
 // subscribe for more videos like this :)
 export default function SignUpScreen() {
   const navigation = useNavigation();
-  const [registerQuery, result] = useRegisterMutation();
+  const [registerQuery, {isLoading}] = useRegisterMutation();
   const Register = data => {
     registerQuery(data)
-      .unwrap()
-      .then(payload =>
-        Alert.alert(
-          payload.message,
-          'Please verify your account before login!',
-          [{text: 'OK', onPress: () => console.log('hi')}],
-        ),
-      )
+      .then(payload => {
+        console.log('payload', payload);
+        if (payload) {
+          Alert.alert(
+            payload.message,
+            'Please verify your account before login!',
+            [
+              {
+                text: 'OK',
+                onPress: () =>
+                  navigation.navigate('OTPScreen', {id: payload.data.data._id}),
+              },
+            ],
+          );
+        }
+      })
       .catch(error => {
+        console.log('error', error);
         if (error) {
           Alert.alert('Notification', error.data.message.duplicate, [
             {text: 'OK', onPress: () => console.log('OK Pressed')},
@@ -37,58 +64,86 @@ export default function SignUpScreen() {
         }
       });
   };
-  console.log(result);
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
-      <SafeAreaView>
-        <View>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}></TouchableOpacity>
-        </View>
-        <View>
-          <Image
-            source={require('../../assets/images/logo2.png')}
-            style={{
-              width: 100,
-              height: 100,
-              marginVertical: 20,
-              alignSelf: 'center',
-            }}
-          />
-        </View>
-      </SafeAreaView>
       <View
         style={{
-          borderTopLeftRadius: 50,
-          borderTopRightRadius: 50,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <View style={styles.circle}></View>
+        <View style={styles.circle}></View>
+        <View style={styles.circle}></View>
+      </View>
+      {isLoading && (
+        <Modal isVisible={true} transparent={true}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginVertical: '90%',
+              alignSelf: 'center',
+            }}>
+            <ActivityIndicator size={40} color={themeColors.primaryColor} />
+          </View>
+        </Modal>
+      )}
+
+      <View
+        style={{
           backgroundColor: themeColors.white,
           flex: 1,
+          marginHorizontal: 10,
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
         }}>
         <Formik
+          validationSchema={signUpValidationSchema}
           onSubmit={values => Register(values)}
           initialValues={{name: '', email: '', phone: '', password: ''}}>
-          {({errors, handleChange, handleBlur, handleSubmit, values}) => {
+          {({errors, handleChange, handleSubmit, touched}) => {
             return (
               <View style={styles.form}>
-                <Text style={styles.title}>Full Name</Text>
+                <View style={styles.titleText}>
+                  <Text style={styles.title}>Full Name</Text>
+                  {errors.name && touched.name && (
+                    <Text style={styles.errorText}>* {errors.name} *</Text>
+                  )}
+                </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Jonh"
                   onChangeText={handleChange('name')}
                 />
-                <Text style={styles.title}>Email Address</Text>
+                <View style={styles.titleText}>
+                  <Text style={styles.title}>Email Address</Text>
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorText}>* {errors.email} *</Text>
+                  )}
+                </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="example@gmail.com"
                   onChangeText={handleChange('email')}
                 />
-                <Text style={styles.title}>Phone</Text>
+                <View style={styles.titleText}>
+                  <Text style={styles.title}>Phone</Text>
+                  {errors.phone && touched.phone && (
+                    <Text style={styles.errorText}>* {errors.phone} *</Text>
+                  )}
+                </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="08320111XXX"
                   onChangeText={handleChange('phone')}
                 />
-                <Text style={styles.title}>Password</Text>
+                <View style={styles.titleText}>
+                  <Text style={styles.title}>Password</Text>
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorText}>* {errors.password} *</Text>
+                  )}
+                </View>
+
                 <TextInput
                   style={styles.input}
                   secureTextEntry
@@ -102,7 +157,7 @@ export default function SignUpScreen() {
                     padding: 10,
                     width: '90%',
                     borderRadius: 2,
-                    marginTop: 10,
+                    marginTop: 30,
                   }}>
                   <Text
                     style={{
@@ -118,15 +173,15 @@ export default function SignUpScreen() {
             );
           }}
         </Formik>
-        <Text
+        {/* <Text
           style={{
             textAlign: 'center',
             fontWeight: 'bold',
             color: themeColors.black,
           }}>
           Or
-        </Text>
-        <View
+        </Text> */}
+        {/* <View
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -152,7 +207,7 @@ export default function SignUpScreen() {
               className="w-10 h-10"
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View
           style={{
             display: 'flex',
@@ -186,12 +241,20 @@ export default function SignUpScreen() {
   );
 }
 const styles = StyleSheet.create({
-  form: {
-    marginHorizontal: 40,
+  circle: {
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+    backgroundColor: themeColors.white,
     marginVertical: 20,
+    marginHorizontal: 20,
+  },
+  form: {
+    marginHorizontal: 30,
+    marginVertical: 40,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     color: themeColors.primaryColor,
     fontWeight: '700',
   },
@@ -200,5 +263,19 @@ const styles = StyleSheet.create({
     borderBottomColor: themeColors.primaryColor2,
     marginBottom: 10,
     padding: 3,
+  },
+  errorText: {
+    fontSize: 13,
+    color: 'red',
+    paddingLeft: 10,
+    fontStyle: 'italic',
+  },
+  titleText: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+    width: '70%',
+    marginTop: 10,
   },
 });

@@ -36,6 +36,7 @@
     "react-native-storage": "^1.0.1",
     "react-native-vector-icons": "^9.2.0",
     "react-redux": "^8.0.5",
+    "react-spinners": "^0.13.8",
     "redux": "^4.2.1",
     "socket.io-client": "^4.6.1",
     "yup": "^1.2.0"
