@@ -1,21 +1,42 @@
 import * as React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {BackHandler} from 'react-native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+
 // Screens
 import HomeScreen from './HomeScreen';
 import InfoScreen from './InfoScreen';
 import {themeColors} from '../theme';
 import MyServiceScreen from './MyServiceScreen';
 import NotiScreen from './NotiScreen';
-import {useEffect} from 'react';
-import {useState} from 'react';
-import {getLocalStorageByKey} from '../common/LocalStorage';
+import {clearStorage} from '../common/LocalStorage';
+// import {useEffect} from 'react';
+// import {useState} from 'react';
+// import {getLocalStorageByKey} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
 
 const Tab = createBottomTabNavigator();
 
 const MainScreen = () => {
+  const navigation = useNavigation();
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        // Do Whatever you want to do on back button click
+        // Return true to stop default back navigaton
+        // Return false to keep default back navigaton
+        clearStorage(KEY_TOKEN);
+        navigation.navigate('Login');
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"

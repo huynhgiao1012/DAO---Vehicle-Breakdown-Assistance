@@ -6,6 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import Header from '../Components/Header';
@@ -16,7 +18,7 @@ import {useOTPVerifyMutation} from '../services/Auth';
 export default function OTPScreen({route}) {
   const navigation = useNavigation();
   const {id} = route.params;
-  const [OTPverify] = useOTPVerifyMutation();
+  const [OTPverify, {isLoading}] = useOTPVerifyMutation();
   const pin1Ref = useRef(null);
   const pin2Ref = useRef(null);
   const pin3Ref = useRef(null);
@@ -28,14 +30,27 @@ export default function OTPScreen({route}) {
   const [pin4, setPin4] = useState('');
 
   const verify = () => {
+    clearInput();
     const otpString = [pin1, pin2, pin3, pin4];
+    if (
+      pin1 === undefined ||
+      pin2 === undefined ||
+      pin3 === undefined ||
+      pin4 === undefined
+    ) {
+      Alert.alert('Notification', 'Please input OTP code');
+    }
     const body = {id: id, otp: otpString.join('')};
     OTPverify(body)
       .unwrap()
       .then(payload => {
         console.log(payload);
         if (payload.success === true) {
-          navigation.navigate('Main');
+          Alert.alert(
+            'Notification',
+            'Verify successfully ! Please login again...',
+          );
+          navigation.navigate('Login');
         }
       })
       .catch(error => {
@@ -47,14 +62,18 @@ export default function OTPScreen({route}) {
         Alert.alert('Notification', error.data.message, [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('Login'),
           },
         ]);
       });
   };
+  const clearInput = () => {
+    pin1Ref.current.clear();
+    pin2Ref.current.clear();
+    pin3Ref.current.clear();
+    pin4Ref.current.clear();
+  };
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
-      <Header />
       <View
         style={{
           backgroundColor: themeColors.white,
@@ -75,6 +94,20 @@ export default function OTPScreen({route}) {
           }}>
           OTP VERIFICATION
         </Text>
+        {isLoading && (
+          <Modal isVisible={true} transparent={true}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginVertical: '90%',
+                alignSelf: 'center',
+              }}>
+              <ActivityIndicator size={40} color={themeColors.primaryColor} />
+            </View>
+          </Modal>
+        )}
         <View
           style={{
             display: 'flex',
@@ -146,16 +179,18 @@ export default function OTPScreen({route}) {
             }}>
             Resend OTP
           </Text>
-          <Text
-            style={{
-              alignSelf: 'center',
-              fontSize: 14,
-              color: themeColors.gray60,
-              fontWeight: '600',
-              fontStyle: 'italic',
-            }}>
-            Change Number
-          </Text>
+          <TouchableOpacity onPress={clearInput}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                fontSize: 14,
+                color: themeColors.gray60,
+                fontWeight: '600',
+                fontStyle: 'italic',
+              }}>
+              Change Number
+            </Text>
+          </TouchableOpacity>
         </View>
         <TouchableOpacity
           onPress={verify}

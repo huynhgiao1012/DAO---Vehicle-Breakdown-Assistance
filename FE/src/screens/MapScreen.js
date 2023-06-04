@@ -70,7 +70,7 @@ const MapScreen = () => {
     console.log('distanceNum', distanceNum);
     setMarkers([]);
     if (getCorCompany.isSuccess) {
-      console.log('data', getCorCompany.data.data);
+      // console.log('data', getCorCompany.data.data);
       getCorCompany.data.data.map(val => {
         const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
         companyCoordinates.push(obj);
@@ -94,7 +94,7 @@ const MapScreen = () => {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       );
-      console.log(granted);
+      // console.log(granted);
       if (granted === PermissionsAndroid.RESULTS.GRANTED) getCurrentLocation();
       else {
         alert('notGranted');
@@ -140,7 +140,7 @@ const MapScreen = () => {
       })
         .unwrap()
         .then(async payload => {
-          console.log('payload', payload.rows[0].elements);
+          // console.log('payload', payload.rows[0].elements);
           const withIndex = await payload.rows[0].elements.map((val, index) => {
             while (index <= companyCoordinates.length) {
               const id = companyCoordinates[index].id;
@@ -156,21 +156,29 @@ const MapScreen = () => {
             if (val.distance.value <= distanceNum * 1000)
               showedMarker.push(val);
           });
-          console.log('showedMarker', showedMarker);
+          // console.log('showedMarker', showedMarker);
           companyCoordinates.map(val => {
             showedMarker.map(value => {
               if (val.id === value.id) {
-                // console.log(val);
-                markerList.push(val);
+                const obj = {
+                  ...val,
+                  distance: value.distance,
+                  duration: value.duration,
+                };
+                markerList.push(obj);
               }
             });
           });
           // console.log('markerList', markerList);
-          if (!markerList.length) {
+          const sortedMarker = markerList.sort(
+            (a, b) => a.distance.value - b.distance.value,
+          );
+          // console.log('sortedMarker', sortedMarker);
+          if (!sortedMarker.length) {
             setMarkers([]);
           } else {
             let newMarkers = await Promise.all(
-              markerList.map(async val => {
+              sortedMarker.map(async val => {
                 let detail = {};
                 await getCompanyDetail({id: val.id})
                   .unwrap()
@@ -189,10 +197,12 @@ const MapScreen = () => {
                   image: 'NA',
                   phoneNo: detail.data.phone,
                   email: detail.data.email,
+                  distance: val.distance.text,
                 };
               }),
             );
             setMarkers(newMarkers);
+            // console.log(markers);
           }
         })
         .catch(error => {
@@ -285,7 +295,7 @@ const MapScreen = () => {
   return (
     <View style={styles.container}>
       <MapView
-        ref={mapRef}
+        ref={_map}
         style={styles.map}
         initialRegion={region}
         onMapReady={onMapReady}
@@ -305,7 +315,7 @@ const MapScreen = () => {
         ))}
         {markers.map(renderMarker)}
       </MapView>
-      {console.log(markers)}
+      {/* {console.log(markers)} */}
       {!markers.length ? (
         <View></View>
       ) : (

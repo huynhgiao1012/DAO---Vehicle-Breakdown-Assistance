@@ -56,6 +56,9 @@ const Card = ({item}) => (
           <Text style={styles.status} numberOfLines={2}>
             Address: <Text style={styles.black}>{item?.address} </Text>
           </Text>
+          <Text style={styles.status} numberOfLines={2}>
+            Distance: <Text style={styles.black}>{item?.distance} </Text>
+          </Text>
         </View>
       </View>
     </View>

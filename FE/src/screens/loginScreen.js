@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -34,11 +35,12 @@ const loginValidationSchema = yup.object().shape({
 });
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const [login] = useLoginMutation();
+  const [login, {isLoading}] = useLoginMutation();
   const Login = data => {
     login({email: data.email, password: data.password})
       .unwrap()
       .then(async payload => {
+        console.log(payload);
         if (payload.success === true) {
           saveStorage(KEY_TOKEN, payload.token);
           const token = await getLocalStorageByKey(KEY_TOKEN);
@@ -78,6 +80,20 @@ export default function LoginScreen() {
 
   return (
     <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
+      {isLoading && (
+        <Modal isVisible={true} transparent={true}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginVertical: '90%',
+              alignSelf: 'center',
+            }}>
+            <ActivityIndicator size={40} color={themeColors.white} />
+          </View>
+        </Modal>
+      )}
       <SafeAreaView>
         <View
           style={{
