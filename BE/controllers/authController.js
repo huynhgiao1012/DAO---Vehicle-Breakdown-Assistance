@@ -150,7 +150,7 @@ exports.login = catchAsync(async (req, res) => {
         `Your OTP code: ${otpcode}`
       );
       res.status(200).json({
-        success: true,
+        success: false,
         message: "Check your mail for OTP code",
         customerId: existEmail,
       });
@@ -174,7 +174,7 @@ exports.login = catchAsync(async (req, res) => {
         `Your OTP code: ${otpcode}`
       );
       res.status(200).json({
-        success: true,
+        success: false,
         message: "Check your mail for OTP code",
         customerId: existEmail,
       });
