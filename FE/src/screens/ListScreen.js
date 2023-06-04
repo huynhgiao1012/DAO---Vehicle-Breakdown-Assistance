@@ -17,6 +17,19 @@ import {useNavigation} from '@react-navigation/native';
 // subscribe for more videos like this :)
 export default function ListScreen() {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
+  const [distanceNum, setDistanceNum] = useState(0);
+  const [markers, setMarkers] = React.useState([]);
+  const [distanceMatrix] = useDistanceMatrixMutation();
+  const getCorCompany = useGetCorCompanyQuery();
+  const [getCompanyDetail] = useGetCompanyDetailMutation();
+  const [region, setRegion] = useState({
+    latitude: 10.5369728,
+    longitude: 106.6734779,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121,
+  });
+  const companyCoordinates = [];
   const data = [
     {
       name: 'Jonh Garage',
