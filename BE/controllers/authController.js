@@ -123,6 +123,7 @@ exports.login = catchAsync(async (req, res) => {
         res.json({
           success: true,
           token,
+          role: existEmail.role,
         });
       } else {
         throw new ApiError(400, "Account is disabled for a while");
