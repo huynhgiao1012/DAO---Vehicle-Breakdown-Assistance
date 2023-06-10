@@ -1,24 +1,23 @@
 import * as React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {BackHandler} from 'react-native';
+import {BackHandler, View, Text} from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 // Screens
-import HomeScreen from './HomeScreen';
-import InfoScreen from './InfoScreen';
-import {themeColors} from '../theme';
-import MyServiceScreen from './MyServiceScreen';
-import NotiScreen from './NotiScreen';
-import {clearStorage} from '../common/LocalStorage';
+import GarageHomeScreen from './GarageHomeScreen';
+import {themeColors} from '../../theme';
+import {clearStorage} from '../../common/LocalStorage';
 // import {useEffect} from 'react';
 // import {useState} from 'react';
 // import {getLocalStorageByKey} from '../common/LocalStorage';
-import {KEY_TOKEN} from '../utils/constants';
+import {KEY_TOKEN} from '../../utils/constants';
+import GarageNotiScreen from './GarageNotiScreen';
+import GarageFormScreen from './GarageFormScreen';
 
 const Tab = createBottomTabNavigator();
 
-const MainScreen = () => {
+const GarageMainScreen = () => {
   const navigation = useNavigation();
   useFocusEffect(
     React.useCallback(() => {
@@ -39,17 +38,18 @@ const MainScreen = () => {
   );
   return (
     <Tab.Navigator
-      initialRouteName="HomeScreen"
+      initialRouteName="GarageHomeScreen"
       screenOptions={({route}) => ({
         tabBarIcon: ({focused, color, size}) => {
           let iconName;
           let rn = route.name;
 
-          if (rn === 'Home') {
+          if (rn === 'GarageHomeScreen') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (rn === 'My Service') {
+          } else if (rn === 'GarageFormScreen') {
             iconName = focused ? 'ios-create' : 'ios-create-outline';
-          } else if (rn === 'Notification') {
+          } else if (rn === 'GarageNotiScreen') {
+            // iconName = focused ? 'notifications' : 'notifications-outline';
             return (
               <View>
                 <Icon name="notifications" size={size} color={color} />
@@ -83,7 +83,7 @@ const MainScreen = () => {
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarStyle: {
-          height: 45,
+          height: 50,
           backgroundColor: themeColors.primaryColor,
         },
         tabBarActiveTintColor: themeColors.primaryColor,
@@ -92,27 +92,27 @@ const MainScreen = () => {
         tabBarShowLabel: false,
       })}>
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+        name="GarageHomeScreen"
+        component={GarageHomeScreen}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="My Service"
-        component={MyServiceScreen}
+        name="GarageFormScreen"
+        component={GarageFormScreen}
         options={{headerShown: false}}
       />
       <Tab.Screen
-        name="Notification"
-        component={NotiScreen}
+        name="GarageNotiScreen"
+        component={GarageNotiScreen}
         options={{headerShown: false}}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Information"
         component={InfoScreen}
         options={{headerShown: false}}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
 
-export default MainScreen;
+export default GarageMainScreen;

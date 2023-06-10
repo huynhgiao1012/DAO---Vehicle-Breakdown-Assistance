@@ -13,6 +13,9 @@ import BookingScreen from '../screens/BookingScreen';
 import OTPScreen from '../screens/OTPScreen';
 import MyInfo from '../screens/MyInfo';
 import RatingScreen from '../screens/RatingScreen';
+import GarageMainScreen from '../screens/Garage Account/GarageMainScreen';
+import GarageNotiScreen from '../screens/Garage Account/GarageNotiScreen';
+import GarageFormScreen from '../screens/Garage Account/GarageFormScreen';
 
 const Stack = createStackNavigator();
 export default function AppNavigation() {
@@ -50,6 +53,11 @@ export default function AppNavigation() {
           component={MainScreen}
         />
         <Stack.Screen
+          name="GarageMain"
+          options={{headerShown: false}}
+          component={GarageMainScreen}
+        />
+        <Stack.Screen
           name="BookingScreen"
           options={{headerShown: false}}
           component={BookingScreen}
@@ -68,6 +76,16 @@ export default function AppNavigation() {
           name="RatingScreen"
           options={{headerShown: false}}
           component={RatingScreen}
+        />
+        <Stack.Screen
+          name="GarageNotiScreen"
+          options={{headerShown: false}}
+          component={GarageNotiScreen}
+        />
+        <Stack.Screen
+          name="GarageFormScreen"
+          options={{headerShown: false}}
+          component={GarageFormScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

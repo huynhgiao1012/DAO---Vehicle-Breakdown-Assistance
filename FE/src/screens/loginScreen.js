@@ -29,7 +29,7 @@ const loginValidationSchema = yup.object().shape({
     .string()
     .required('Password is required')
     .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*`<>])(?=.{8,})/,
       'Must Contain 8 Characters, Uppercase, Lowercase, Number and Special Case Character',
     ),
 });
@@ -45,7 +45,11 @@ export default function LoginScreen() {
           saveStorage(KEY_TOKEN, payload.token);
           const token = await getLocalStorageByKey(KEY_TOKEN);
           if (token) {
-            navigation.navigate('Main');
+            if (payload.role === 'customer') {
+              navigation.navigate('Main');
+            } else {
+              navigation.navigate('GarageMain');
+            }
           }
         } else {
           if (payload.customerId.isActive === false) {
