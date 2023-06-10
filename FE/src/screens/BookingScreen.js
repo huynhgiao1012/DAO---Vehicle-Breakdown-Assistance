@@ -16,6 +16,7 @@ import MapView, {Marker} from 'react-native-maps';
 import GetLocation from 'react-native-get-location';
 import {useReverseGeoMutation} from '../services/Map';
 import {useGetCompanyDetailMutation} from '../services/Company';
+import socketService from '../utils/socketService';
 
 export default function BookingScreen({route}) {
   const navigation = useNavigation();
@@ -26,6 +27,7 @@ export default function BookingScreen({route}) {
   const {id, accountId, serviceName, servicePrice} = route.params;
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(true);
+
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
@@ -60,7 +62,6 @@ export default function BookingScreen({route}) {
     },
     success: true,
   });
-
   useEffect(() => {
     companyDetail({id: accountId})
       .unwrap()
@@ -78,6 +79,7 @@ export default function BookingScreen({route}) {
 
   useEffect(() => {
     requestPermission();
+    socketService.initializeSocket();
   }, []);
 
   useEffect(() => {
@@ -89,7 +91,13 @@ export default function BookingScreen({route}) {
         return error;
       });
   }, [region]);
-
+  const handleBook = () => {
+    socketService.emit('sendNotification', {
+      senderName: userData.currentData.data.name,
+      receiverName: data.data.name,
+      text: `${userData.currentData.data.name} has booked your service`,
+    });
+  };
   const requestPermission = async () => {
     if (Platform.OS == 'android') {
       getCurrentLocation();
@@ -288,7 +296,7 @@ export default function BookingScreen({route}) {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('OTPScreen')}
+        onPress={handleBook}
         style={{
           alignSelf: 'center',
           backgroundColor: themeColors.primaryColor,

@@ -39,17 +39,15 @@ export default function LoginScreen() {
   const Login = data => {
     login({email: data.email, password: data.password})
       .unwrap()
-      .then(async payload => {
-        console.log(payload);
+      .then(payload => {
+        console.log('payload', payload);
         if (payload.success === true) {
           saveStorage(KEY_TOKEN, payload.token);
-          const token = await getLocalStorageByKey(KEY_TOKEN);
-          if (token) {
-            if (payload.role === 'customer') {
-              navigation.navigate('Main');
-            } else {
-              navigation.navigate('GarageMain');
-            }
+          if (payload.role === 'customer') {
+            console.log('hihi');
+            navigation.navigate('Main', {token: payload.token});
+          } else {
+            navigation.navigate('GarageMain', {token: payload.token});
           }
         } else {
           if (payload.customerId.isActive === false) {
@@ -70,15 +68,7 @@ export default function LoginScreen() {
         }
       })
       .catch(error => {
-        console.log(error);
-        if (error) {
-          Alert.alert('Login Failed !', error.data.message, [
-            {
-              text: 'OK',
-              onPress: () => console.log(''),
-            },
-          ]);
-        }
+        return '';
       });
   };
 

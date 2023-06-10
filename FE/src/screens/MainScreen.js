@@ -1,9 +1,9 @@
 import * as React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {BackHandler} from 'react-native';
+import {BackHandler, View, Text} from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
-
+import jwt_decode from 'jwt-decode';
 // Screens
 import HomeScreen from './HomeScreen';
 import InfoScreen from './InfoScreen';
@@ -15,11 +15,26 @@ import {clearStorage} from '../common/LocalStorage';
 // import {useState} from 'react';
 // import {getLocalStorageByKey} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
+import {useEffect, useState} from 'react';
+import socketService from '../utils/socketService';
+import {io} from 'socket.io-client';
 
 const Tab = createBottomTabNavigator();
 
-const MainScreen = () => {
+const MainScreen = ({route}) => {
+  const [user, setUser] = useState('');
+  const [socket, setSocket] = useState(null);
   const navigation = useNavigation();
+  const {token} = route.params;
+  useEffect(() => {
+    const socketIo = io('http://localhost:3000');
+    setSocket(socketIo);
+    const decode = jwt_decode(token);
+    setUser(decode.name);
+  }, []);
+  useEffect(() => {
+    socket?.emit('newUser', user);
+  }, [socket, user]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
