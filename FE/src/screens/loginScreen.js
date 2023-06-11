@@ -57,9 +57,9 @@ export default function LoginScreen() {
           const decode = jwt_decode(payload.token);
           setUser(decode.id);
           if (payload.role === 'customer') {
-            navigation.navigate('Main');
+            navigation.navigate('Main', {socketIO: socket});
           } else {
-            navigation.navigate('GarageMain', {socket: socket});
+            navigation.navigate('GarageMain', {socketIO: socket});
           }
         } else {
           if (payload.customerId.isActive === false) {

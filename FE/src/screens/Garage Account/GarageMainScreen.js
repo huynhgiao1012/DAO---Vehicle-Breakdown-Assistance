@@ -22,19 +22,20 @@ const Tab = createBottomTabNavigator();
 
 const GarageMainScreen = ({route}) => {
   const navigation = useNavigation();
-  // const [user, setUser] = useState('');
   const [notifications, setNotifications] = useState([]);
-  const {socket} = route.params;
+  const [socket, setSocket] = useState(null);
+  const {socketIO} = route.params;
   useEffect(() => {
-    console.log(socket);
+    setSocket(socketIO);
   }, []);
-
   useEffect(() => {
-    socket.on('getNotification', data => {
-      console.log('data', data);
-      setNotifications(prev => [...prev, data]);
-    });
-    console.log('notifications', notifications);
+    if (socket) {
+      socket.on('getNotification', data => {
+        console.log('data', data);
+        setNotifications(prev => [...prev, data]);
+      });
+      console.log('notifications', notifications);
+    }
   }, [socket]);
   useFocusEffect(
     React.useCallback(() => {

@@ -65,6 +65,7 @@ export default function BookingScreen({route}) {
     success: true,
   });
   useEffect(() => {
+    console.log(userData);
     companyDetail({id: accountId})
       .unwrap()
       .then(payload => {
@@ -95,6 +96,7 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
+    console.log(data.data.name);
     socket.emit('sendNotification', {
       senderName: userData.currentData.data._id,
       receiverName: data.data._id,

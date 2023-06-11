@@ -10,28 +10,27 @@ import InfoScreen from './InfoScreen';
 import {themeColors} from '../theme';
 import MyServiceScreen from './MyServiceScreen';
 import NotiScreen from './NotiScreen';
-import {clearStorage} from '../common/LocalStorage';
+import {clearStorage, getLocalStorageByKey} from '../common/LocalStorage';
 // import {useEffect} from 'react';
 // import {useState} from 'react';
-// import {getLocalStorageByKey} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
 import {useEffect, useState} from 'react';
 // import socketService from '../utils/socketService';
 import {io} from 'socket.io-client';
+import jwtDecode from 'jwt-decode';
 
 const Tab = createBottomTabNavigator();
 
-const MainScreen = () => {
-  // const [user, setUser] = useState('');
+const MainScreen = ({route}) => {
+  const {socketIO} = route.params;
+  const [user, setUser] = useState('');
   const [socket, setSocket] = useState(null);
   const navigation = useNavigation();
   useEffect(() => {
-    const socketIo = io('http://localhost:3000');
-    setSocket(socketIo);
+    setSocket(socketIO);
+    console.log(socketIO);
   }, []);
-  // useEffect(() => {
-  //   socket?.emit('newUser', user);
-  // }, [socket, user]);
+
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
