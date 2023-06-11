@@ -16,25 +16,22 @@ import {clearStorage} from '../common/LocalStorage';
 // import {getLocalStorageByKey} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
 import {useEffect, useState} from 'react';
-import socketService from '../utils/socketService';
+// import socketService from '../utils/socketService';
 import {io} from 'socket.io-client';
 
 const Tab = createBottomTabNavigator();
 
-const MainScreen = ({route}) => {
-  const [user, setUser] = useState('');
+const MainScreen = () => {
+  // const [user, setUser] = useState('');
   const [socket, setSocket] = useState(null);
   const navigation = useNavigation();
-  const {token} = route.params;
   useEffect(() => {
     const socketIo = io('http://localhost:3000');
     setSocket(socketIo);
-    const decode = jwt_decode(token);
-    setUser(decode.name);
   }, []);
-  useEffect(() => {
-    socket?.emit('newUser', user);
-  }, [socket, user]);
+  // useEffect(() => {
+  //   socket?.emit('newUser', user);
+  // }, [socket, user]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {

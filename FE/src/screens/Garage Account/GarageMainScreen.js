@@ -15,28 +15,23 @@ import {KEY_TOKEN} from '../../utils/constants';
 import GarageNotiScreen from './GarageNotiScreen';
 import GarageFormScreen from './GarageFormScreen';
 import {useEffect, useState} from 'react';
-import socketService from '../../utils/socketService';
+// import socketService from '../../utils/socketService';
 import {io} from 'socket.io-client';
-import jwt_decode from 'jwt-decode';
+// import jwt_decode from 'jwt-decode';
 const Tab = createBottomTabNavigator();
 
 const GarageMainScreen = ({route}) => {
   const navigation = useNavigation();
-  const [user, setUser] = useState('');
-  const [socket, setSocket] = useState(null);
+  // const [user, setUser] = useState('');
   const [notifications, setNotifications] = useState([]);
-  const {token} = route.params;
+  const {socket} = route.params;
   useEffect(() => {
-    const socketIo = io('http://localhost:3000');
-    setSocket(socketIo);
-    const decode = jwt_decode(token);
-    setUser(decode.name);
+    console.log(socket);
   }, []);
+
   useEffect(() => {
-    socket?.emit('newUser', user);
-  }, [socket, user]);
-  useEffect(() => {
-    socket?.on('getNotification', data => {
+    socket.on('getNotification', data => {
+      console.log('data', data);
       setNotifications(prev => [...prev, data]);
     });
     console.log('notifications', notifications);

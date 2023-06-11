@@ -17,6 +17,7 @@ import GetLocation from 'react-native-get-location';
 import {useReverseGeoMutation} from '../services/Map';
 import {useGetCompanyDetailMutation} from '../services/Company';
 import socketService from '../utils/socketService';
+import {io} from 'socket.io-client';
 
 export default function BookingScreen({route}) {
   const navigation = useNavigation();
@@ -27,6 +28,7 @@ export default function BookingScreen({route}) {
   const {id, accountId, serviceName, servicePrice} = route.params;
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(true);
+  const [socket, setSocket] = useState(null);
 
   const [region, setRegion] = useState({
     latitude: 10.5369728,
@@ -74,12 +76,13 @@ export default function BookingScreen({route}) {
       .catch(error => {
         return error;
       });
+    const socketIo = io('http://localhost:3000');
+    setSocket(socketIo);
   }, []);
   const mapRef = useRef(null);
 
   useEffect(() => {
     requestPermission();
-    socketService.initializeSocket();
   }, []);
 
   useEffect(() => {
@@ -92,11 +95,12 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
-    socketService.emit('sendNotification', {
-      senderName: userData.currentData.data.name,
-      receiverName: data.data.name,
+    socket.emit('sendNotification', {
+      senderName: userData.currentData.data._id,
+      receiverName: data.data._id,
       text: `${userData.currentData.data.name} has booked your service`,
     });
+    console.log(socket);
   };
   const requestPermission = async () => {
     if (Platform.OS == 'android') {

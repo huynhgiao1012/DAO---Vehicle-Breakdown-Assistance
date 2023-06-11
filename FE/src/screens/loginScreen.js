@@ -19,7 +19,9 @@ import {useLoginMutation} from '../services/Auth';
 import {getLocalStorageByKey, saveStorage} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
 import * as yup from 'yup';
-
+import {useEffect, useState} from 'react';
+import {io} from 'socket.io-client';
+import jwt_decode from 'jwt-decode';
 const loginValidationSchema = yup.object().shape({
   email: yup
     .string()
@@ -35,7 +37,16 @@ const loginValidationSchema = yup.object().shape({
 });
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const [user, setUser] = useState('');
+  const [socket, setSocket] = useState(null);
   const [login, {isLoading}] = useLoginMutation();
+  useEffect(() => {
+    const socketIo = io('http://localhost:3000');
+    setSocket(socketIo);
+  }, []);
+  useEffect(() => {
+    socket?.emit('newUser', user);
+  }, [socket, user]);
   const Login = data => {
     login({email: data.email, password: data.password})
       .unwrap()
@@ -43,11 +54,12 @@ export default function LoginScreen() {
         console.log('payload', payload);
         if (payload.success === true) {
           saveStorage(KEY_TOKEN, payload.token);
+          const decode = jwt_decode(payload.token);
+          setUser(decode.id);
           if (payload.role === 'customer') {
-            console.log('hihi');
-            navigation.navigate('Main', {token: payload.token});
+            navigation.navigate('Main');
           } else {
-            navigation.navigate('GarageMain', {token: payload.token});
+            navigation.navigate('GarageMain', {socket: socket});
           }
         } else {
           if (payload.customerId.isActive === false) {
@@ -68,7 +80,7 @@ export default function LoginScreen() {
         }
       })
       .catch(error => {
-        return '';
+        console.log(error);
       });
   };
 
