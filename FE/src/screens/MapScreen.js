@@ -29,7 +29,7 @@ import {
   useGetCorCompanyQuery,
 } from '../services/Company';
 import {useNavigation} from '@react-navigation/native';
-const MapScreen = () => {
+const MapScreen = props => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [distanceNum, setDistanceNum] = useState(0);
@@ -37,6 +37,7 @@ const MapScreen = () => {
   const [distanceMatrix] = useDistanceMatrixMutation();
   const getCorCompany = useGetCorCompanyQuery();
   const [getCompanyDetail] = useGetCompanyDetailMutation();
+  const socketIO = props.socketIO;
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
@@ -277,7 +278,9 @@ const MapScreen = () => {
   const renderCard = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('GarageDetail', {id: item.id})}>
+        onPress={() =>
+          navigation.navigate('GarageDetail', {id: item.id, socketIO: socketIO})
+        }>
         <Card item={item} />
       </TouchableOpacity>
     );

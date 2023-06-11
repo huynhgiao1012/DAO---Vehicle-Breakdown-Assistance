@@ -28,7 +28,7 @@ const MainScreen = ({route}) => {
   const navigation = useNavigation();
   useEffect(() => {
     setSocket(socketIO);
-    console.log(socketIO);
+    console.log('socketIO from main', socketIO);
   }, []);
 
   useFocusEffect(
@@ -106,6 +106,7 @@ const MainScreen = ({route}) => {
         name="Home"
         component={HomeScreen}
         options={{headerShown: false}}
+        initialParams={{socketIO: socketIO}}
       />
       <Tab.Screen
         name="My Service"

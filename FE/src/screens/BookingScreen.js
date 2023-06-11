@@ -25,7 +25,7 @@ export default function BookingScreen({route}) {
   const [companyDetail] = useGetCompanyDetailMutation();
   const [reverseGeo] = useReverseGeoMutation();
   const [addPrice, setAddPrice] = useState(20);
-  const {id, accountId, serviceName, servicePrice} = route.params;
+  const {id, accountId, serviceName, servicePrice, socketIO} = route.params;
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
@@ -65,7 +65,7 @@ export default function BookingScreen({route}) {
     success: true,
   });
   useEffect(() => {
-    console.log(userData);
+    console.log('socketio from bookscreen', socketIO);
     companyDetail({id: accountId})
       .unwrap()
       .then(payload => {
@@ -77,8 +77,7 @@ export default function BookingScreen({route}) {
       .catch(error => {
         return error;
       });
-    const socketIo = io('http://localhost:3000');
-    setSocket(socketIo);
+    setSocket(socketIO);
   }, []);
   const mapRef = useRef(null);
 
@@ -96,7 +95,6 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
-    console.log(data.data.name);
     socket.emit('sendNotification', {
       senderName: userData.currentData.data._id,
       receiverName: data.data._id,

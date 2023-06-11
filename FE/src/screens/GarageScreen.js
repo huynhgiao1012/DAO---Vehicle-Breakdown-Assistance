@@ -13,7 +13,7 @@ import {useState} from 'react';
 export default function GarageScreen({route}) {
   const [getCompanyDetail] = useGetCompanyDetailMutation();
 
-  const {id} = route.params;
+  const {id, socketIO} = route.params;
   const [data, setData] = useState({
     companyDetail: {
       __v: 0,
@@ -186,7 +186,7 @@ export default function GarageScreen({route}) {
             SERVICE
           </Text>
         </View>
-        <ServiceList id={id} />
+        <ServiceList id={id} socketIO={socketIO} />
         <View style={styles.title}>
           <Icon
             name="gratipay"

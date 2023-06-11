@@ -53,6 +53,7 @@ export default function ServiceList(props) {
               accountId: item.accountId,
               serviceName: item.type,
               servicePrice: item.price,
+              socketIO: props.socketIO,
             })
           }>
           <View
