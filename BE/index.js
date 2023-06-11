@@ -15,6 +15,7 @@ const authRoutes = require("./route/authRoutes");
 const companyRoutes = require("./route/companyRoutes");
 const serviceRoutes = require("./route/serviceRoutes");
 const userRoutes = require("./route/userRoutes");
+const notification = require("./models/notification");
 app.use(express.json());
 app.use(cors());
 EmailService.init();
@@ -29,7 +30,11 @@ const port = process.env.PORT || 3000;
 
 let onlineUsers = [];
 
-const addNewUser = (userId, socketId) => {
+const addNewUser = async (userId, socketId) => {
+  const data = await notification.findOne({ accountId: userId });
+  if (!data) {
+    await notification.create({ accountId: userId, num: 0 });
+  }
   !onlineUsers.some((user) => user.userId === userId) &&
     onlineUsers.push({ userId, socketId });
 };
@@ -38,8 +43,14 @@ const removeUser = (socketId) => {
   onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = (userId) => {
-  return onlineUsers.find((user) => user.userId === userId);
+const getUser = async (userId) => {
+  const data = await notification.findOne({ accountId: userId });
+  if (data) {
+    const user = onlineUsers.find((user) => user.userId === userId);
+    if (user) {
+      return user;
+    }
+  }
 };
 io.on("connection", (socket) => {
   socket.on("newUser", (userId) => {
@@ -49,10 +60,10 @@ io.on("connection", (socket) => {
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     const receiver = getUser(receiverName);
     console.log(receiver);
-    io.to(`${receiver.socketId}`).emit("getNotification", {
-      senderName,
-      text,
-    });
+    // io.to(`${receiver.socketId}`).emit("getNotification", {
+    //   senderName,
+    //   text,
+    // });
   });
 
   socket.on("sendText", ({ senderName, receiverName, text }) => {
