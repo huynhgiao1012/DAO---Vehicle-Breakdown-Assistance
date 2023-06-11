@@ -43,14 +43,13 @@ const getUser = (userId) => {
 };
 io.on("connection", (socket) => {
   socket.on("newUser", (userId) => {
-    socket.id = userId;
     addNewUser(userId, socket.id);
   });
   console.log(onlineUsers);
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     const receiver = getUser(receiverName);
     console.log(receiver);
-    io.to(receiver.socketId).emit("getNotification", {
+    io.to(`${receiver.socketId}`).emit("getNotification", {
       senderName,
       text,
     });
