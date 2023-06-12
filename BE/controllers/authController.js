@@ -12,6 +12,7 @@ const Otp = require("../models/OTP");
 const otpGenerator = require("otp-generator");
 
 const { findByIdAndUpdate } = require("../models/timeAccess");
+const notification = require("../models/notification");
 
 exports.register = catchAsync(async (req, res) => {
   const { name, email, phone, password } = req.body;
@@ -66,6 +67,10 @@ exports.verifyOTP = catchAsync(async (req, res) => {
       const isPoint = await Customer.findOne({ accountId: id });
       if (!isPoint) {
         await Customer.create({ accountId: id, point: 0 });
+      }
+      const isNoti = await notification.findOne({ accountId: id });
+      if (!isNoti) {
+        await notification.create({ accountId: id, num: 0 });
       }
     }
   }

@@ -32,11 +32,10 @@ let onlineUsers = [];
 
 const addNewUser = async (userId, socketId) => {
   const data = await notification.findOne({ accountId: userId });
-  if (!data) {
-    await notification.create({ accountId: userId, num: 0 });
+  if (data) {
+    !onlineUsers.some((user) => user.userId === userId) &&
+      onlineUsers.push({ userId, socketId });
   }
-  !onlineUsers.some((user) => user.userId === userId) &&
-    onlineUsers.push({ userId, socketId });
 };
 
 const removeUser = (socketId) => {
@@ -53,6 +52,9 @@ const getUser = async (userId) => {
   }
 };
 io.on("connection", (socket) => {
+  socket.on("connected", (socket) => {
+    console.log(socket);
+  });
   socket.on("newUser", (userId) => {
     addNewUser(userId, socket.id);
   });
@@ -60,19 +62,19 @@ io.on("connection", (socket) => {
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     const receiver = getUser(receiverName);
     console.log(receiver);
-    // io.to(`${receiver.socketId}`).emit("getNotification", {
-    //   senderName,
-    //   text,
-    // });
-  });
-
-  socket.on("sendText", ({ senderName, receiverName, text }) => {
-    const receiver = getUser(receiverName);
-    io.to(receiver.socketId).emit("getText", {
+    io.to(`${receiver.socketId}`).emit("getNotification", {
       senderName,
       text,
     });
   });
+
+  // socket.on("sendText", ({ senderName, receiverName, text }) => {
+  //   const receiver = getUser(receiverName);
+  //   io.to(receiver.socketId).emit("getText", {
+  //     senderName,
+  //     text,
+  //   });
+  // });
 
   socket.on("disconnect", () => {
     removeUser(socket.id);
