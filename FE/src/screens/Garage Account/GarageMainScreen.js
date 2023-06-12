@@ -27,20 +27,20 @@ const GarageMainScreen = ({route}) => {
   const {socketIo} = route.params;
   useEffect(() => {
     setSocket(socketIo);
-    socketIo.on('getNotification', data => {
-      console.log('data', data);
+    socketIo.volatile.on('getNotification', data => {
+      console.log('data hihi', data);
       setNotifications(prev => [...prev, data]);
     });
-    console.log('notifications', notifications);
+    console.log(notifications);
   }, []);
   // useEffect(() => {
   //   if (socket) {
   //     socket.on('getNotification', data => {
-  //       console.log('data', data);
-  //       setNotifications(prev => [...prev, data]);
+  //       console.log('data hihi', data);
+  //       setNotifications([...notifications, data]);
   //     });
-  //     console.log('notifications', notifications);
   //   }
+  //   console.log('notifications', notifications);
   // }, [socket]);
   useFocusEffect(
     React.useCallback(() => {

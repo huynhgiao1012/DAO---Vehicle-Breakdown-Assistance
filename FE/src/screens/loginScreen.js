@@ -46,9 +46,12 @@ export default function LoginScreen({route}) {
   const [login, {isLoading}] = useLoginMutation();
   useEffect(() => {
     console.log('socketIo from login', route.params.socketIo);
+    setSocket(route.params.socketIo);
   }, []);
   useEffect(() => {
-    socket?.emit('newUser', user);
+    if (user !== '') {
+      socket?.emit('newUser', user);
+    }
   }, [socket, user]);
   const Login = data => {
     clearStorage(KEY_TOKEN);
