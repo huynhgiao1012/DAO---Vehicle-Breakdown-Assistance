@@ -8,8 +8,6 @@ class WSService {
       this.socket = io(SOCKET_URL, {
         transports: ['websocket'],
       });
-      console.log('initializing socket', this.socket);
-
       this.socket.on('connect', data => {
         console.log('=== socket connected ====');
       });
@@ -21,6 +19,7 @@ class WSService {
       this.socket.on('error', data => {
         console.log('socekt error', data);
       });
+      return this.socket;
     } catch (error) {
       console.log('scoket is not inialized', error);
     }

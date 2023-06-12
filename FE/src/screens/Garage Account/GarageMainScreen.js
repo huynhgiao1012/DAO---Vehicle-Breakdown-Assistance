@@ -27,17 +27,21 @@ const GarageMainScreen = ({route}) => {
   const {socketIo} = route.params;
   useEffect(() => {
     setSocket(socketIo);
-    socketIo.on('connected');
+    socketIo.on('getNotification', data => {
+      console.log('data', data);
+      setNotifications(prev => [...prev, data]);
+    });
+    console.log('notifications', notifications);
   }, []);
-  useEffect(() => {
-    if (socket) {
-      socket.on('getNotification', data => {
-        console.log('data', data);
-        // setNotifications(prev => [...prev, data]);
-      });
-      // console.log('notifications', notifications);
-    }
-  }, [socket]);
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('getNotification', data => {
+  //       console.log('data', data);
+  //       setNotifications(prev => [...prev, data]);
+  //     });
+  //     console.log('notifications', notifications);
+  //   }
+  // }, [socket]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {

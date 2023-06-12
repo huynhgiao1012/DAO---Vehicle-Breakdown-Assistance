@@ -19,6 +19,7 @@ import GarageFormScreen from '../screens/Garage Account/GarageFormScreen';
 
 const Stack = createStackNavigator();
 export default function AppNavigation(props) {
+  console.log(props.socketIo);
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Welcome">

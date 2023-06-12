@@ -19,10 +19,8 @@ import {io} from 'socket.io-client';
 
 const Stack = createStackNavigator();
 const App = () => {
-  const [message, setMessage] = useState('');
-  const [data, setData] = useState([]);
-  const [socket, setSocket] = useState(null);
-  LogBox.ignoreLogs(['Warning: ...']);
+  // LogBox.ignoreLogs(['Warning: ...', 'Non-serializable ...']);
+  LogBox.ignoreAllLogs();
   const socketIo = io('http://localhost:3000');
   return (
     <Provider store={store}>
