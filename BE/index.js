@@ -31,11 +31,8 @@ const port = process.env.PORT || 3000;
 let onlineUsers = [];
 
 const addNewUser = async (userId, socketId) => {
-  const data = await notification.findOne({ accountId: userId });
-  if (data) {
-    !onlineUsers.some((user) => user.userId === userId) &&
-      onlineUsers.push({ userId, socketId });
-  }
+  !onlineUsers.some((user) => user.userId === userId) &&
+    onlineUsers.push({ userId, socketId });
 };
 
 const removeUser = (socketId) => {
@@ -52,15 +49,13 @@ const getUser = async (userId) => {
   }
 };
 io.on("connection", (socket) => {
-  socket.emit("connected");
   socket.on("newUser", (userId) => {
     addNewUser(userId, socket.id);
+    console.log(onlineUsers);
   });
-  console.log(onlineUsers);
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     const receiver = getUser(receiverName);
-
-    io.emit("getNotification", {
+    socket.broadcast.emit("getNotification", {
       senderName,
       text,
     });
