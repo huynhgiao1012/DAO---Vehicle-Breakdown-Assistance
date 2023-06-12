@@ -15,25 +15,18 @@ import {createStackNavigator} from '@react-navigation/stack';
 import AppNavigation from './src/navigation/appNavigation';
 import {Provider} from 'react-redux';
 import {store} from './src/store/index.js';
+import {io} from 'socket.io-client';
+
 const Stack = createStackNavigator();
 const App = () => {
   const [message, setMessage] = useState('');
   const [data, setData] = useState([]);
+  const [socket, setSocket] = useState(null);
   LogBox.ignoreLogs(['Warning: ...']);
-  useEffect(() => {
-    socketService.initializeSocket();
-  }, []);
-  useEffect(() => {
-    socketService.on('receive_message', msg => {
-      console.log('Message received in react native', msg);
-    });
-  }, []);
-  const sendMessage = () => {
-    socketService.emit('send_message', message);
-  };
+  const socketIo = io('http://localhost:3000');
   return (
     <Provider store={store}>
-      <AppNavigation />
+      <AppNavigation socketIo={socketIo} />
     </Provider>
   );
 };

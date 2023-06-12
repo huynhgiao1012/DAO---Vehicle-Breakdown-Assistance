@@ -12,11 +12,9 @@ export default function HomeScreen({route}) {
   const [token, setToken] = useState('');
   const [distanceNum, setDistanceNum] = useState(0);
   const navigation = useNavigation();
-  const {socketIO} = route.params;
   useEffect(() => {
     const value = AsyncStorage.getItem('TOKEN');
     setToken(value);
-    console.log('socketIO from HomeScreen', socketIO);
   }, []);
   const setMap = () => {
     if (isMap) {
@@ -76,11 +74,7 @@ export default function HomeScreen({route}) {
             </TouchableOpacity>
           </View>
         </View>
-        {isMap ? (
-          <MapScreen distanceNum={distanceNum} socketIO={socketIO} />
-        ) : (
-          <ListScreen socketIO={socketIO} />
-        )}
+        {isMap ? <MapScreen distanceNum={distanceNum} /> : <ListScreen />}
       </SafeAreaView>
     )
   );

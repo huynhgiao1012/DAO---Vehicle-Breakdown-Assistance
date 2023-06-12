@@ -24,9 +24,9 @@ const GarageMainScreen = ({route}) => {
   const navigation = useNavigation();
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
-  const {socketIO} = route.params;
+  const {socketIo} = route.params;
   useEffect(() => {
-    setSocket(socketIO);
+    setSocket(socketIo);
   }, []);
   useEffect(() => {
     if (socket) {
@@ -43,7 +43,6 @@ const GarageMainScreen = ({route}) => {
         // Do Whatever you want to do on back button click
         // Return true to stop default back navigaton
         // Return false to keep default back navigaton
-        clearStorage(KEY_TOKEN);
         navigation.navigate('Login');
         return true;
       };

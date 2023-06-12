@@ -22,22 +22,19 @@ import jwtDecode from 'jwt-decode';
 const Tab = createBottomTabNavigator();
 
 const MainScreen = ({route}) => {
-  const {socketIO} = route.params;
+  const {socketIo} = route.params;
   const [user, setUser] = useState('');
   const [socket, setSocket] = useState(null);
   const navigation = useNavigation();
   useEffect(() => {
-    setSocket(socketIO);
-    console.log('socketIO from main', socketIO);
+    setSocket(socketIo);
   }, []);
-
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
         // Do Whatever you want to do on back button click
         // Return true to stop default back navigaton
         // Return false to keep default back navigaton
-        clearStorage(KEY_TOKEN);
         navigation.navigate('Login');
         return true;
       };
@@ -106,7 +103,6 @@ const MainScreen = ({route}) => {
         name="Home"
         component={HomeScreen}
         options={{headerShown: false}}
-        initialParams={{socketIO: socketIO}}
       />
       <Tab.Screen
         name="My Service"

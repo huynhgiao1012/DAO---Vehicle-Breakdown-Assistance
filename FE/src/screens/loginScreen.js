@@ -16,7 +16,11 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {Formik} from 'formik';
 import {useLoginMutation} from '../services/Auth';
-import {getLocalStorageByKey, saveStorage} from '../common/LocalStorage';
+import {
+  clearStorage,
+  getLocalStorageByKey,
+  saveStorage,
+} from '../common/LocalStorage';
 import {KEY_TOKEN} from '../utils/constants';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
@@ -35,14 +39,13 @@ const loginValidationSchema = yup.object().shape({
       'Must Contain 8 Characters, Uppercase, Lowercase, Number and Special Case Character',
     ),
 });
-export default function LoginScreen() {
+export default function LoginScreen({route}) {
   const navigation = useNavigation();
   const [user, setUser] = useState('');
   const [socket, setSocket] = useState(null);
   const [login, {isLoading}] = useLoginMutation();
   useEffect(() => {
-    const socketIo = io('http://localhost:3000');
-    setSocket(socketIo);
+    console.log('socketIo from login', route.params.socketIo);
   }, []);
   useEffect(() => {
     socket?.emit('newUser', user);
@@ -56,10 +59,11 @@ export default function LoginScreen() {
           saveStorage(KEY_TOKEN, payload.token);
           const decode = jwt_decode(payload.token);
           setUser(decode.id);
+          setSocket(route.params.socketIo);
           if (payload.role === 'customer') {
-            navigation.navigate('Main', {socketIO: socket});
+            navigation.navigate('Main');
           } else {
-            navigation.navigate('GarageMain', {socketIO: socket});
+            navigation.navigate('GarageMain');
           }
         } else {
           if (payload.customerId.isActive === false) {

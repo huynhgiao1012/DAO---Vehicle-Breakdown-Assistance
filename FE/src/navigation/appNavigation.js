@@ -18,7 +18,7 @@ import GarageNotiScreen from '../screens/Garage Account/GarageNotiScreen';
 import GarageFormScreen from '../screens/Garage Account/GarageFormScreen';
 
 const Stack = createStackNavigator();
-export default function AppNavigation() {
+export default function AppNavigation(props) {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Welcome">
@@ -31,6 +31,7 @@ export default function AppNavigation() {
           name="Login"
           options={{headerShown: false}}
           component={LoginScreen}
+          initialParams={{socketIo: props.socketIo}}
         />
         <Stack.Screen
           name="SignUp"
@@ -51,16 +52,19 @@ export default function AppNavigation() {
           name="Main"
           options={{headerShown: false}}
           component={MainScreen}
+          initialParams={{socketIo: props.socketIo}}
         />
         <Stack.Screen
           name="GarageMain"
           options={{headerShown: false}}
           component={GarageMainScreen}
+          initialParams={{socketIo: props.socketIo}}
         />
         <Stack.Screen
           name="BookingScreen"
           options={{headerShown: false}}
           component={BookingScreen}
+          initialParams={{socketIo: props.socketIo}}
         />
         <Stack.Screen
           name="OTPScreen"
