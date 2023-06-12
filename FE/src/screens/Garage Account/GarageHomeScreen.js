@@ -2,13 +2,13 @@ import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 import React, {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {themeColors} from '../../theme';
-import {useGetUserDetailQuery} from '../../services/User';
+import {useGetCompanyAccountDetailQuery} from '../../services/User';
 export default function GarageHomeScreen() {
-  const userData = useGetUserDetailQuery();
+  const userData = useGetCompanyAccountDetailQuery();
   useEffect(() => {
     try {
       if (userData.isSuccess === true) {
-        console.log(userData);
+        console.log('userData', userData);
       }
     } catch (error) {
       return '';

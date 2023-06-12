@@ -28,6 +28,9 @@ const MainScreen = ({route}) => {
   const navigation = useNavigation();
   useEffect(() => {
     setSocket(socketIo);
+    socketIo.on('connect', () => {
+      console.log(socketIo.id);
+    });
   }, []);
   useFocusEffect(
     React.useCallback(() => {
@@ -35,7 +38,8 @@ const MainScreen = ({route}) => {
         // Do Whatever you want to do on back button click
         // Return true to stop default back navigaton
         // Return false to keep default back navigaton
-        navigation.navigate('Login');
+        clearStorage(KEY_TOKEN);
+        navigation.navigate('Welcome');
         return true;
       };
 

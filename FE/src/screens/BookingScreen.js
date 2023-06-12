@@ -66,6 +66,7 @@ export default function BookingScreen({route}) {
     success: true,
   });
   useEffect(() => {
+    console.log('socket from booking', socketIo);
     companyDetail({id: accountId})
       .unwrap()
       .then(payload => {
@@ -95,12 +96,11 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
-    socket.emit('sendNotification', {
+    socket.volatile.emit('sendNotification', {
       senderName: userData.currentData.data._id,
       receiverName: data.data._id,
       text: `${userData.currentData.data.name} has booked your service`,
     });
-    console.log(socket);
   };
   const requestPermission = async () => {
     if (Platform.OS == 'android') {

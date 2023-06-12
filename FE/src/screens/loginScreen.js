@@ -51,6 +51,7 @@ export default function LoginScreen({route}) {
     socket?.emit('newUser', user);
   }, [socket, user]);
   const Login = data => {
+    clearStorage(KEY_TOKEN);
     login({email: data.email, password: data.password})
       .unwrap()
       .then(payload => {

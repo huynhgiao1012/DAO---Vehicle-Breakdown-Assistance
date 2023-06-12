@@ -27,14 +27,15 @@ const GarageMainScreen = ({route}) => {
   const {socketIo} = route.params;
   useEffect(() => {
     setSocket(socketIo);
+    socketIo.on('connected');
   }, []);
   useEffect(() => {
     if (socket) {
       socket.on('getNotification', data => {
         console.log('data', data);
-        setNotifications(prev => [...prev, data]);
+        // setNotifications(prev => [...prev, data]);
       });
-      console.log('notifications', notifications);
+      // console.log('notifications', notifications);
     }
   }, [socket]);
   useFocusEffect(
@@ -43,7 +44,8 @@ const GarageMainScreen = ({route}) => {
         // Do Whatever you want to do on back button click
         // Return true to stop default back navigaton
         // Return false to keep default back navigaton
-        navigation.navigate('Login');
+        clearStorage(KEY_TOKEN);
+        navigation.navigate('Welcome');
         return true;
       };
 

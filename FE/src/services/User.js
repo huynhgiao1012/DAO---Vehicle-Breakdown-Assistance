@@ -1,6 +1,6 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {IP, KEY_TOKEN} from '../utils/constants';
-import {getLocalStorageByKey} from '../common/LocalStorage';
+import {clearStorage, getLocalStorageByKey} from '../common/LocalStorage';
 
 // Define a service using a base URL and expected endpoints
 
@@ -30,9 +30,18 @@ export const userApi = createApi({
         url: '/userPoint',
       }),
     }),
+    getCompanyAccountDetail: builder.query({
+      query: () => ({
+        url: '/userDetail',
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetUserDetailQuery, useGetUserPointQuery} = userApi;
+export const {
+  useGetUserDetailQuery,
+  useGetUserPointQuery,
+  useGetCompanyAccountDetailQuery,
+} = userApi;
