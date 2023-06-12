@@ -52,20 +52,20 @@ const getUser = async (userId) => {
   }
 };
 io.on("connection", (socket) => {
-  socket.on("connected", (socket) => {
-    console.log(socket);
-  });
+  socket.emit("connected");
   socket.on("newUser", (userId) => {
     addNewUser(userId, socket.id);
   });
   console.log(onlineUsers);
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     const receiver = getUser(receiverName);
-    console.log(receiver);
-    io.to(`${receiver.socketId}`).emit("getNotification", {
-      senderName,
-      text,
-    });
+    console.log("receiver", receiver);
+    if (receiver) {
+      io.to(receiver.socketId).emit("getNotification", {
+        senderName,
+        text,
+      });
+    }
   });
 
   // socket.on("sendText", ({ senderName, receiverName, text }) => {
