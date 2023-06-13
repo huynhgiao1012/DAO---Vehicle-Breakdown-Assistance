@@ -39,26 +39,42 @@ const removeUser = (socketId) => {
   onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
 };
 
-const getUser = async (userId) => {
-  const data = await notification.findOne({ accountId: userId });
-  if (data) {
-    const user = onlineUsers.find((user) => user.userId === userId);
-    if (user) {
-      return user;
-    }
-  }
+const getUser = (userId) => {
+  return onlineUsers.find((user) => user.userId === userId);
 };
 io.on("connection", (socket) => {
   socket.on("newUser", (userId) => {
     addNewUser(userId, socket.id);
     console.log(onlineUsers);
   });
+  socket.on("newConnection", (socket) => {
+    console.log("socket", socket);
+  });
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
-    const receiver = getUser(receiverName);
-    socket.broadcast.emit("getNotification", {
-      senderName,
-      text,
-    });
+    console.log(receiverName);
+    // const receiver = getUser(receiverName);
+    // if (!receiver) {
+    const intervalId = setInterval(() => {
+      const receiver = getUser(receiverName);
+      console.log("Receiver", receiver);
+      if (receiver) {
+        io.to(receiver.socketId).emit("getNotification", {
+          senderName,
+          text,
+        });
+        clearInterval(intervalId);
+      }
+    }, 3000);
+
+    // } else if (receiver) {
+    //   console.log("Receiver", receiver);
+    //   setTimeout(() => {
+    //     io.to(receiver.socketId).emit("getNotification", {
+    //       senderName,
+    //       text,
+    //     });
+    //   }, 1000);
+    // }
   });
 
   // socket.on("sendText", ({ senderName, receiverName, text }) => {
@@ -69,7 +85,7 @@ io.on("connection", (socket) => {
   //   });
   // });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnectUser", () => {
     removeUser(socket.id);
   });
 });

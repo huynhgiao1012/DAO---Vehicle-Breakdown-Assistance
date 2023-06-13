@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { FORM_STATUS } = require("../constant");
 const Schema = mongoose.Schema;
 const OrderFormSchema = new Schema(
   {
@@ -7,6 +8,10 @@ const OrderFormSchema = new Schema(
       ref: "account",
     },
     garageId: {
+      type: Schema.Types.ObjectId,
+      ref: "account",
+    },
+    serviceId: {
       type: Schema.Types.ObjectId,
       ref: "account",
     },

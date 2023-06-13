@@ -1,4 +1,5 @@
 const catchAsync = require("../middleware/async");
+const orderForm = require("../models/orderForm");
 const Service = require("../models/service");
 const ApiError = require("../utils/ApiError");
 const { io } = require("socket.io-client");
@@ -82,7 +83,17 @@ exports.getService = catchAsync(async (req, res) => {
   });
 });
 exports.bookingService = catchAsync(async (req, res) => {
+  const { customerId, garageId, serviceId, date, price, note } = req.body;
+  const booking = await orderForm.create({
+    customerId: customerId,
+    garageId: garageId,
+    serviceId: serviceId,
+    date: date,
+    price: price,
+    note: note,
+  });
   res.status(200).json({
     success: true,
+    booking,
   });
 });
