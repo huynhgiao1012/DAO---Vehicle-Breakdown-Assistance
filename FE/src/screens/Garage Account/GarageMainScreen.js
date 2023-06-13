@@ -17,6 +17,10 @@ import GarageFormScreen from './GarageFormScreen';
 import {useEffect, useState} from 'react';
 // import socketService from '../../utils/socketService';
 import {io} from 'socket.io-client';
+import {
+  useCreateNotiMutation,
+  useGetUnreadNotiMutation,
+} from '../../services/Notification';
 // import jwt_decode from 'jwt-decode';
 const Tab = createBottomTabNavigator();
 
@@ -26,21 +30,35 @@ const GarageMainScreen = ({route}) => {
   const [socket, setSocket] = useState(null);
   const {socketIo} = route.params;
   const [unRead, setUnread] = useState([]);
+  const [createNoti] = useCreateNotiMutation();
+  const [getUnreadNoti] = useGetUnreadNotiMutation();
   useEffect(() => {
     socketIo.on('getNotification', data => {
       console.log('data', data);
       setNotifications(prev => [...prev, data]);
     });
     console.log('Noti', notifications);
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          setUnread(prev => [...prev, ...payload.data]);
+        }
+      });
   }, []);
   useEffect(() => {
-    socketIo.on('getNotification', data => {
-      console.log('data', data);
-      setNotifications(prev => [...prev, data]);
+    notifications.map(val => {
+      createNoti({from: val.senderName, to: val.receiverName, text: val.text})
+        .unwrap()
+        .then(payload => {
+          console.log(payload);
+        })
+        .catch(error => {
+          return error;
+        });
     });
-    console.log('Noti', notifications);
-    setUnread(prev => [...prev, ...notifications]);
-  }, [socketIo]);
+  }, [notifications]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {

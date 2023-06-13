@@ -6,6 +6,7 @@ import {mapApi} from '../services/Map';
 import authSlice from '../slices/authSlice';
 import {companyApi} from '../services/Company';
 import {serviceApi} from '../services/Service';
+import {notiApi} from '../services/Notification';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     [mapApi.reducerPath]: mapApi.reducer,
     [companyApi.reducerPath]: companyApi.reducer,
     [serviceApi.reducerPath]: serviceApi.reducer,
+    [notiApi.reducerPath]: notiApi.reducer,
     authSlice,
   },
   middleware: getDefaultMiddleware =>
@@ -23,6 +25,7 @@ export const store = configureStore({
       mapApi.middleware,
       companyApi.middleware,
       serviceApi.middleware,
+      notiApi.middleware,
     ),
 });
 setupListeners(store.dispatch);

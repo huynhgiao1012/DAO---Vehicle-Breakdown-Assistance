@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, {useRef} from 'react';
 import Header from '../Components/Header';
@@ -18,17 +19,20 @@ import {useReverseGeoMutation} from '../services/Map';
 import {useGetCompanyDetailMutation} from '../services/Company';
 import socketService from '../utils/socketService';
 import {io} from 'socket.io-client';
+import {useBookingServiceMutation} from '../services/Service';
 
 export default function BookingScreen({route}) {
   const navigation = useNavigation();
   const userData = useGetUserDetailQuery();
   const [companyDetail] = useGetCompanyDetailMutation();
+  const [bookingService] = useBookingServiceMutation();
   const [reverseGeo] = useReverseGeoMutation();
   const [addPrice, setAddPrice] = useState(20);
   const {id, accountId, serviceName, servicePrice} = route.params;
   const {socketIo} = route.params;
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(true);
+  const [note, setNote] = useState('');
   const [socket, setSocket] = useState(null);
 
   const [region, setRegion] = useState({
@@ -96,11 +100,39 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
-    socket.volatile.emit('sendNotification', {
-      senderName: userData.currentData.data._id,
-      receiverName: data.data._id,
-      text: `${userData.currentData.data.name} has booked your service`,
-    });
+    bookingService({
+      customerId: userData.currentData.data._id,
+      garageId: accountId,
+      serviceId: id,
+      date: new Date()
+        .toLocaleDateString('en-GB')
+        .split('/')
+        .reverse()
+        .join('-'),
+      price: servicePrice + addPrice,
+      note: note,
+    })
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          socket.volatile.emit('sendNotification', {
+            senderName: payload.booking.customerId,
+            receiverName: payload.booking.garageId,
+            text: `NEW BOOKING - ${userData.currentData.data.name} has booked your service`,
+          });
+          Alert.alert('NOTIFICATION', 'Booking Successfully', [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('Main'),
+            },
+          ]);
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        return error;
+      });
   };
   const requestPermission = async () => {
     if (Platform.OS == 'android') {
@@ -233,6 +265,7 @@ export default function BookingScreen({route}) {
         <Text style={styles.text1}>Other Notes</Text>
         <TextInput
           numberOfLines={1}
+          onChangeText={val => setNote(val)}
           placeholder="Optional"
           style={{
             borderWidth: 1,
@@ -241,7 +274,8 @@ export default function BookingScreen({route}) {
             borderRadius: 10,
             fontSize: 16,
             color: themeColors.blue,
-          }}></TextInput>
+          }}
+        />
       </View>
       <View
         style={{

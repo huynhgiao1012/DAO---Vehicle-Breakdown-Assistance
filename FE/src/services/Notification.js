@@ -1,15 +1,16 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {IP, KEY_TOKEN} from '../utils/constants';
-import {getLocalStorageByKey} from '../common/LocalStorage';
+import {clearStorage, getLocalStorageByKey} from '../common/LocalStorage';
 
 // Define a service using a base URL and expected endpoints
 
-export const serviceApi = createApi({
-  reducerPath: 'serviceApi',
+export const notiApi = createApi({
+  reducerPath: 'notiApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://${IP}:3000/api/v1/service`,
+    baseUrl: `http://${IP}:3000/api/v1/notification`,
     prepareHeaders: async (headers, query) => {
       const Token = await getLocalStorageByKey(KEY_TOKEN);
+      console.log('TOKEN' + ' ' + Token);
       if (Token) {
         headers.set('authorization', `Bearer ${Token}`);
         headers.set('Content-Type', 'application/json');
@@ -19,14 +20,9 @@ export const serviceApi = createApi({
     },
   }),
   endpoints: builder => ({
-    getCompanyService: builder.mutation({
-      query: ({id}) => ({
-        url: `/getAllService/${id}`,
-      }),
-    }),
-    bookingService: builder.mutation({
+    createNoti: builder.mutation({
       query: payload => ({
-        url: '/bookingService',
+        url: '/create',
         method: 'POST',
         body: payload,
         headers: {
@@ -34,10 +30,11 @@ export const serviceApi = createApi({
         },
       }),
     }),
+    getUnreadNoti: builder.mutation({
+      query: () => ({
+        url: `/getUnreadNotification`,
+      }),
+    }),
   }),
 });
-
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
-export const {useGetCompanyServiceMutation, useBookingServiceMutation} =
-  serviceApi;
+export const {useCreateNotiMutation, useGetUnreadNotiMutation} = notiApi;
