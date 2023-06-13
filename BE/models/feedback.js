@@ -21,7 +21,7 @@ const FeedbackSchema = new Schema(
     },
   },
   {
-    collection: "DAO-feedbacks",
+    collection: "Feedbacks",
     timestamps: true,
   }
 );

@@ -68,10 +68,6 @@ exports.verifyOTP = catchAsync(async (req, res) => {
       if (!isPoint) {
         await Customer.create({ accountId: id, point: 0 });
       }
-      const isNoti = await notification.findOne({ accountId: id });
-      if (!isNoti) {
-        await notification.create({ accountId: id, num: 0 });
-      }
     }
   }
 });

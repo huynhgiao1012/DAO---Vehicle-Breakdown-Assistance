@@ -15,7 +15,7 @@ const authRoutes = require("./route/authRoutes");
 const companyRoutes = require("./route/companyRoutes");
 const serviceRoutes = require("./route/serviceRoutes");
 const userRoutes = require("./route/userRoutes");
-const notification = require("./models/notification");
+const notiRoutes = require("./route/notiRoutes");
 app.use(express.json());
 app.use(cors());
 EmailService.init();
@@ -25,6 +25,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/company", companyRoutes);
 app.use("/api/v1/service", serviceRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/notification", notiRoutes);
 app.use(catchError);
 const port = process.env.PORT || 3000;
 
@@ -60,6 +61,7 @@ io.on("connection", (socket) => {
       if (receiver) {
         io.to(receiver.socketId).emit("getNotification", {
           senderName,
+          receiverName,
           text,
         });
         clearInterval(intervalId);

@@ -1,13 +1,26 @@
 const mongoose = require("mongoose");
+const { NOTI_STATUS } = require("../constant");
 const Schema = mongoose.Schema;
 const NotificationSchema = new Schema(
   {
-    accountId: {
+    from: {
       type: Schema.Types.ObjectId,
       ref: "account",
+      required: "true",
     },
-    num: {
-      type: Number,
+    to: {
+      type: Schema.Types.ObjectId,
+      ref: "account",
+      required: "true",
+    },
+    text: {
+      type: String,
+      required: "true",
+    },
+    status: {
+      type: String,
+      enum: NOTI_STATUS,
+      default: NOTI_STATUS.UNREAD,
     },
     createAt: {
       type: Date,

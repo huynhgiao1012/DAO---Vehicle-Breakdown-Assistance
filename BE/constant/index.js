@@ -9,3 +9,8 @@ exports.FORM_STATUS = {
   PROCESS: "process",
   DONE: "done",
 };
+
+exports.NOTI_STATUS = {
+  UNREAD: "unread",
+  READ: "read",
+};
