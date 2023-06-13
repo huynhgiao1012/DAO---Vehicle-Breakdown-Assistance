@@ -25,23 +25,22 @@ const GarageMainScreen = ({route}) => {
   const [notifications, setNotifications] = useState([]);
   const [socket, setSocket] = useState(null);
   const {socketIo} = route.params;
+  const [unRead, setUnread] = useState([]);
   useEffect(() => {
-    setSocket(socketIo);
-    socketIo.volatile.on('getNotification', data => {
-      console.log('data hihi', data);
+    socketIo.on('getNotification', data => {
+      console.log('data', data);
       setNotifications(prev => [...prev, data]);
     });
-    console.log(notifications);
+    console.log('Noti', notifications);
   }, []);
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.on('getNotification', data => {
-  //       console.log('data hihi', data);
-  //       setNotifications([...notifications, data]);
-  //     });
-  //   }
-  //   console.log('notifications', notifications);
-  // }, [socket]);
+  useEffect(() => {
+    socketIo.on('getNotification', data => {
+      console.log('data', data);
+      setNotifications(prev => [...prev, data]);
+    });
+    console.log('Noti', notifications);
+    setUnread(prev => [...prev, ...notifications]);
+  }, [socketIo]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -49,6 +48,7 @@ const GarageMainScreen = ({route}) => {
         // Return true to stop default back navigaton
         // Return false to keep default back navigaton
         clearStorage(KEY_TOKEN);
+        socketIo.emit('disconnectUser');
         navigation.navigate('Welcome');
         return true;
       };
@@ -92,7 +92,7 @@ const GarageMainScreen = ({route}) => {
                       color: themeColors.white,
                       fontWeight: '600',
                     }}>
-                    0
+                    {unRead.length}
                   </Text>
                 </View>
               </View>
