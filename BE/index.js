@@ -16,6 +16,7 @@ const companyRoutes = require("./route/companyRoutes");
 const serviceRoutes = require("./route/serviceRoutes");
 const userRoutes = require("./route/userRoutes");
 const notiRoutes = require("./route/notiRoutes");
+const formRoutes = require("./route/formRoutes");
 app.use(express.json());
 app.use(cors());
 EmailService.init();
@@ -26,6 +27,8 @@ app.use("/api/v1/company", companyRoutes);
 app.use("/api/v1/service", serviceRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/notification", notiRoutes);
+app.use("/api/v1/notification", notiRoutes);
+app.use("/api/v1/form", formRoutes);
 app.use(catchError);
 const port = process.env.PORT || 3000;
 
@@ -46,10 +49,6 @@ const getUser = (userId) => {
 io.on("connection", (socket) => {
   socket.on("newUser", (userId) => {
     addNewUser(userId, socket.id);
-    console.log(onlineUsers);
-  });
-  socket.on("newConnection", (socket) => {
-    console.log("socket", socket);
   });
   socket.on("sendNotification", ({ senderName, receiverName, text }) => {
     console.log(receiverName);
@@ -57,7 +56,6 @@ io.on("connection", (socket) => {
     // if (!receiver) {
     const intervalId = setInterval(() => {
       const receiver = getUser(receiverName);
-      console.log("Receiver", receiver);
       if (receiver) {
         io.to(receiver.socketId).emit("getNotification", {
           senderName,

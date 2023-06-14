@@ -4,16 +4,16 @@ const Schema = mongoose.Schema;
 const OrderFormSchema = new Schema(
   {
     customerId: {
-      type: Schema.Types.ObjectId,
-      ref: "account",
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
     },
     garageId: {
-      type: Schema.Types.ObjectId,
-      ref: "account",
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
     },
     serviceId: {
-      type: Schema.Types.ObjectId,
-      ref: "account",
+      type: mongoose.Types.ObjectId,
+      ref: "Service",
     },
     date: {
       type: Date,
