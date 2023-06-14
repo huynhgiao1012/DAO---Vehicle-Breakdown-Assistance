@@ -4,10 +4,10 @@ import {clearStorage, getLocalStorageByKey} from '../common/LocalStorage';
 
 // Define a service using a base URL and expected endpoints
 
-export const userApi = createApi({
-  reducerPath: 'userApi',
+export const formApi = createApi({
+  reducerPath: 'formApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://${IP}:3000/api/v1/user`,
+    baseUrl: `http://${IP}:3000/api/v1/form`,
     prepareHeaders: async (headers, query) => {
       const Token = await getLocalStorageByKey(KEY_TOKEN);
       if (Token) {
@@ -19,28 +19,31 @@ export const userApi = createApi({
     },
   }),
   endpoints: builder => ({
-    getUserDetail: builder.query({
+    getAllFormCustomer: builder.mutation({
       query: () => ({
-        url: '/userDetail',
+        url: `/getAllFormCustomer`,
       }),
     }),
-    getUserPoint: builder.query({
+    getAllFormGarage: builder.mutation({
       query: () => ({
-        url: '/userPoint',
+        url: `/getAllFormGarage`,
       }),
     }),
-    getCompanyAccountDetail: builder.query({
-      query: () => ({
-        url: '/userDetail',
+    updateProcess: builder.mutation({
+      query: ({id}) => ({
+        url: `/updateProcess/${id}`,
+      }),
+    }),
+    updateDone: builder.mutation({
+      query: ({id}) => ({
+        url: `/updateDone/${id}`,
       }),
     }),
   }),
 });
-
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const {
-  useGetUserDetailQuery,
-  useGetUserPointQuery,
-  useGetCompanyAccountDetailQuery,
-} = userApi;
+  useGetAllFormCustomerMutation,
+  useGetAllFormGarageMutation,
+  useUpdateDoneMutation,
+  useUpdateProcessMutation,
+} = formApi;

@@ -7,7 +7,7 @@ import authSlice from '../slices/authSlice';
 import {companyApi} from '../services/Company';
 import {serviceApi} from '../services/Service';
 import {notiApi} from '../services/Notification';
-
+import {formApi} from '../services/OrderForm';
 export const store = configureStore({
   reducer: {
     [authApi.reducerPath]: authApi.reducer,
@@ -16,6 +16,7 @@ export const store = configureStore({
     [companyApi.reducerPath]: companyApi.reducer,
     [serviceApi.reducerPath]: serviceApi.reducer,
     [notiApi.reducerPath]: notiApi.reducer,
+    [formApi.reducerPath]: formApi.reducer,
     authSlice,
   },
   middleware: getDefaultMiddleware =>
@@ -26,6 +27,7 @@ export const store = configureStore({
       companyApi.middleware,
       serviceApi.middleware,
       notiApi.middleware,
+      formApi.middleware,
     ),
 });
 setupListeners(store.dispatch);

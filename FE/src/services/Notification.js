@@ -10,7 +10,6 @@ export const notiApi = createApi({
     baseUrl: `http://${IP}:3000/api/v1/notification`,
     prepareHeaders: async (headers, query) => {
       const Token = await getLocalStorageByKey(KEY_TOKEN);
-      console.log('TOKEN' + ' ' + Token);
       if (Token) {
         headers.set('authorization', `Bearer ${Token}`);
         headers.set('Content-Type', 'application/json');

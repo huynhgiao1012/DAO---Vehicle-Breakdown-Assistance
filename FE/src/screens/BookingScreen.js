@@ -114,7 +114,7 @@ export default function BookingScreen({route}) {
     })
       .unwrap()
       .then(payload => {
-        console.log(payload);
+        // console.log(payload);
         if (payload.success === true) {
           socket.volatile.emit('sendNotification', {
             senderName: payload.booking.customerId,

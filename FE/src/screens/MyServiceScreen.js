@@ -1,56 +1,30 @@
 import {View, Text, ScrollView, FlatList, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import Header from '../Components/Header';
 import {useNavigation} from '@react-navigation/native';
 import {themeColors} from '../theme';
+import {useGetAllFormCustomerMutation} from '../services/OrderForm';
+import {useState} from 'react';
 
 export default function MyServiceScreen() {
   const navigation = useNavigation();
-  const data = [
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      service: 'Fuel',
-      date: '12/03/2023',
-      price: '14$',
-      id: 1,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      service: 'Fuel',
-      date: '12/03/2023',
-      price: '14$',
-      id: 2,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      service: 'Fuel',
-      date: '12/03/2023',
-      price: '14$',
-      id: 3,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      service: 'Fuel',
-      date: '12/03/2023',
-      price: '14$',
-      id: 4,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      service: 'Fuel',
-      date: '12/03/2023',
-      price: '14$',
-      id: 5,
-    },
-  ];
+  const [getAllFOrm] = useGetAllFormCustomerMutation();
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    getAllFOrm()
+      .unwrap()
+      .then(payload => {
+        if (payload) {
+          setData([]);
+          payload.data.map(val => {
+            setData(prev => [...prev, val]);
+          });
+        }
+      });
+  }, []);
   const showModal = () => {};
   return (
-    <ScrollView>
+    <View>
       <Header />
       <View style={{backgroundColor: themeColors.white}}>
         <Text
@@ -98,7 +72,7 @@ export default function MyServiceScreen() {
                       fontSize: 18,
                       color: themeColors.blue,
                     }}>
-                    {item.name}
+                    {item.garageId.name}
                   </Text>
                   <Text
                     style={{
@@ -106,17 +80,9 @@ export default function MyServiceScreen() {
                       color: themeColors.gray60,
                       fontStyle: 'italic',
                     }}>
-                    {item.date}
+                    {item.date.slice(0, 10).split('-').reverse().join('-')}
                   </Text>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    color: themeColors.gray60,
-                    fontStyle: 'italic',
-                  }}>
-                  {item.address}
-                </Text>
                 <View
                   style={{
                     display: 'flex',
@@ -128,7 +94,7 @@ export default function MyServiceScreen() {
                       fontSize: 16,
                       color: themeColors.gray60,
                     }}>
-                    {item.service}
+                    {item.serviceId.type}
                   </Text>
                   <Text
                     style={{
@@ -139,11 +105,20 @@ export default function MyServiceScreen() {
                     {item.price}
                   </Text>
                 </View>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: themeColors.primaryColor,
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                  }}>
+                  {item.status}
+                </Text>
               </View>
             </TouchableOpacity>
           )}
         />
       </View>
-    </ScrollView>
+    </View>
   );
 }

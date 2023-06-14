@@ -34,10 +34,8 @@ const GarageMainScreen = ({route}) => {
   const [getUnreadNoti] = useGetUnreadNotiMutation();
   useEffect(() => {
     socketIo.on('getNotification', data => {
-      console.log('data', data);
       setNotifications(prev => [...prev, data]);
     });
-    console.log('Noti', notifications);
     getUnreadNoti()
       .unwrap()
       .then(payload => {
@@ -58,6 +56,14 @@ const GarageMainScreen = ({route}) => {
           return error;
         });
     });
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          setUnread(prev => [...prev, ...payload.data]);
+        }
+      });
   }, [notifications]);
   useFocusEffect(
     React.useCallback(() => {

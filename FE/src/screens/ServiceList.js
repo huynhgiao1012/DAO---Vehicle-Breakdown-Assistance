@@ -25,9 +25,7 @@ export default function ServiceList(props) {
     getCompanyService({id: props.id})
       .unwrap()
       .then(payload => {
-        console.log(payload);
         setData([...payload.data]);
-        console.log('data', data);
       })
       .catch(error => {
         console.log(error);

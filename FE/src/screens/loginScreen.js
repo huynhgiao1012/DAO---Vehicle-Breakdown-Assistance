@@ -45,7 +45,7 @@ export default function LoginScreen({route}) {
   const [socket, setSocket] = useState(null);
   const [login, {isLoading}] = useLoginMutation();
   useEffect(() => {
-    console.log('socketIo from login', route.params.socketIo);
+    // console.log('socketIo from login', route.params.socketIo);
     setSocket(route.params.socketIo);
   }, []);
   useEffect(() => {
