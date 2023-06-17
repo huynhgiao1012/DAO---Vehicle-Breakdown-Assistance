@@ -102,38 +102,36 @@ const GarageMainScreen = ({route}) => {
 
           if (rn === 'GarageHomeScreen') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (rn === 'GarageFormScreen') {
-            iconName = focused ? 'ios-create' : 'ios-create-outline';
           } else if (rn === 'GarageNotiScreen') {
             // iconName = focused ? 'notifications' : 'notifications-outline';
             return (
               <View>
                 <Icon name="notifications" size={size} color={color} />
-                <View
-                  style={{
-                    backgroundColor: 'red',
-                    borderRadius: 20,
-                    width: 20,
-                    height: 20,
-                    position: 'absolute',
-                    top: -8,
-                    right: -13,
-                  }}>
-                  <Text
+                {unRead.length !== 0 && (
+                  <View
                     style={{
-                      alignSelf: 'center',
-                      color: themeColors.white,
-                      fontWeight: '600',
+                      backgroundColor: 'red',
+                      borderRadius: 20,
+                      width: 20,
+                      height: 20,
+                      position: 'absolute',
+                      top: -8,
+                      right: -13,
                     }}>
-                    {unRead.length}
-                  </Text>
-                </View>
+                    <Text
+                      style={{
+                        alignSelf: 'center',
+                        color: themeColors.white,
+                        fontWeight: '600',
+                      }}>
+                      {unRead.length}
+                    </Text>
+                  </View>
+                )}
               </View>
             );
-          } else if (rn === 'Information') {
-            iconName = focused
-              ? 'information-circle'
-              : 'information-circle-outline';
+          } else if (rn === 'GarageFormScreen') {
+            iconName = focused ? 'ios-create' : 'ios-create-outline';
           }
           // You can return any component that you like here!
           return <Icon name={iconName} size={size} color={color} />;
