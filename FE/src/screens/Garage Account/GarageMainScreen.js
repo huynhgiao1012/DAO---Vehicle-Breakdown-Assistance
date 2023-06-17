@@ -41,16 +41,21 @@ const GarageMainScreen = ({route}) => {
       .then(payload => {
         setUnread([]);
         if (payload) {
-          setUnread(prev => [...prev, ...payload.data]);
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
         }
       });
+    console.log('noti', notifications);
   }, []);
   useEffect(() => {
     notifications.map(val => {
       createNoti({from: val.senderName, to: val.receiverName, text: val.text})
         .unwrap()
         .then(payload => {
-          console.log(payload);
+          setNotifications([]);
         })
         .catch(error => {
           return error;
@@ -61,7 +66,11 @@ const GarageMainScreen = ({route}) => {
       .then(payload => {
         setUnread([]);
         if (payload) {
-          setUnread(prev => [...prev, ...payload.data]);
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
         }
       });
   }, [notifications]);
