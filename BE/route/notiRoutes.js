@@ -28,7 +28,7 @@ router.delete(
   notiController.deleteNotification
 );
 router.patch(
-  "/:id",
+  "/updateNoti/:id",
   jwtAuth,
   authorize("company", "customer"),
   notiController.updateNotification

@@ -43,7 +43,7 @@ exports.updateNotification = catchAsync(async (req, res) => {
 });
 exports.getUnreadNotification = catchAsync(async (req, res) => {
   const id = req.user.id;
-  const data = await notification.find({ to: id, status: "unread" });
+  const data = await notification.find({ to: id });
   if (!data) {
     throw new ApiError(400, "Notification is unavailable");
   }
