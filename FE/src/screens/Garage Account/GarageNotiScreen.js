@@ -31,25 +31,11 @@ export default function GarageNotiScreen() {
       .then(payload => {
         setUnread([]);
         if (payload) {
-          setUnread(prev => [...prev, ...payload.data]);
+          setUnread(prev => [...prev, ...payload.data].reverse());
         }
       });
-    console.log(unRead);
   }, []);
-  const AcceptService = id => {
-    console.log(id);
-    updateNoti({id: id})
-      .unwrap()
-      .then(payload => {
-        console.log(payload);
-        Alert.alert('NOTIFICATION', 'Accept ', [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Main'),
-          },
-        ]);
-      });
-  };
+
   const handlePress = id => {
     setStatus('old');
     navigation.navigate('GarageFormScreen');

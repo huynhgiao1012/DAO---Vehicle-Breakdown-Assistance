@@ -27,7 +27,7 @@ const Tab = createBottomTabNavigator();
 const GarageMainScreen = ({route}) => {
   const navigation = useNavigation();
   const [notifications, setNotifications] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const [status, setStatus] = useState('home');
   const {socketIo} = route.params;
   const [unRead, setUnread] = useState([]);
   const [createNoti] = useCreateNotiMutation();
@@ -74,6 +74,20 @@ const GarageMainScreen = ({route}) => {
         }
       });
   }, [notifications]);
+  useEffect(() => {
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
+        }
+      });
+  }, [status]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -95,56 +109,63 @@ const GarageMainScreen = ({route}) => {
   return (
     <Tab.Navigator
       initialRouteName="GarageHomeScreen"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
-          let iconName;
-          let rn = route.name;
-
-          if (rn === 'GarageHomeScreen') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (rn === 'GarageNotiScreen') {
-            // iconName = focused ? 'notifications' : 'notifications-outline';
-            return (
-              <View>
-                <Icon name="notifications" size={size} color={color} />
-                {unRead.length !== 0 && (
-                  <View
-                    style={{
-                      backgroundColor: 'red',
-                      borderRadius: 20,
-                      width: 20,
-                      height: 20,
-                      position: 'absolute',
-                      top: -8,
-                      right: -13,
-                    }}>
-                    <Text
+      screenOptions={({route, navigation}) => {
+        if (navigation.getState().index === 0) {
+          setStatus('home');
+        } else if (navigation.getState().index === 1) {
+          setStatus('form');
+        } else if (navigation.getState().index === 2) {
+          setStatus('noti');
+        }
+        return {
+          tabBarIcon: ({focused, color, size}) => {
+            let iconName;
+            let rn = route.name;
+            if (rn === 'GarageHomeScreen') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (rn === 'GarageNotiScreen') {
+              return (
+                <View>
+                  <Icon name="notifications" size={size} color={color} />
+                  {unRead.length !== 0 && !navigation.isFocused() && (
+                    <View
                       style={{
-                        alignSelf: 'center',
-                        color: themeColors.white,
-                        fontWeight: '600',
+                        backgroundColor: 'red',
+                        borderRadius: 20,
+                        width: 20,
+                        height: 20,
+                        position: 'absolute',
+                        top: -8,
+                        right: -13,
                       }}>
-                      {unRead.length}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            );
-          } else if (rn === 'GarageFormScreen') {
-            iconName = focused ? 'ios-create' : 'ios-create-outline';
-          }
-          // You can return any component that you like here!
-          return <Icon name={iconName} size={size} color={color} />;
-        },
-        tabBarStyle: {
-          height: 50,
-          backgroundColor: themeColors.primaryColor,
-        },
-        tabBarActiveTintColor: themeColors.primaryColor,
-        tabBarInactiveTintColor: themeColors.white,
-        tabBarActiveBackgroundColor: themeColors.white,
-        tabBarShowLabel: false,
-      })}>
+                      <Text
+                        style={{
+                          alignSelf: 'center',
+                          color: themeColors.white,
+                          fontWeight: '600',
+                        }}>
+                        {unRead.length}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              );
+            } else if (rn === 'GarageFormScreen') {
+              iconName = focused ? 'ios-create' : 'ios-create-outline';
+            }
+            // You can return any component that you like here!
+            return <Icon name={iconName} size={size} color={color} />;
+          },
+          tabBarStyle: {
+            height: 50,
+            backgroundColor: themeColors.primaryColor,
+          },
+          tabBarActiveTintColor: themeColors.primaryColor,
+          tabBarInactiveTintColor: themeColors.white,
+          tabBarActiveBackgroundColor: themeColors.white,
+          tabBarShowLabel: false,
+        };
+      }}>
       <Tab.Screen
         name="GarageHomeScreen"
         component={GarageHomeScreen}
@@ -159,12 +180,8 @@ const GarageMainScreen = ({route}) => {
         name="GarageNotiScreen"
         component={GarageNotiScreen}
         options={{headerShown: false}}
+        initialParams={{unRead: unRead}}
       />
-      {/* <Tab.Screen
-        name="Information"
-        component={InfoScreen}
-        options={{headerShown: false}}
-      /> */}
     </Tab.Navigator>
   );
 };
