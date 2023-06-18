@@ -100,10 +100,12 @@ export default function BookingScreen({route}) {
       });
   }, [region]);
   const handleBook = () => {
+    console.log(address);
     bookingService({
       customerId: userData.currentData.data._id,
       garageId: accountId,
       serviceId: id,
+      address: address,
       date: new Date()
         .toLocaleDateString('en-GB')
         .split('/')
