@@ -83,11 +83,13 @@ exports.getService = catchAsync(async (req, res) => {
   });
 });
 exports.bookingService = catchAsync(async (req, res) => {
-  const { customerId, garageId, serviceId, date, price, note } = req.body;
+  const { customerId, garageId, serviceId, address, date, price, note } =
+    req.body;
   const booking = await orderForm.create({
     customerId: customerId,
     garageId: garageId,
     serviceId: serviceId,
+    address: address,
     date: date,
     price: price,
     note: note,

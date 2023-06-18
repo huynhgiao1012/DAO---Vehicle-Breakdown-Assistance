@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
     // if (!receiver) {
     const intervalId = setInterval(() => {
       const receiver = getUser(receiverName);
+      console.log(receiver);
       if (receiver) {
         io.to(receiver.socketId).emit("getNotification", {
           senderName,
