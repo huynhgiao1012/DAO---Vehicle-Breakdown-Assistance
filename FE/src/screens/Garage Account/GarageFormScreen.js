@@ -6,35 +6,109 @@ import {themeColors} from '../../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SelectDropdown from 'react-native-select-dropdown';
 import {useEffect} from 'react';
-import {useGetAllFormGarageMutation} from '../../services/OrderForm';
+import {
+  useGetAllFormGarageMutation,
+  useGetFormDetailMutation,
+  useUpdateProcessMutation,
+} from '../../services/OrderForm';
 
 const statusForm = ['Await', 'Process', 'Done'];
-export default function GarageFormScreen() {
-  const [status, setStatus] = useState('Waiting');
+export default function GarageFormScreen({route}) {
+  const {socketIo} = route.params;
+  const [socket, setSocket] = useState(null);
+  const [status, setStatus] = useState('Await');
   const [getAllFormGarage] = useGetAllFormGarageMutation();
   const [isOpen, setIsOpen] = useState(false);
-  const [detail, setDetail] = useState({});
+  const [detail, setDetail] = useState([]);
+  const [getFormDetail] = useGetFormDetailMutation();
+  const [updateProcess] = useUpdateProcessMutation();
   const [form, setForm] = useState([]);
   useEffect(() => {
+    console.log('socketIo from form garage', socketIo);
+    setSocket(socketIo);
     getAllFormGarage()
       .unwrap()
       .then(payload => {
         console.log(payload.data);
         setForm([]);
         if (payload.data) {
-          setForm(prev => [...prev, ...payload.data]);
+          const filterData = payload.data.filter(val => val.status === 'await');
+          setForm(prev => [...prev, ...filterData]);
         }
       });
   }, []);
+  useEffect(() => {
+    getAllFormGarage()
+      .unwrap()
+      .then(payload => {
+        setForm([]);
+        if (payload.data) {
+          if (status === 'Await') {
+            const filterData = payload.data.filter(
+              val => val.status === 'await',
+            );
+            setForm(prev => [...prev, ...filterData]);
+          } else if (status === 'Process') {
+            const filterData = payload.data.filter(
+              val => val.status === 'process',
+            );
+            setForm(prev => [...prev, ...filterData]);
+          } else {
+            const filterData = payload.data.filter(
+              val => val.status === 'done',
+            );
+            setForm(prev => [...prev, ...filterData]);
+          }
+        }
+      });
+  }, [status]);
   const setStatusFilter = status => {
     setStatus(status);
-    console.log(status);
   };
-  const openModal = item => {
-    console.log(item);
-    setDetail({});
-    setDetail({...item});
+  const openModal = async id => {
+    var Item = [];
+    setDetail([]);
+    await getFormDetail({id: id})
+      .unwrap()
+      .then(payload => {
+        if (payload.data) {
+          Item.push(payload.data);
+        }
+      });
+    setDetail(prev => [...prev, ...Item]);
     setIsOpen(true);
+  };
+  const AcceptService = id => {
+    console.log(id);
+    updateProcess({id: id})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          form.map(val => {
+            if (val._id === id) {
+              console.log(val);
+              socket.volatile.emit('sendNotification', {
+                senderName: val.garageId,
+                receiverName: val.customerId._id,
+                text: `PROCESSING - Your service is being processed...Technician will arrive within a few minutes`,
+              });
+            }
+          });
+          getAllFormGarage()
+            .unwrap()
+            .then(payload => {
+              setForm([]);
+              if (payload.data) {
+                const filterData = payload.data.filter(
+                  val => val.status === 'await',
+                );
+                setForm(prev => [...prev, ...filterData]);
+              }
+            });
+          setIsOpen(false);
+        }
+      });
   };
   return (
     <View
@@ -76,7 +150,7 @@ export default function GarageFormScreen() {
       <FlatList
         data={form}
         renderItem={({item}) => (
-          <TouchableOpacity onPress={() => openModal(item)}>
+          <TouchableOpacity onPress={() => openModal(item._id)}>
             <View style={styles.item}>
               <Text
                 style={{
@@ -104,107 +178,102 @@ export default function GarageFormScreen() {
         )}
         keyExtractor={item => item._id}
       />
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          presentationStyle="overFullScreen"
-          visible={isOpen}>
-          <View
-            style={{
-              backgroundColor: '#000000aa',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <View style={styles.modalView}>
-              <Text
-                style={{
-                  color: themeColors.blue,
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                }}>
-                Form Detail
-              </Text>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: themeColors.gray60,
-                  fontStyle: 'italic',
-                  alignSelf: 'flex-end',
-                }}>
-                Date: {detail.date.slice(0, 10).split('-').reverse().join('-')}
-              </Text>
-              <Text style={styles.modalText}>
-                Customer's Name: {detail.customerId.name}
-              </Text>
-              <Text style={styles.modalText}>
-                Phone: {detail.customerId.phone}
-              </Text>
-              <Text style={styles.modalText}>Address: {detail.address}</Text>
-              <Text style={styles.modalText}>
-                Service: {detail.serviceId.type}
-              </Text>
-              <Text style={styles.modalText}>Price: {detail.price}</Text>
-              <View
-                style={{
-                  alignSelf: 'flex-start',
-                  backgroundColor: themeColors.gray,
-                  padding: 10,
-                  width: '100%',
-                  borderRadius: 10,
-                }}>
-                <Text style={styles.modalText}>Garage's Name:</Text>
-                <Text style={styles.modalText}>Address: </Text>
-                <Text style={styles.modalText}>Phone: </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginVertical: 20,
-                }}>
-                <TouchableOpacity
+      {detail.length !== 0 && (
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            presentationStyle="overFullScreen"
+            visible={isOpen}>
+            <View
+              style={{
+                backgroundColor: '#000000aa',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <View style={styles.modalView}>
+                <Text
                   style={{
-                    backgroundColor: themeColors.primaryColor,
-                    padding: 10,
-                    borderRadius: 10,
-                    width: 100,
-                    marginHorizontal: 10,
+                    color: themeColors.blue,
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    marginBottom: 10,
                   }}>
-                  <Text
-                    style={{
-                      color: themeColors.white,
-                      fontWeight: '600',
-                      alignSelf: 'center',
-                    }}>
-                    ACCEPT
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsOpen(false);
-                  }}
+                  Form Detail
+                </Text>
+                <Text
                   style={{
-                    backgroundColor: themeColors.primaryColor,
-                    padding: 10,
-                    borderRadius: 10,
-                    width: 100,
-                    marginHorizontal: 10,
+                    fontSize: 16,
+                    color: themeColors.gray60,
+                    fontStyle: 'italic',
+                    alignSelf: 'flex-end',
                   }}>
-                  <Text
+                  Date:{' '}
+                  {detail[0].date.slice(0, 10).split('-').reverse().join('-')}
+                </Text>
+                <Text style={styles.modalText}>
+                  Customer's Name: {detail[0].customerId.name}
+                </Text>
+                <Text style={styles.modalText}>
+                  Phone: {detail[0].customerId.phone}
+                </Text>
+                <Text style={styles.modalText}>
+                  Address: {detail[0].address}
+                </Text>
+                <Text style={styles.modalText}>
+                  Service: {detail[0].serviceId.type}
+                </Text>
+                <Text style={styles.modalText}>Price: {detail[0].price}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginVertical: 20,
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => AcceptService(detail[0]._id)}
                     style={{
-                      color: themeColors.white,
-                      fontWeight: '600',
-                      alignSelf: 'center',
+                      backgroundColor: themeColors.primaryColor,
+                      padding: 10,
+                      borderRadius: 10,
+                      width: 100,
+                      marginHorizontal: 10,
                     }}>
-                    CLOSE
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        fontWeight: '600',
+                        alignSelf: 'center',
+                      }}>
+                      ACCEPT
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      backgroundColor: themeColors.primaryColor,
+                      padding: 10,
+                      borderRadius: 10,
+                      width: 100,
+                      marginHorizontal: 10,
+                    }}>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        fontWeight: '600',
+                        alignSelf: 'center',
+                      }}>
+                      CLOSE
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-      </View>
+          </Modal>
+        </View>
+      )}
     </View>
   );
 }
@@ -250,7 +319,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '90%',
-    height: '80%',
+    height: '60%',
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,

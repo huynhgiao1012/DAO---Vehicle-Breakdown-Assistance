@@ -41,6 +41,7 @@ const GarageMainScreen = ({route}) => {
       .then(payload => {
         setUnread([]);
         if (payload) {
+          console.log(payload);
           payload.data.map(val => {
             if (val.status === 'unread') {
               setUnread(prev => [...prev, val]);
@@ -66,6 +67,7 @@ const GarageMainScreen = ({route}) => {
       .then(payload => {
         setUnread([]);
         if (payload) {
+          console.log(payload);
           payload.data.map(val => {
             if (val.status === 'unread') {
               setUnread(prev => [...prev, val]);
@@ -175,6 +177,7 @@ const GarageMainScreen = ({route}) => {
         name="GarageFormScreen"
         component={GarageFormScreen}
         options={{headerShown: false}}
+        initialParams={{socketIo: socketIo}}
       />
       <Tab.Screen
         name="GarageNotiScreen"

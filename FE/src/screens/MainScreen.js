@@ -18,17 +18,80 @@ import {useEffect, useState} from 'react';
 // import socketService from '../utils/socketService';
 import {io} from 'socket.io-client';
 import jwtDecode from 'jwt-decode';
+import {
+  useCreateNotiMutation,
+  useGetUnreadNotiMutation,
+} from '../services/Notification';
 
 const Tab = createBottomTabNavigator();
 
 const MainScreen = ({route}) => {
   const {socketIo} = route.params;
+  const [status, setStatus] = useState('home');
+  const [notifications, setNotifications] = useState([]);
   const [user, setUser] = useState('');
   const [socket, setSocket] = useState(null);
   const navigation = useNavigation();
+  const [unRead, setUnread] = useState([]);
+  const [createNoti] = useCreateNotiMutation();
+  const [getUnreadNoti] = useGetUnreadNotiMutation();
   useEffect(() => {
-    setSocket(socketIo);
+    socketIo.on('getNotification', data => {
+      console.log(data);
+      setNotifications(prev => [...prev, data]);
+    });
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
+        }
+      });
+    console.log('noti', notifications);
   }, []);
+  useEffect(() => {
+    notifications.map(val => {
+      createNoti({from: val.senderName, to: val.receiverName, text: val.text})
+        .unwrap()
+        .then(payload => {
+          setNotifications([]);
+        })
+        .catch(error => {
+          return error;
+        });
+    });
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
+        }
+      });
+  }, [notifications]);
+  useEffect(() => {
+    getUnreadNoti()
+      .unwrap()
+      .then(payload => {
+        setUnread([]);
+        if (payload) {
+          payload.data.map(val => {
+            if (val.status === 'unread') {
+              setUnread(prev => [...prev, val]);
+            }
+          });
+        }
+      });
+  }, [status]);
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => {
@@ -50,57 +113,70 @@ const MainScreen = ({route}) => {
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
-      screenOptions={({route}) => ({
-        tabBarIcon: ({focused, color, size}) => {
-          let iconName;
-          let rn = route.name;
+      screenOptions={({route, navigation}) => {
+        if (navigation.getState().index === 0) {
+          setStatus('home');
+        } else if (navigation.getState().index === 1) {
+          setStatus('form');
+        } else if (navigation.getState().index === 2) {
+          setStatus('noti');
+        } else {
+          setStatus('info');
+        }
+        return {
+          tabBarIcon: ({focused, color, size}) => {
+            let iconName;
+            let rn = route.name;
 
-          if (rn === 'Home') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (rn === 'My Service') {
-            iconName = focused ? 'ios-create' : 'ios-create-outline';
-          } else if (rn === 'Notification') {
-            return (
-              <View>
-                <Icon name="notifications" size={size} color={color} />
-                <View
-                  style={{
-                    backgroundColor: 'red',
-                    borderRadius: 20,
-                    width: 20,
-                    height: 20,
-                    position: 'absolute',
-                    top: -8,
-                    right: -13,
-                  }}>
-                  <Text
-                    style={{
-                      alignSelf: 'center',
-                      color: themeColors.white,
-                      fontWeight: '600',
-                    }}>
-                    0
-                  </Text>
+            if (rn === 'Home') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (rn === 'My Service') {
+              iconName = focused ? 'ios-create' : 'ios-create-outline';
+            } else if (rn === 'Notification') {
+              return (
+                <View>
+                  <Icon name="notifications" size={size} color={color} />
+                  {unRead.length !== 0 && !navigation.isFocused() && (
+                    <View
+                      style={{
+                        backgroundColor: 'red',
+                        borderRadius: 20,
+                        width: 20,
+                        height: 20,
+                        position: 'absolute',
+                        top: -8,
+                        right: -13,
+                      }}>
+                      <Text
+                        style={{
+                          alignSelf: 'center',
+                          color: themeColors.white,
+                          fontWeight: '600',
+                        }}>
+                        {unRead.length}
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              </View>
-            );
-          } else if (rn === 'Information') {
-            iconName = focused
-              ? 'information-circle'
-              : 'information-circle-outline';
-          }
-          // You can return any component that you like here!
-          return <Icon name={iconName} size={size} color={color} />;
-        },
-        tabBarStyle: {
-          height: 45,
-          backgroundColor: themeColors.primaryColor,
-        },
-        tabBarActiveTintColor: themeColors.primaryColor,
-        tabBarInactiveTintColor: themeColors.white,
-        tabBarActiveBackgroundColor: themeColors.white,
-        tabBarShowLabel: false,
-      })}>
+              );
+            } else if (rn === 'Information') {
+              iconName = focused
+                ? 'information-circle'
+                : 'information-circle-outline';
+            }
+            // You can return any component that you like here!
+            return <Icon name={iconName} size={size} color={color} />;
+          },
+          tabBarStyle: {
+            height: 45,
+            backgroundColor: themeColors.primaryColor,
+          },
+          tabBarActiveTintColor: themeColors.primaryColor,
+          tabBarInactiveTintColor: themeColors.white,
+          tabBarActiveBackgroundColor: themeColors.white,
+          tabBarShowLabel: false,
+        };
+      }}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}

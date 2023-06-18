@@ -32,11 +32,18 @@ export const formApi = createApi({
     updateProcess: builder.mutation({
       query: ({id}) => ({
         url: `/updateProcess/${id}`,
+        method: 'PATCH',
       }),
     }),
     updateDone: builder.mutation({
       query: ({id}) => ({
         url: `/updateDone/${id}`,
+        method: 'PATCH',
+      }),
+    }),
+    getFormDetail: builder.mutation({
+      query: ({id}) => ({
+        url: `/getFormDetail/${id}`,
       }),
     }),
   }),
@@ -46,4 +53,5 @@ export const {
   useGetAllFormGarageMutation,
   useUpdateDoneMutation,
   useUpdateProcessMutation,
+  useGetFormDetailMutation,
 } = formApi;
