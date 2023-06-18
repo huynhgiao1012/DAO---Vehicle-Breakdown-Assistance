@@ -70,3 +70,17 @@ exports.getAllFormByGarage = catchAsync(async (req, res) => {
     data,
   });
 });
+exports.getFormDetail = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const data = await orderForm
+    .findById(id)
+    .populate("customerId", "name email phone _id")
+    .populate("serviceId", "type price description _id");
+  if (!data) {
+    throw new ApiError(400, "Form is unavailable");
+  }
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});

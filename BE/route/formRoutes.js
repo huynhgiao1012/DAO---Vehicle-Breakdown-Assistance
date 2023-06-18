@@ -21,6 +21,12 @@ router.delete(
   authorize("company", "customer"),
   formController.deleteForm
 );
+router.get(
+  "/getFormDetail/:id",
+  jwtAuth,
+  authorize("company", "customer"),
+  formController.getFormDetail
+);
 router.patch(
   "/updateProcess/:id",
   jwtAuth,

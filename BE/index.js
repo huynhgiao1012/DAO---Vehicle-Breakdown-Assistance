@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
         });
         clearInterval(intervalId);
       }
-    }, 3000);
+    }, 1000);
 
     // } else if (receiver) {
     //   console.log("Receiver", receiver);
