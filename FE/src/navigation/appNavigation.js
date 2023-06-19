@@ -16,6 +16,7 @@ import RatingScreen from '../screens/RatingScreen';
 import GarageMainScreen from '../screens/Garage Account/GarageMainScreen';
 import GarageNotiScreen from '../screens/Garage Account/GarageNotiScreen';
 import GarageFormScreen from '../screens/Garage Account/GarageFormScreen';
+import ViewPathScreen from '../screens/Garage Account/ViewPathScreen';
 
 const Stack = createStackNavigator();
 export default function AppNavigation(props) {
@@ -91,6 +92,11 @@ export default function AppNavigation(props) {
           name="GarageFormScreen"
           options={{headerShown: false}}
           component={GarageFormScreen}
+        />
+        <Stack.Screen
+          name="ViewPathScreen"
+          options={{headerShown: false}}
+          component={ViewPathScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

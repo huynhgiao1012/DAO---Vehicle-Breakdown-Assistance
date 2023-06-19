@@ -11,9 +11,11 @@ import {
   useGetFormDetailMutation,
   useUpdateProcessMutation,
 } from '../../services/OrderForm';
+import {useNavigation} from '@react-navigation/native';
 
 const statusForm = ['Await', 'Process', 'Done'];
 export default function GarageFormScreen({route}) {
+  const navigation = useNavigation();
   const {socketIo} = route.params;
   const [socket, setSocket] = useState(null);
   const [status, setStatus] = useState('Await');
@@ -193,6 +195,29 @@ export default function GarageFormScreen({route}) {
                 alignItems: 'center',
               }}>
               <View style={styles.modalView}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setIsOpen(false);
+                  }}
+                  style={{
+                    backgroundColor: themeColors.blue,
+                    padding: 10,
+                    borderBottomLeftRadius: 10,
+                    borderTopRightRadius: 20,
+                    width: 40,
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                  }}>
+                  <Text
+                    style={{
+                      color: themeColors.white,
+                      fontWeight: '600',
+                      alignSelf: 'center',
+                    }}>
+                    X
+                  </Text>
+                </TouchableOpacity>
                 <Text
                   style={{
                     color: themeColors.blue,
@@ -249,11 +274,8 @@ export default function GarageFormScreen({route}) {
                     </Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => {
-                      setIsOpen(false);
-                    }}
                     style={{
-                      backgroundColor: themeColors.primaryColor,
+                      backgroundColor: themeColors.blue,
                       padding: 10,
                       borderRadius: 10,
                       width: 100,
@@ -265,7 +287,34 @@ export default function GarageFormScreen({route}) {
                         fontWeight: '600',
                         alignSelf: 'center',
                       }}>
-                      CLOSE
+                      DELETE
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    width: '100%',
+                  }}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('ViewPathScreen', {
+                        address: detail[0].address,
+                      })
+                    }
+                    style={{
+                      backgroundColor: themeColors.blue,
+                      padding: 10,
+                      borderRadius: 10,
+                      width: '85%',
+                      marginHorizontal: 20,
+                    }}>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        fontWeight: '600',
+                        alignSelf: 'center',
+                      }}>
+                      VIEW PATH
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -319,7 +368,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '90%',
-    height: '60%',
+    height: '70%',
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,

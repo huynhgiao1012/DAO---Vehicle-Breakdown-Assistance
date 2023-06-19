@@ -29,9 +29,18 @@ export const companyApi = createApi({
         url: `/getCompanyDetail/${id}`,
       }),
     }),
+    getSpecificCorCompany: builder.query({
+      query: () => ({
+        url: '/getSpecificCorCompany',
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetCorCompanyQuery, useGetCompanyDetailMutation} = companyApi;
+export const {
+  useGetCorCompanyQuery,
+  useGetCompanyDetailMutation,
+  useGetSpecificCorCompanyQuery,
+} = companyApi;

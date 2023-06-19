@@ -40,10 +40,17 @@ export const notiApi = createApi({
         method: 'PATCH',
       }),
     }),
+    deleteNoti: builder.mutation({
+      query: ({id}) => ({
+        url: `/${id}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 export const {
   useCreateNotiMutation,
   useGetUnreadNotiMutation,
   useUpdateNotiMutation,
+  useDeleteNotiMutation,
 } = notiApi;

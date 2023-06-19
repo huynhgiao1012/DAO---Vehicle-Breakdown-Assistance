@@ -52,7 +52,7 @@ export default function NotiScreen() {
       extrapolate: 'clamp',
     });
     return (
-      <TouchableOpacity activeOpacity={0.6}>
+      <TouchableOpacity activeOpacity={0.6} onPress={() => {}}>
         <View style={styles.deleteBox}>
           <Animated.Text
             style={{
@@ -80,7 +80,9 @@ export default function NotiScreen() {
         {unRead.map(val => {
           if (val.status === 'unread') {
             return (
-              <TouchableOpacity onPress={() => handlePress(val._id)}>
+              <TouchableOpacity
+                onPress={() => handlePress(val._id)}
+                key={val._id}>
                 <Swipeable renderRightActions={rightSwipe}>
                   <View style={styles.container}>
                     {status === 'new' && (

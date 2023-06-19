@@ -27,6 +27,18 @@ export const mapApi = createApi({
       }),
       invalidatesTags: ['Map'],
     }),
+    forwardGeo: builder.mutation({
+      query: ({address}) => ({
+        url: `/geocode?address=${address}&api_key=${API_KEY}`,
+      }),
+      invalidatesTags: ['Map'],
+    }),
+    directionPath: builder.mutation({
+      query: ({origins, destinations}) => ({
+        url: `/Direction?origin=${origins.lat},${origins.lng}&destination=${destinations.lat},${destinations.lng}&vehicle=truck&api_key=${API_KEY}`,
+      }),
+      invalidatesTags: ['Map'],
+    }),
   }),
 });
 
@@ -36,4 +48,6 @@ export const {
   useDistanceMatrixMutation,
   useReverseGeoMutation,
   useDetailPlaceMutation,
+  useForwardGeoMutation,
+  useDirectionPathMutation,
 } = mapApi;
