@@ -3,8 +3,12 @@ import React, {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {themeColors} from '../../theme';
 import {useGetCompanyAccountDetailQuery} from '../../services/User';
+import {useNavigation} from '@react-navigation/native';
+
 export default function GarageHomeScreen() {
   const userData = useGetCompanyAccountDetailQuery();
+  const navigation = useNavigation();
+
   useEffect(() => {
     try {
       if (userData.isSuccess === true) {
@@ -68,18 +72,40 @@ export default function GarageHomeScreen() {
             justifyContent: 'flex-start',
           }}>
           <View style={{marginVertical: 10, marginRight: 10}}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Add Service</Text>
+            <TouchableOpacity
+              style={{
+                borderTopLeftRadius: 15,
+                backgroundColor: themeColors.blue,
+                padding: 15,
+                marginVertical: 10,
+              }}
+              onPress={() => navigation.navigate('GarageService')}>
+              <Text style={styles.buttonText}>Manage Service</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Delete Service</Text>
-            </TouchableOpacity>
+            <View
+              style={{
+                borderBottomLeftRadius: 15,
+                backgroundColor: themeColors.blue,
+                padding: 15,
+                marginVertical: 10,
+              }}></View>
           </View>
           <View style={{marginVertical: 10}}>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Update Service</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <View
+              style={{
+                borderTopRightRadius: 15,
+                backgroundColor: themeColors.blue,
+                padding: 15,
+                marginVertical: 10,
+              }}></View>
+            <TouchableOpacity
+              style={{
+                borderBottomRightRadius: 15,
+                backgroundColor: themeColors.blue,
+                padding: 15,
+                marginVertical: 10,
+              }}
+              onPress={() => navigation.navigate('GarageChangePass')}>
               <Text style={styles.buttonText}>Change Password</Text>
             </TouchableOpacity>
           </View>

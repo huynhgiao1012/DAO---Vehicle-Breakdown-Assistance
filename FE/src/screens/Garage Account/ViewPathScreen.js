@@ -1,10 +1,10 @@
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import Header from '../../Components/Header';
 import React, {useState, useEffect, useRef} from 'react';
+import {createOpenLink} from 'react-native-open-maps';
 import MapView, {
   PROVIDER_GOOGLE,
   Marker,
-  Callout,
   enableLatestRenderer,
   Polyline,
 } from 'react-native-maps';
@@ -16,27 +16,28 @@ import {
   useForwardGeoMutation,
 } from '../../services/Map';
 import {useGetSpecificCorCompanyQuery} from '../../services/Company';
+import {themeColors} from '../../theme';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 enableLatestRenderer();
 export default function ViewPathScreen({route}) {
-  const [loading, setLoading] = useState(true);
   const {address} = route.params;
   const [forwardGeo] = useForwardGeoMutation();
-  //   const [destinations, setDes] = useState({lat: '', lng: ''});
-  //   const [origins, setOrigins] = useState({lat: '', lng: ''});
+  const [destinations, setDes] = useState({lat: '', lng: ''});
+  const [origins, setOrigins] = useState({lat: '', lng: ''});
   const getSpecificCorCompany = useGetSpecificCorCompanyQuery();
   const [directionPath] = useDirectionPathMutation();
-  const [region, setRegion] = useState({
-    latitude: 10.5369728,
-    longitude: 106.6734779,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.0121,
-  });
-
-  const mapRef = useRef(null);
+  const [newCordinates, setNewCoordinates] = useState([]);
 
   useEffect(() => {
     const string = address.split(' ').join('%20');
+    if (getSpecificCorCompany.isLoading === false) {
+      const obj = {
+        lat: getSpecificCorCompany.data.data.lat,
+        lng: getSpecificCorCompany.data.data.long,
+      };
+      setOrigins(prev => ({...prev, ...obj}));
+    }
     forwardGeo({address: string})
       .unwrap()
       .then(payload => {
@@ -44,141 +45,83 @@ export default function ViewPathScreen({route}) {
           lat: payload.results[0].geometry.location.lat,
           lng: payload.results[0].geometry.location.lng,
         };
-        const origins = {lat: '', lng: ''};
-        if (!getSpecificCorCompany.isLoading) {
-          origins.lat = getSpecificCorCompany.data.data.lat;
-          origins.lng = getSpecificCorCompany.data.data.long;
-        }
-        directionPath({origins: origins, destinations: destinations})
-          .unwrap()
-          .then(payload => {
-            console.log(payload.routes[0].overview_polyline.points);
-          });
+        setDes(prev => ({...prev, ...destinations}));
       });
   }, []);
   useEffect(() => {
-    directionPath({origins: origins, destinations: destinations})
-      .unwrap()
-      .then(payload => {
-        console.log(payload.routes[0].overview_polyline.points);
-      });
-  }, [origins]);
-  //   useEffect(() => {
-  //     if (loading) return;
-  //     mapRef.current?.animateToRegion(region);
-  //   }, [region]);
+    console.log('hihi');
+    console.log('origins', origins);
+    console.log('destinations', destinations);
+    if (getSpecificCorCompany.isSuccess === true) {
+      console.log(getSpecificCorCompany);
+      const obj = {
+        lat: getSpecificCorCompany.data.data.lat,
+        lng: getSpecificCorCompany.data.data.long,
+      };
+      setOrigins(prev => ({...prev, ...obj}));
+      directionPath({origins: obj, destinations: destinations})
+        .unwrap()
+        .then(payload => {
+          if (payload) {
+            const coordinates = decodePolyline(
+              payload.routes[0].overview_polyline.points,
+            );
+            const newArr = coordinates.map(val => {
+              const obj = {latitude: val.lat, longitude: val.lng};
+              return obj;
+            });
+            setNewCoordinates(prev => [...prev, ...newArr]);
+          }
+        })
+        .catch(error => console.log(error));
+    }
+  }, [destinations]);
 
-  //   const requestPermission = async () => {
-  //     if (Platform.OS == 'android') {
-  //       getCurrentLocation();
-  //     } else {
-  //       const granted = await PermissionsAndroid.request(
-  //         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-  //       );
-  //       console.log(granted);
-  //       if (granted === PermissionsAndroid.RESULTS.GRANTED) getCurrentLocation();
-  //       else {
-  //         alert('notGranted');
-  //       }
-  //     }
-  //   };
-
-  //   const getCurrentLocation = () => {
-  //     GetLocation.getCurrentPosition({
-  //       enableHighAccuracy: true,
-  //       timeout: 20000,
-  //     })
-  //       .then(location => {
-  //         setRegion({
-  //           ...region,
-  //           latitude: location.latitude,
-  //           longitude: location.longitude,
-  //         });
-  //       })
-  //       .catch(error => {
-  //         const {code, message} = error;
-  //         console.warn(code, message);
-  //       });
-  //     setLoading(false);
-  //   };
-
-  //   if (loading)
-  //     return (
-  //       <View style={styles.container}>
-  //         <ActivityIndicator size={55} color="grey" />
-  //       </View>
-  //     );
-
-  //   const coordinates = polyline.decode('mtm_C{cudSG@');
-  //   console.log('coordinates', coordinates);
-  //   const coordinates = decodePolyline(
-  //     '}cv`Ae_hjSNEBFuAh@EHB\\BDRL@B?@?@@@@B@?@@B@@?@?B?@?@ABA@A@A?A@A?C?A?A?CAAFKHI|Aq@NMDOn@[vAo@NG\\M|G{BVIbA_@`A[rFmBf@QlAa@VMFIf@aAlAeCb@_ATc@b@}@dAwBVi@n@qAHSVe@Vk@LUlAeCvBgEfBuDr@uAN]\\o@dCuFXw@Tm@p@gBXo@Ve@RYfBkC~EmHd@q@rFmI|@uAnBuCLKFGx@iA`@o@DM`@o@BIBKFWJk@@c@EIUq@Y_AQ}@G[Gc@MmACk@Cw@GqCCO??@GLQLQXUF?dAEv@C`ACvCKxAE|@EjEOpAGzBI^E|AKTAz@GrAMl@Gn@ETCvAMpAKJX',
-  //   );
-  //   const newCordinates = [];
-  //   for (let data of coordinates) {
-  //     console.log(data);
-  //     newCordinates.push({latitude: data[0], longitude: data[1]});
-  //   }
-  //   console.log('newCordinates', newCordinates);
-
-  // const coordinates = [
-  //   {latitude: 10.7681832, longitude: 106.7060151},
-  //   {latitude: 10.76246, longitude: 106.70838},
-  //   {latitude: 10.75702, longitude: 106.71797},
-  //   {latitude: 10.75184, longitude: 106.72482},
-  //   {latitude: 10.75248, longitude: 106.72661},
-  //   {latitude: 10.75263, longitude: 106.728},
-  //   {latitude: 10.75238, longitude: 106.7284},
-  //   {latitude: 10.74475, longitude: 106.72915},
-  // ];
-
-  // geocoding - dung api chuyen dia chi cu the ra toa do - sau do bo toa do vo api direction
-  // - lay cai chuoi dem di decode - convert qua dung dang - roi lay array toa do bo vo polyline de render ra duong di
-
-  return (
-    <View style={{flex: 1}}>
-      <MapView style={styles.map} initialRegion={region}>
-        {[
-          {
-            latLong: {latitude: region.latitude, longitude: region.longitude},
-            title: 'You Current Location',
-            description: 'This is your location',
-          },
-        ].map((marker, index) => (
-          <Marker.Animated
-            key={index}
-            coordinate={marker.latLong}
-            title={marker.title}
-            description={marker.description}
-          />
-        ))}
-      </MapView>
+  return getSpecificCorCompany.isLoading === true &&
+    !getSpecificCorCompany.data ? (
+    <View style={{flex: 1, justifyContent: 'center'}}>
+      <ActivityIndicator size="large" color={themeColors.primaryColor} />
     </View>
-    // <View style={styles.container}>
-    //   <MapView
-    //     provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-    //     style={styles.map}
-    //     region={{
-    //       latitude: 10.5369798,
-    //       longitude: 106.6734728,
-    //       latitudeDelta: 0.015,
-    //       longitudeDelta: 0.0121,
-    //     }}>
-    //     <Marker
-    //       draggable
-    //       coordinate={{
-    //         latitude: 10.5369798,
-    //         longitude: 106.6734728,
-    //       }}
-    //       title="Ben Thanh Market"
-    //       description="This is Ben Thanh Market"></Marker>
-    //     {/* <Polyline
-    //       coordinates={newCordinates}
-    //       strokeWidth={3}
-    //       strokeColor={'green'}
-    //     /> */}
-    //   </MapView>
-    // </View>
+  ) : (
+    <View style={styles.container}>
+      <MapView
+        provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+        style={styles.map}
+        region={{
+          latitude: origins && origins.lat,
+          longitude: origins && origins.lng,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}>
+        <Marker
+          draggable
+          coordinate={{
+            latitude: origins && origins.lat,
+            longitude: origins && origins.lng,
+          }}
+          title="Your Current Place"
+          description="This is your current place"></Marker>
+
+        <Polyline
+          coordinates={newCordinates}
+          strokeWidth={5}
+          strokeColor={themeColors.primaryColor}
+        />
+      </MapView>
+      <View style={{position: 'absolute', bottom: 20, right: 20}}>
+        <TouchableOpacity
+          onPress={createOpenLink({
+            provider: 'google',
+            start: `${getSpecificCorCompany.data.data.address}`,
+            end: `${address}`,
+          })}
+          style={{backgroundColor: themeColors.blue, padding: 15}}>
+          <Text style={{color: themeColors.white, fontWeight: 'bold'}}>
+            Open Google Map
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 const styles = StyleSheet.create({

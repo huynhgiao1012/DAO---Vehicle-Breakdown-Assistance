@@ -10,6 +10,7 @@ import {
   useGetAllFormGarageMutation,
   useGetFormDetailMutation,
   useUpdateProcessMutation,
+  useUpdateDoneMutation,
 } from '../../services/OrderForm';
 import {useNavigation} from '@react-navigation/native';
 
@@ -24,6 +25,7 @@ export default function GarageFormScreen({route}) {
   const [detail, setDetail] = useState([]);
   const [getFormDetail] = useGetFormDetailMutation();
   const [updateProcess] = useUpdateProcessMutation();
+  const [updateDone] = useUpdateDoneMutation();
   const [form, setForm] = useState([]);
   useEffect(() => {
     console.log('socketIo from form garage', socketIo);
@@ -104,6 +106,38 @@ export default function GarageFormScreen({route}) {
               if (payload.data) {
                 const filterData = payload.data.filter(
                   val => val.status === 'await',
+                );
+                setForm(prev => [...prev, ...filterData]);
+              }
+            });
+          setIsOpen(false);
+        }
+      });
+  };
+  const ProcessService = id => {
+    console.log(id);
+    updateDone({id: id})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          form.map(val => {
+            if (val._id === id) {
+              console.log(val);
+              socket.volatile.emit('sendNotification', {
+                senderName: val.garageId,
+                receiverName: val.customerId._id,
+                text: `DONE - Your service is done completely...You can pay for service`,
+              });
+            }
+          });
+          getAllFormGarage()
+            .unwrap()
+            .then(payload => {
+              setForm([]);
+              if (payload.data) {
+                const filterData = payload.data.filter(
+                  val => val.status === 'process',
                 );
                 setForm(prev => [...prev, ...filterData]);
               }
@@ -255,69 +289,77 @@ export default function GarageFormScreen({route}) {
                     flexDirection: 'row',
                     marginVertical: 20,
                   }}>
-                  <TouchableOpacity
-                    onPress={() => AcceptService(detail[0]._id)}
-                    style={{
-                      backgroundColor: themeColors.primaryColor,
-                      padding: 10,
-                      borderRadius: 10,
-                      width: 100,
-                      marginHorizontal: 10,
-                    }}>
-                    <Text
-                      style={{
-                        color: themeColors.white,
-                        fontWeight: '600',
-                        alignSelf: 'center',
-                      }}>
-                      ACCEPT
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: themeColors.blue,
-                      padding: 10,
-                      borderRadius: 10,
-                      width: 100,
-                      marginHorizontal: 10,
-                    }}>
-                    <Text
-                      style={{
-                        color: themeColors.white,
-                        fontWeight: '600',
-                        alignSelf: 'center',
-                      }}>
-                      DELETE
-                    </Text>
-                  </TouchableOpacity>
+                  {status === 'Await' && (
+                    <TouchableOpacity
+                      onPress={() => AcceptService(detail[0]._id)}
+                      style={styles.buttonModal}>
+                      <Text
+                        style={{
+                          color: themeColors.white,
+                          fontWeight: '600',
+                          alignSelf: 'center',
+                        }}>
+                        ACCEPT
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {status === 'Process' && (
+                    <TouchableOpacity
+                      style={styles.buttonModal}
+                      onPress={() => ProcessService(detail[0]._id)}>
+                      <Text
+                        style={{
+                          color: themeColors.white,
+                          fontWeight: '600',
+                          alignSelf: 'center',
+                        }}>
+                        DONE
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                  {status === 'Done' && (
+                    <TouchableOpacity style={styles.buttonModal}>
+                      <Text
+                        style={{
+                          color: themeColors.white,
+                          fontWeight: '600',
+                          alignSelf: 'center',
+                        }}>
+                        DELETE
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
-                <View
-                  style={{
-                    width: '100%',
-                  }}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate('ViewPathScreen', {
-                        address: detail[0].address,
-                      })
-                    }
+                {status !== 'Done' && (
+                  <View
                     style={{
-                      backgroundColor: themeColors.blue,
-                      padding: 10,
-                      borderRadius: 10,
-                      width: '85%',
-                      marginHorizontal: 20,
+                      width: '100%',
                     }}>
-                    <Text
+                    <TouchableOpacity
+                      onPress={() => {
+                        setIsOpen(false);
+                        navigation.navigate('ViewPathScreen', {
+                          address: detail[0].address,
+                        });
+                      }}
                       style={{
-                        color: themeColors.white,
-                        fontWeight: '600',
-                        alignSelf: 'center',
+                        backgroundColor: themeColors.blue,
+                        padding: 10,
+                        borderRadius: 10,
+                        width: '85%',
+                        marginHorizontal: 20,
                       }}>
-                      VIEW PATH
-                    </Text>
-                  </TouchableOpacity>
-                </View>
+                      <Text
+                        style={{
+                          color: themeColors.white,
+                          fontWeight: '600',
+                          alignSelf: 'center',
+                        }}>
+                        VIEW PATH
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
             </View>
           </Modal>
@@ -389,5 +431,12 @@ const styles = StyleSheet.create({
     color: themeColors.blue,
     fontWeight: '600',
     paddingVertical: 10,
+  },
+  buttonModal: {
+    backgroundColor: themeColors.primaryColor,
+    padding: 10,
+    borderRadius: 10,
+    width: '85%',
+    marginHorizontal: 10,
   },
 });
