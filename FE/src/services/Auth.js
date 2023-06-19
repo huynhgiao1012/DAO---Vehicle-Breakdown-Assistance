@@ -40,10 +40,25 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['Post'],
     }),
+    forgetPassword: builder.mutation({
+      query: payload => ({
+        url: '/forgetPassword',
+        method: 'POST',
+        body: payload,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      }),
+      invalidatesTags: ['Post'],
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useRegisterMutation, useLoginMutation, useOTPVerifyMutation} =
-  authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useOTPVerifyMutation,
+  useForgetPasswordMutation,
+} = authApi;

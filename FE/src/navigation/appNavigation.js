@@ -19,7 +19,7 @@ import GarageFormScreen from '../screens/Garage Account/GarageFormScreen';
 import ViewPathScreen from '../screens/Garage Account/ViewPathScreen';
 import GarageChangePass from '../screens/Garage Account/GarageChangePass';
 import GarageService from '../screens/Garage Account/GarageService';
-
+import ForgotPassword from '../screens/ForgotPassword';
 const Stack = createStackNavigator();
 export default function AppNavigation(props) {
   console.log(props.socketIo);
@@ -41,6 +41,11 @@ export default function AppNavigation(props) {
           name="SignUp"
           options={{headerShown: false}}
           component={SignUpScreen}
+        />
+        <Stack.Screen
+          name="ForgotPassword"
+          options={{headerShown: false}}
+          component={ForgotPassword}
         />
         <Stack.Screen
           name="GarageDetail"

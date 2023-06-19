@@ -184,7 +184,9 @@ export default function LoginScreen({route}) {
                   onChangeText={handleChange('password')}
                 />
 
-                <TouchableOpacity className="flex items-end">
+                <TouchableOpacity
+                  className="flex items-end"
+                  onPress={() => navigation.navigate('ForgotPassword')}>
                   <Text
                     style={{
                       alignSelf: 'flex-end',
@@ -227,7 +229,7 @@ export default function LoginScreen({route}) {
           }}>
           Or
         </Text>
-        <View
+        {/* <View
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -252,7 +254,7 @@ export default function LoginScreen({route}) {
               className="w-10 h-10"
             />
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View
           style={{
             display: 'flex',

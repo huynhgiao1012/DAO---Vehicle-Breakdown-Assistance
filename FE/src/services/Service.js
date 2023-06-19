@@ -34,10 +34,41 @@ export const serviceApi = createApi({
         },
       }),
     }),
+    addService: builder.mutation({
+      query: payload => ({
+        url: '/create',
+        method: 'POST',
+        body: payload,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      }),
+    }),
+    updateService: builder.mutation({
+      query: ({id, ...payload}) => ({
+        url: `/${id}`,
+        method: 'PATCH',
+        body: payload,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      }),
+    }),
+    deleteService: builder.mutation({
+      query: ({id}) => ({
+        url: `/${id}`,
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const {useGetCompanyServiceMutation, useBookingServiceMutation} =
-  serviceApi;
+export const {
+  useGetCompanyServiceMutation,
+  useBookingServiceMutation,
+  useAddServiceMutation,
+  useDeleteServiceMutation,
+  useUpdateServiceMutation,
+} = serviceApi;

@@ -79,7 +79,11 @@ export default function GarageHomeScreen() {
                 padding: 15,
                 marginVertical: 10,
               }}
-              onPress={() => navigation.navigate('GarageService')}>
+              onPress={() =>
+                navigation.navigate('GarageService', {
+                  id: userData.currentData.data._id,
+                })
+              }>
               <Text style={styles.buttonText}>Manage Service</Text>
             </TouchableOpacity>
             <View
