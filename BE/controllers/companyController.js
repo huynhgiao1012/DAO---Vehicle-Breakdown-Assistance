@@ -75,14 +75,12 @@ exports.updateCompany = catchAsync(async (req, res) => {
   if (!account || !company) {
     throw new ApiError(400, "This company is not available");
   }
-  res
-    .status(200)
-    .json({
-      success: true,
-      message: "Update successfully",
-      accountInfo: account,
-      companyInfo: company,
-    });
+  res.status(200).json({
+    success: true,
+    message: "Update successfully",
+    accountInfo: account,
+    companyInfo: company,
+  });
 });
 exports.getAllCompany = catchAsync(async (req, res) => {
   const data = await Account.find({ role: ROLES.COMPANY });
@@ -96,6 +94,17 @@ exports.getAllCompany = catchAsync(async (req, res) => {
 });
 exports.getCorCompany = catchAsync(async (req, res) => {
   const data = await Company.find({});
+  if (!data) {
+    throw new ApiError(400, "This company is not available");
+  }
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+exports.getSpecificCorCompany = catchAsync(async (req, res) => {
+  const id = req.user.id;
+  const data = await Company.findOne({ accountId: id });
   if (!data) {
     throw new ApiError(400, "This company is not available");
   }

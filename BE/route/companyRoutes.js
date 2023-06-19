@@ -17,6 +17,12 @@ router.get(
   companyController.getCorCompany
 );
 router.get(
+  "/getSpecificCorCompany",
+  jwtAuth,
+  authorize("company"),
+  companyController.getSpecificCorCompany
+);
+router.get(
   "/getCompanyDetail/:id",
   jwtAuth,
   authorize("admin", "customer"),
