@@ -8,7 +8,6 @@ router.post("/register", authController.register);
 router.post("/verifyOTP/:id", authController.verifyOTP);
 router.post("/login", authController.login);
 router.post("/forgetPassword", authController.forgetPassword);
-router.post("/updatePassword", jwtAuth, authController.updatePassword);
 router.post("/reset-Password", authController.resetPassword);
 router.get("/home", jwtAuth, authController.home);
 module.exports = router;

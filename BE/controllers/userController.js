@@ -2,8 +2,11 @@ const catchAsync = require("../middleware/async");
 const User = require("../models/account");
 var generator = require("generate-password");
 const EmailService = require("../utils/EmailService");
+const bcrypt = require("bcryptjs");
 const Customer = require("../models/customer");
+const Account = require("../models/account");
 const { ROLES } = require("../constant");
+const ApiError = require("../utils/ApiError");
 // exports.createUser = catchAsync(async (req, res) => {
 //   const { name, email, phone } = req.body;
 //   var password = generator.generateMultiple(1, {
@@ -99,6 +102,25 @@ exports.getUserPoint = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     data,
+  });
+});
+exports.updatePassword = catchAsync(async (req, res) => {
+  const { email } = req.user;
+  const { oldPassword, newPassword } = req.body;
+  const existEmail = await Account.findOne({ email: email });
+  if (!existEmail) {
+    throw new ApiError(400, "Email have no longer exists");
+  }
+  const isMatch = bcrypt.compareSync(oldPassword, existEmail.password);
+  if (!isMatch) {
+    throw new ApiError(400, "Old password does not match");
+  } else {
+    existEmail.password = newPassword;
+    existEmail.save();
+  }
+  res.json({
+    success: true,
+    message: "Change successfully !",
   });
 });
 // exports.rechargeUserBalance = catchAsync(async (req, res) => {

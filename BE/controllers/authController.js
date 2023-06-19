@@ -184,26 +184,6 @@ exports.login = catchAsync(async (req, res) => {
   }
 });
 
-exports.updatePassword = catchAsync(async (req, res) => {
-  const { email } = req.user;
-  const { oldPassword, newPassword } = req.body;
-  const existEmail = await Account.findOne({ email: email });
-  if (!existEmail) {
-    throw new ApiError(400, "Email have no longer exists");
-  }
-  const isMatch = bcrypt.compareSync(oldPassword, existEmail.password);
-  if (!isMatch) {
-    throw new ApiError(400, "Old password does not match");
-  } else {
-    existEmail.password = newPassword;
-    existEmail.save();
-  }
-  res.json({
-    success: true,
-    message: "Change successfully !",
-  });
-});
-
 exports.resetPassword = catchAsync(async (req, res) => {
   const { userId, token } = req.query;
   const { newPassword } = req.body;
