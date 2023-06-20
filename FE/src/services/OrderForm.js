@@ -59,6 +59,12 @@ export const formApi = createApi({
         body: data,
       }),
     }),
+    payment: builder.mutation({
+      query: ({id}) => ({
+        url: `/payment/${id}`,
+        method: 'PATCH',
+      }),
+    }),
   }),
 });
 export const {
@@ -69,4 +75,5 @@ export const {
   useGetFormDetailMutation,
   useDeleteFormMutation,
   useCreatePaymentIntentMutation,
+  usePaymentMutation,
 } = formApi;

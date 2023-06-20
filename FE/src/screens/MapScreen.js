@@ -50,20 +50,6 @@ const MapScreen = props => {
   let mapIndex = useRef(0);
   let _map = React.useRef(null);
   let scrollAnimation = useRef(new Animated.Value(0)).current;
-  // useEffect(() => {
-  //   getCorCompany;
-  //   if (getCorCompany.isSuccess) {
-  //     console.log('data', getCorCompany.data.data);
-  //     getCorCompany.data.data.map(val => {
-  //       const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
-  //       companyCoordinates.push(obj);
-  //     });
-  //   } else {
-  //     <View style={{flex: 1, justifyContent: 'center'}}>
-  //       <ActivityIndicator size="large" color={themeColors.primaryColor} />
-  //     </View>;
-  //   }
-  // }, []);
   useEffect(() => {
     requestPermission();
   }, []);

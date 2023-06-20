@@ -1,16 +1,21 @@
 import {View, Text, Alert} from 'react-native';
 import React from 'react';
 import Header from '../Components/Header';
-import {useCreatePaymentIntentMutation} from '../services/OrderForm';
+import {
+  useCreatePaymentIntentMutation,
+  usePaymentMutation,
+} from '../services/OrderForm';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {themeColors} from '../theme';
 import {useStripe} from '@stripe/stripe-react-native';
 import {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
-
+import {useNavigation} from '@react-navigation/native';
 export default function PaymentScreen({route}) {
   const {item} = route.params;
+  const navigation = useNavigation();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
+  const [payment] = usePaymentMutation();
   const {initPaymentSheet, presentPaymentSheet} = useStripe();
   useEffect(() => {
     // console.log(item);
@@ -48,7 +53,13 @@ export default function PaymentScreen({route}) {
     }
 
     // 4. If payment ok -> create the order
-    // onCreateOrder();
+    payment({id: item._id})
+      .unwrap()
+      .then(payload => {
+        if (payload) {
+          navigation.navigate('RatingScreen', {item: item});
+        }
+      });
   };
   return (
     <View style={{backgroundColor: themeColors.white, flex: 1}}>

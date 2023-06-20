@@ -13,7 +13,7 @@ import React from 'react';
 import {themeColors} from '../theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-
+import {useState} from 'react';
 // subscribe for more videos like this :)
 export default function ListScreen() {
   const navigation = useNavigation();

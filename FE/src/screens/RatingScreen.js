@@ -7,18 +7,21 @@ import {
   Animated,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import {themeColors} from '../theme';
 import {useNavigation} from '@react-navigation/native';
-export default function RatingScreen() {
+import {useCreateFeedbackMutation} from '../services/Feedback';
+export default function RatingScreen({route}) {
   const navigation = useNavigation();
   const starRatingOptions = [1, 2, 3, 4, 5];
-
+  const [createFeedback] = useCreateFeedbackMutation();
   const [starRating, setStarRating] = useState(0);
+  const [text, setText] = useState('');
 
   const animatedButtonScale = new Animated.Value(0.8);
-
+  const {item} = route.params;
   const startImageFilled = require('../../assets/images/star_filled.png');
   const startImageCorner = require('../../assets/images/star_corner.png');
   const handlePressIn = () => {
@@ -47,6 +50,31 @@ export default function RatingScreen() {
 
   const animatedScaleStyle = {
     transform: [{scale: animatedButtonScale}],
+  };
+  const onSubmitForm = () => {
+    console.log(item);
+    console.log(text);
+    console.log(starRating);
+    if (!starRating) {
+      Alert.alert('Noification', 'Please drag on the star for rating', [
+        {
+          text: 'OK',
+        },
+      ]);
+    }
+    createFeedback({
+      customerId: item.customerId,
+      garageId: item.garageId._id,
+      rating: starRating,
+      review: text,
+    })
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success) {
+          navigation.navigate('Main');
+        }
+      });
   };
   return (
     <View
@@ -115,9 +143,10 @@ export default function RatingScreen() {
           fontSize: 18,
           borderRadius: 20,
         }}
+        onChangeText={text => setText(text)}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => onSubmitForm()}
         style={{
           alignSelf: 'center',
           backgroundColor: themeColors.white,

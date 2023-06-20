@@ -3,12 +3,12 @@ import React from 'react';
 import {themeColors} from '../theme';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ServiceList from '../screens/ServiceList';
-import Rating from '../Components/Rating';
 import Header from '../Components/Header';
 import {useEffect} from 'react';
+import {Rating} from 'react-native-ratings';
 import {useGetCompanyDetailMutation} from '../services/Company';
-
 import {useState} from 'react';
+import {useGetAllFbMutation} from '../services/Feedback';
 
 export default function GarageScreen({route}) {
   const [getCompanyDetail] = useGetCompanyDetailMutation();
@@ -42,7 +42,24 @@ export default function GarageScreen({route}) {
     },
     success: true,
   });
-
+  const [getAllFb] = useGetAllFbMutation();
+  const [totalRatings, setTotalRating] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState([]);
+  useEffect(() => {
+    getAllFb({id: id})
+      .unwrap()
+      .then(payload => {
+        console.log(payload.data[0]);
+        setFeedback(prev => [...prev, ...payload.data]);
+        setTotalRating(payload.data.length);
+        let num = 0;
+        payload.data.map(val => {
+          num = val.rating + num;
+        });
+        setRating(Math.round(num / 2));
+      });
+  }, []);
   useEffect(() => {
     getCompanyDetail({id: id})
       .unwrap()
@@ -67,7 +84,13 @@ export default function GarageScreen({route}) {
             source={require('../../assets/images/garage.jpg')}
             style={styles.image}
           />
-          <Rating />
+          <Rating
+            ratingCount={rating}
+            type="star"
+            readonly={true}
+            startingValue={rating || 0}
+            imageSize={14}
+          />
         </View>
         <View
           style={{
@@ -200,55 +223,56 @@ export default function GarageScreen({route}) {
               fontWeight: 'bold',
               color: themeColors.blue,
             }}>
-            FEEDBACK
+            FEEDBACK ({totalRatings} feedbacks)
           </Text>
         </View>
-        <View style={styles.feedback}>
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-            }}>
-            <Icon
-              name="user-circle-o"
-              size={35}
-              color={themeColors.blue}
-              style={{marginVertical: 10, marginLeft: 20, marginRight: 10}}
-            />
-            <Text style={{fontWeight: '800', color: themeColors.blue}}>
-              John Smith
-            </Text>
-          </View>
-          <Text style={{marginHorizontal: 20, marginBottom: 15}}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
-          </Text>
-        </View>
-        <View style={styles.feedback}>
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-            }}>
-            <Icon
-              name="user-circle-o"
-              size={35}
-              color={themeColors.blue}
-              style={{marginVertical: 10, marginLeft: 20, marginRight: 10}}
-            />
-            <Text style={{fontWeight: '800', color: themeColors.blue}}>
-              John Smith
-            </Text>
-          </View>
-          <Text style={{marginHorizontal: 20, marginBottom: 15}}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
-          </Text>
-        </View>
+        {feedback.length !== 0 &&
+          feedback.map(val => {
+            return (
+              <View style={styles.feedback}>
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      alignItems: 'center',
+                    }}>
+                    <Icon
+                      name="user-circle-o"
+                      size={35}
+                      color={themeColors.blue}
+                      style={{
+                        marginVertical: 10,
+                        marginLeft: 20,
+                        marginRight: 10,
+                      }}
+                    />
+                    <Text style={{fontWeight: '800', color: themeColors.blue}}>
+                      {val.customerId.name}
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontStyle: 'italic',
+                      color: themeColors.gray60,
+                      marginRight: 20,
+                    }}>
+                    {val.createAt.slice(0, 10).split('-').reverse().join('-')}
+                  </Text>
+                </View>
+                <Text style={{marginHorizontal: 20, marginBottom: 15}}>
+                  {val.review}
+                </Text>
+              </View>
+            );
+          })}
       </View>
     </ScrollView>
   );

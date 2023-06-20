@@ -28,7 +28,7 @@ export default function HomeScreen({route}) {
       <SafeAreaView>
         <View>
           <View style={styles.bar}>
-            {isMap ? (
+            {/* {isMap ? (
               <TouchableOpacity
                 onPress={setMap}
                 style={{
@@ -54,7 +54,19 @@ export default function HomeScreen({route}) {
                   style={{marginVertical: 10}}
                 />
               </TouchableOpacity>
-            )}
+            )} */}
+            <TouchableOpacity
+              // onPress={setMap}
+              style={{
+                alignSelf: 'flex-start',
+              }}>
+              <Icon
+                name="map"
+                size={26}
+                color={themeColors.white}
+                style={{marginVertical: 10}}
+              />
+            </TouchableOpacity>
             <Text
               style={{
                 color: themeColors.white,

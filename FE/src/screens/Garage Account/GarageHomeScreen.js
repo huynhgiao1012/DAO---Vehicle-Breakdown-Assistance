@@ -17,27 +17,26 @@ export default function GarageHomeScreen() {
     try {
       if (userData.isSuccess === true) {
         console.log('userData', userData);
-        getAllFormGarage({id: userData.currentData.data._id})
-          .unwrap()
-          .then(payload => {
-            setTotalService(payload.data.length);
-          });
+        setTotalService(0);
+        setTotalBalance(0);
       }
     } catch (error) {
       return '';
     }
   }, []);
   useEffect(() => {
-    getAllFormGarage({id: userData.currentData.data._id})
-      .unwrap()
-      .then(payload => {
-        setTotalService(payload.data.length);
-        let num = 0;
-        payload.data.map(val => {
-          num = num + val.price;
+    if (userData.data) {
+      getAllFormGarage({id: userData.currentData.data._id})
+        .unwrap()
+        .then(payload => {
+          setTotalService(payload.data.length);
+          let num = 0;
+          payload.data.map(val => {
+            num = num + val.price;
+          });
+          setTotalBalance(num);
         });
-        setTotalBalance(num);
-      });
+    }
   }, [totalService]);
   return userData.isLoading === true && !userData.data ? (
     <View style={{flex: 1, justifyContent: 'center'}}>

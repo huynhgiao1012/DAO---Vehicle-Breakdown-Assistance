@@ -24,6 +24,7 @@ export default function NotiScreen() {
       .unwrap()
       .then(payload => {
         setUnread([]);
+        console.log(payload);
         if (payload) {
           setUnread(prev => [...prev, ...payload.data].reverse());
         }
@@ -107,7 +108,7 @@ export default function NotiScreen() {
           }
           if (val.status === 'read') {
             return (
-              <Swipeable renderRightActions={rightSwipe}>
+              <Swipeable renderRightActions={rightSwipe} key={val._id}>
                 <View style={styles.container}>
                   <Text style={styles.text2}>{val.text}</Text>
                 </View>
