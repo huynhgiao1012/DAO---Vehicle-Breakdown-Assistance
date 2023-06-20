@@ -45,4 +45,10 @@ router.post(
   authorize("customer"),
   formController.paymentIntent
 );
+router.patch(
+  "/payment/:id",
+  jwtAuth,
+  authorize("customer"),
+  formController.payment
+);
 module.exports = router;

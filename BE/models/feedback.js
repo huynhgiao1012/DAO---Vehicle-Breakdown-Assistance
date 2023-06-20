@@ -2,11 +2,14 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const FeedbackSchema = new Schema(
   {
-    accountId: {
-      type: Schema.Types.ObjectId,
-      ref: "account",
+    customerId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
     },
-
+    garageId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
+    },
     rating: {
       type: Number,
       required: true,

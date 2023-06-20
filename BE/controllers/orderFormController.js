@@ -106,3 +106,18 @@ exports.paymentIntent = catchAsync(async (req, res) => {
     });
   }
 });
+exports.payment = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const paymentItem = await payment.findOneAndUpdate({
+    formId: id,
+    paymentStatus: true,
+  });
+  const data = await orderForm.findByIdAndUpdate(id, { isPaid: true });
+  if (!data || !paymentItem) {
+    throw new ApiError(400, "Form is unavailable");
+  }
+  res.status(200).json({
+    success: true,
+    paymentItem,
+  });
+});
