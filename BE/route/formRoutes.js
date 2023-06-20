@@ -39,4 +39,10 @@ router.patch(
   authorize("company"),
   formController.updateDoneForm
 );
+router.post(
+  "/intent",
+  jwtAuth,
+  authorize("customer"),
+  formController.paymentIntent
+);
 module.exports = router;

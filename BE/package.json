@@ -28,6 +28,7 @@
     "otp-generator": "^4.0.0",
     "path": "^0.12.7",
     "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1"
+    "socket.io-client": "^4.6.1",
+    "stripe": "^12.9.0"
   }
 }

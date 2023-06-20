@@ -2,7 +2,10 @@ const { FORM_STATUS } = require("../constant");
 const catchAsync = require("../middleware/async");
 const orderForm = require("../models/orderForm");
 const ApiError = require("../utils/ApiError");
-
+const payment = require("../models/payment");
+const stripe = require("stripe")(
+  "sk_test_51NKv7XIatF4AkN7lpqCvr5HT3Cg3mUK6pnjQryIDAXO6ffg5DiSx4dHjX2rhUmpDKqLh7llrpHUYEVmnq6tLJlKF00F3N2HMc8"
+);
 exports.deleteForm = catchAsync(async (req, res) => {
   const { id } = req.params;
   const noti = await orderForm.findById(id);
@@ -37,6 +40,7 @@ exports.updateDoneForm = catchAsync(async (req, res) => {
   if (!noti) {
     throw new ApiError(400, "Form is not available");
   }
+  await payment.create({ formId: id });
   res.status(200).json({
     success: true,
     message: "Update successfully",
@@ -75,7 +79,8 @@ exports.getFormDetail = catchAsync(async (req, res) => {
   const data = await orderForm
     .findById(id)
     .populate("customerId", "name email phone _id")
-    .populate("serviceId", "type price description _id");
+    .populate("serviceId", "type price description _id")
+    .populate("garageId", "name email phone _id");
   if (!data) {
     throw new ApiError(400, "Form is unavailable");
   }
@@ -83,4 +88,21 @@ exports.getFormDetail = catchAsync(async (req, res) => {
     success: true,
     data,
   });
+});
+exports.paymentIntent = catchAsync(async (req, res) => {
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: req.body.amount,
+      currency: "usd",
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+
+    res.json({ paymentIntent: paymentIntent.client_secret });
+  } catch (e) {
+    res.status(400).json({
+      error: e.message,
+    });
+  }
 });
