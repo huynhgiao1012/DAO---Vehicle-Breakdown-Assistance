@@ -51,13 +51,16 @@ export default function GarageScreen({route}) {
       .unwrap()
       .then(payload => {
         console.log(payload.data[0]);
-        setFeedback(prev => [...prev, ...payload.data]);
-        setTotalRating(payload.data.length);
-        let num = 0;
-        payload.data.map(val => {
-          num = val.rating + num;
-        });
-        setRating(Math.round(num / 2));
+        if (payload.data.length > 0) {
+          setFeedback([]);
+          setFeedback(prev => [...prev, ...payload.data]);
+          setTotalRating(payload.data.length);
+          let num = 0;
+          payload.data.map(val => {
+            num = val.rating + num;
+          });
+          setRating(num / payload.data.length);
+        }
       });
   }, []);
   useEffect(() => {
@@ -85,7 +88,7 @@ export default function GarageScreen({route}) {
             style={styles.image}
           />
           <Rating
-            ratingCount={rating}
+            ratingCount={5}
             type="star"
             readonly={true}
             startingValue={rating || 0}

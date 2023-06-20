@@ -20,12 +20,14 @@ const Card = ({item}) => {
       .unwrap()
       .then(payload => {
         console.log(payload.data.length);
-        setTotalRating(payload.data.length);
-        let num = 0;
-        payload.data.map(val => {
-          num = val.rating + num;
-        });
-        setRating(Math.round(num / 2));
+        if (payload.data.length > 0) {
+          setTotalRating(payload.data.length);
+          let num = 0;
+          payload.data.map(val => {
+            num = val.rating + num;
+          });
+          setRating(num / payload.data.length);
+        }
       });
   }, []);
   return (

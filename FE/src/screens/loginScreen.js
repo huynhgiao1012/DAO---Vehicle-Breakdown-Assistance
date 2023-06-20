@@ -89,6 +89,13 @@ export default function LoginScreen({route}) {
       })
       .catch(error => {
         console.log(error);
+        if (error) {
+          Alert.alert('LOGIN FAILED', error.data.message, [
+            {
+              text: 'OK',
+            },
+          ]);
+        }
       });
   };
 

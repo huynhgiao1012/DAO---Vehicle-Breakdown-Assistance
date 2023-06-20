@@ -41,6 +41,12 @@ export default function BookingScreen({route}) {
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121,
   });
+  const [fixRegion, setFixRegion] = useState({
+    latitude: 10.5369728,
+    longitude: 106.6734779,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.0121,
+  });
   const [data, setData] = useState({
     companyDetail: {
       __v: 0,
@@ -167,6 +173,11 @@ export default function BookingScreen({route}) {
           latitude: location.latitude,
           longitude: location.longitude,
         });
+        setFixRegion({
+          ...fixRegion,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
       })
       .catch(error => {
         const {code, message} = error;
@@ -218,6 +229,20 @@ export default function BookingScreen({route}) {
         </Text>
         <View style={styles.markAddress}>
           <MapView ref={mapRef} style={styles.map} initialRegion={region}>
+            <Marker
+              coordinate={{
+                latitude: fixRegion.latitude,
+                longitude: fixRegion.longitude,
+              }}
+              title="Your Current Location">
+              <View
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 20,
+                  backgroundColor: '#1a73e8',
+                }}></View>
+            </Marker>
             {[
               {
                 latLong: {

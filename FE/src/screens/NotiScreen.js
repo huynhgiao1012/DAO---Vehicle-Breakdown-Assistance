@@ -1,4 +1,12 @@
-import {View, Text, Dimensions, TouchableOpacity, Animated} from 'react-native';
+import {
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  Animated,
+  ScrollView,
+  ScrollViewBase,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Header from '../Components/Header';
 import {useNavigation} from '@react-navigation/native';
@@ -6,6 +14,7 @@ import {themeColors} from '../theme';
 import {
   useGetUnreadNotiMutation,
   useUpdateNotiMutation,
+  useDeleteNotiMutation,
 } from '../services/Notification';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -18,7 +27,7 @@ export default function NotiScreen() {
   const [getUnreadNoti] = useGetUnreadNotiMutation();
   const [updateNoti] = useUpdateNotiMutation();
   const [unRead, setUnread] = useState([]);
-
+  const [deleteNoti] = useDeleteNotiMutation();
   useEffect(() => {
     getUnreadNoti()
       .unwrap()
@@ -46,14 +55,14 @@ export default function NotiScreen() {
           });
       });
   };
-  const rightSwipe = (progress, dragX) => {
+  const rightSwipe = (dragX, id) => {
     const scale = dragX.interpolate({
       inputRange: [1, 100],
       outputRange: [1.2, 0.6],
       extrapolate: 'clamp',
     });
     return (
-      <TouchableOpacity activeOpacity={0.6} onPress={() => {}}>
+      <TouchableOpacity activeOpacity={0.6} onPress={() => onDelete(id)}>
         <View style={styles.deleteBox}>
           <Animated.Text
             style={{
@@ -65,10 +74,27 @@ export default function NotiScreen() {
       </TouchableOpacity>
     );
   };
+  const onDelete = id => {
+    deleteNoti({id: id})
+      .unwrap()
+      .then(payload => {
+        if (payload.success === true) {
+          getUnreadNoti()
+            .unwrap()
+            .then(payload => {
+              setUnread([]);
+              if (payload) {
+                setUnread(prev => [...prev, ...payload.data].reverse());
+              }
+            });
+        }
+      });
+  };
+
   return (
     <View style={{backgroundColor: themeColors.white, flex: 1}}>
       <Header />
-      <View style={{margin: 20}}>
+      <ScrollView style={{margin: 20}}>
         <Text
           style={{
             color: themeColors.primaryColor,
@@ -84,31 +110,31 @@ export default function NotiScreen() {
               <TouchableOpacity
                 onPress={() => handlePress(val._id)}
                 key={val._id}>
-                <Swipeable renderRightActions={rightSwipe}>
-                  <View style={styles.container}>
-                    {status === 'new' && (
-                      <View
-                        style={{
-                          position: 'absolute',
-                          left: 0,
-                          top: 0,
-                          backgroundColor: 'red',
-                          padding: 3,
-                        }}>
-                        <Text style={{color: themeColors.white, fontSize: 10}}>
-                          New
-                        </Text>
-                      </View>
-                    )}
-                    <Text style={styles.text1}>{val.text}</Text>
-                  </View>
-                </Swipeable>
+                <View style={styles.container}>
+                  {status === 'new' && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        backgroundColor: 'red',
+                        padding: 3,
+                      }}>
+                      <Text style={{color: themeColors.white, fontSize: 10}}>
+                        New
+                      </Text>
+                    </View>
+                  )}
+                  <Text style={styles.text1}>{val.text}</Text>
+                </View>
               </TouchableOpacity>
             );
           }
           if (val.status === 'read') {
             return (
-              <Swipeable renderRightActions={rightSwipe} key={val._id}>
+              <Swipeable
+                renderRightActions={dragX => rightSwipe(dragX, val._id)}
+                key={val._id}>
                 <View style={styles.container}>
                   <Text style={styles.text2}>{val.text}</Text>
                 </View>
@@ -116,7 +142,7 @@ export default function NotiScreen() {
             );
           }
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }
