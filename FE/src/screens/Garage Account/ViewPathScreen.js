@@ -23,8 +23,8 @@ enableLatestRenderer();
 export default function ViewPathScreen({route}) {
   const {address} = route.params;
   const [forwardGeo] = useForwardGeoMutation();
-  const [destinations, setDes] = useState({lat: '', lng: ''});
-  const [origins, setOrigins] = useState({lat: '', lng: ''});
+  const [destinations, setDes] = useState({lat: 0, lng: 0});
+  const [origins, setOrigins] = useState({lat: 0, lng: 0});
   const getSpecificCorCompany = useGetSpecificCorCompanyQuery();
   const [directionPath] = useDirectionPathMutation();
   const [newCordinates, setNewCoordinates] = useState([]);

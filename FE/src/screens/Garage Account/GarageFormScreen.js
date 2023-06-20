@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, FlatList, Modal} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Modal, Alert} from 'react-native';
 import React, {useState} from 'react';
 import Header from '../../Components/Header';
 import {TouchableOpacity} from 'react-native';
@@ -11,6 +11,7 @@ import {
   useGetFormDetailMutation,
   useUpdateProcessMutation,
   useUpdateDoneMutation,
+  useDeleteFormMutation,
 } from '../../services/OrderForm';
 import {useNavigation} from '@react-navigation/native';
 
@@ -26,10 +27,12 @@ export default function GarageFormScreen({route}) {
   const [getFormDetail] = useGetFormDetailMutation();
   const [updateProcess] = useUpdateProcessMutation();
   const [updateDone] = useUpdateDoneMutation();
+  const [deleteFormDone] = useDeleteFormMutation();
   const [form, setForm] = useState([]);
   useEffect(() => {
     console.log('socketIo from form garage', socketIo);
     setSocket(socketIo);
+    setStatus('Await');
     getAllFormGarage()
       .unwrap()
       .then(payload => {
@@ -69,6 +72,7 @@ export default function GarageFormScreen({route}) {
   const setStatusFilter = status => {
     setStatus(status);
   };
+  // open modal
   const openModal = async id => {
     var Item = [];
     setDetail([]);
@@ -82,6 +86,7 @@ export default function GarageFormScreen({route}) {
     setDetail(prev => [...prev, ...Item]);
     setIsOpen(true);
   };
+  // update process form
   const AcceptService = id => {
     console.log(id);
     updateProcess({id: id})
@@ -114,6 +119,7 @@ export default function GarageFormScreen({route}) {
         }
       });
   };
+  // update done form
   const ProcessService = id => {
     console.log(id);
     updateDone({id: id})
@@ -145,6 +151,33 @@ export default function GarageFormScreen({route}) {
           setIsOpen(false);
         }
       });
+  };
+  // delete form
+  const deleteForm = id => {
+    deleteFormDone({id: id})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+        if (payload.success === true) {
+          Alert.alert('DELETE SERVICE', payload.message, [
+            {
+              text: 'OK',
+            },
+          ]);
+        }
+      });
+    getAllFormGarage()
+      .unwrap()
+      .then(payload => {
+        setForm([]);
+        if (payload.data) {
+          const filterData = payload.data.filter(
+            val => val.status === 'process',
+          );
+          setForm(prev => [...prev, ...filterData]);
+        }
+      });
+    setIsOpen(false);
   };
   return (
     <View
@@ -183,6 +216,7 @@ export default function GarageFormScreen({route}) {
           rowTextStyle={styles.rowTextStyle}
         />
       </View>
+      {/* LIST */}
       <FlatList
         data={form}
         renderItem={({item}) => (
@@ -197,6 +231,28 @@ export default function GarageFormScreen({route}) {
                 }}>
                 Date: {item.date.slice(0, 10).split('-').reverse().join('-')}
               </Text>
+              {status === 'Done' && item.isPaid === false && (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.blue,
+                    fontStyle: 'italic',
+                    alignSelf: 'flex-end',
+                  }}>
+                  NOT PAID
+                </Text>
+              )}
+              {status === 'Done' && item.isPaid === true && (
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: themeColors.blue,
+                    fontStyle: 'italic',
+                    alignSelf: 'flex-end',
+                  }}>
+                  PAID
+                </Text>
+              )}
               <Text style={styles.title}>
                 Customer's name: {item.customerId.name}
               </Text>
@@ -214,6 +270,7 @@ export default function GarageFormScreen({route}) {
         )}
         keyExtractor={item => item._id}
       />
+      {/* modal */}
       {detail.length !== 0 && (
         <View style={styles.centeredView}>
           <Modal
@@ -317,8 +374,10 @@ export default function GarageFormScreen({route}) {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  {status === 'Done' && (
-                    <TouchableOpacity style={styles.buttonModal}>
+                  {/* {status === 'Done' && (
+                    <TouchableOpacity
+                      style={styles.buttonModal}
+                      onPress={() => deleteForm(detail[0]._id)}>
                       <Text
                         style={{
                           color: themeColors.white,
@@ -328,7 +387,7 @@ export default function GarageFormScreen({route}) {
                         DELETE
                       </Text>
                     </TouchableOpacity>
-                  )}
+                  )} */}
                 </View>
                 {status !== 'Done' && (
                   <View

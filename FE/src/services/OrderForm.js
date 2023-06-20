@@ -46,6 +46,19 @@ export const formApi = createApi({
         url: `/getFormDetail/${id}`,
       }),
     }),
+    deleteForm: builder.mutation({
+      query: ({id}) => ({
+        url: `/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+    createPaymentIntent: builder.mutation({
+      query: data => ({
+        url: '/intent',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 export const {
@@ -54,4 +67,6 @@ export const {
   useUpdateDoneMutation,
   useUpdateProcessMutation,
   useGetFormDetailMutation,
+  useDeleteFormMutation,
+  useCreatePaymentIntentMutation,
 } = formApi;

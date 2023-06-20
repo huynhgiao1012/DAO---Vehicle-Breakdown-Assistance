@@ -19,6 +19,7 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "@reduxjs/toolkit": "^1.9.5",
+    "@stripe/stripe-react-native": "^0.28.0",
     "axios": "^1.4.0",
     "decode-google-map-polyline": "^1.0.1",
     "dotenv": "^16.0.3",

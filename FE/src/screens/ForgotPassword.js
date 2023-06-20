@@ -72,7 +72,7 @@ export default function ForgotPassword() {
                 <Text
                   style={{
                     color: themeColors.primaryColor,
-                    fontSize: 18,
+                    fontSize: 20,
                     fontWeight: '800',
                     marginBottom: 10,
                   }}>
@@ -81,12 +81,12 @@ export default function ForgotPassword() {
                 <TextInput
                   onChangeText={handleChange('email')}
                   style={{
-                    borderBottomWidth: 1,
-                    borderBottomColor: themeColors.blue,
+                    backgroundColor: '#fffaf0',
                     paddingHorizontal: 10,
                     fontSize: 16,
                     fontWeight: '600',
                     color: themeColors.blue,
+                    borderRadius: 10,
                   }}
                 />
                 {errors.email && touched.email && (
@@ -97,9 +97,9 @@ export default function ForgotPassword() {
                   onPress={handleSubmit}
                   style={{
                     alignSelf: 'center',
-                    padding: 10,
-                    width: '90%',
-                    borderRadius: 15,
+                    padding: 8,
+                    width: '70%',
+                    borderRadius: 10,
                     marginTop: 20,
                     borderWidth: 1,
                     borderColor: themeColors.blue,
@@ -108,7 +108,7 @@ export default function ForgotPassword() {
                     style={{
                       color: themeColors.blue,
                       textAlign: 'center',
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: 'bold',
                     }}>
                     Send Mail

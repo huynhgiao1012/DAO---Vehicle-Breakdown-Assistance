@@ -20,6 +20,8 @@ import ViewPathScreen from '../screens/Garage Account/ViewPathScreen';
 import GarageChangePass from '../screens/Garage Account/GarageChangePass';
 import GarageService from '../screens/Garage Account/GarageService';
 import ForgotPassword from '../screens/ForgotPassword';
+import PaymentScreen from '../screens/PaymentScreen';
+
 const Stack = createStackNavigator();
 export default function AppNavigation(props) {
   console.log(props.socketIo);
@@ -74,6 +76,11 @@ export default function AppNavigation(props) {
           options={{headerShown: false}}
           component={BookingScreen}
           initialParams={{socketIo: props.socketIo}}
+        />
+        <Stack.Screen
+          name="PaymentScreen"
+          options={{headerShown: false}}
+          component={PaymentScreen}
         />
         <Stack.Screen
           name="OTPScreen"

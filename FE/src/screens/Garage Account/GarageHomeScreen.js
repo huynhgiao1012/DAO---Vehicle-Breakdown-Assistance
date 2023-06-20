@@ -4,20 +4,41 @@ import {StyleSheet} from 'react-native';
 import {themeColors} from '../../theme';
 import {useGetCompanyAccountDetailQuery} from '../../services/User';
 import {useNavigation} from '@react-navigation/native';
+import {useGetAllFormGarageMutation} from '../../services/OrderForm';
+import {useState} from 'react';
 
 export default function GarageHomeScreen() {
   const userData = useGetCompanyAccountDetailQuery();
   const navigation = useNavigation();
-
+  const [getAllFormGarage] = useGetAllFormGarageMutation();
+  const [totalService, setTotalService] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
   useEffect(() => {
     try {
       if (userData.isSuccess === true) {
         console.log('userData', userData);
+        getAllFormGarage({id: userData.currentData.data._id})
+          .unwrap()
+          .then(payload => {
+            setTotalService(payload.data.length);
+          });
       }
     } catch (error) {
       return '';
     }
   }, []);
+  useEffect(() => {
+    getAllFormGarage({id: userData.currentData.data._id})
+      .unwrap()
+      .then(payload => {
+        setTotalService(payload.data.length);
+        let num = 0;
+        payload.data.map(val => {
+          num = num + val.price;
+        });
+        setTotalBalance(num);
+      });
+  }, [totalService]);
   return userData.isLoading === true && !userData.data ? (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size="large" color={themeColors.primaryColor} />
@@ -58,11 +79,11 @@ export default function GarageHomeScreen() {
           }}>
           <View style={styles.statisticText}>
             <Text style={styles.text2}>Total Booked Service</Text>
-            <Text style={styles.text2}>0</Text>
+            <Text style={styles.text2}>{totalService}</Text>
           </View>
           <View style={styles.statisticText}>
             <Text style={styles.text2}>Total Balance</Text>
-            <Text style={styles.text2}>0</Text>
+            <Text style={styles.text2}>{totalBalance}</Text>
           </View>
         </View>
         <View
