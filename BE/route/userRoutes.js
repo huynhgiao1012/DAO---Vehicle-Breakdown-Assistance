@@ -4,7 +4,12 @@ const { jwtAuth } = require("../middleware/jwtAuth");
 const { authorize } = require("../middleware/authorize");
 const router = express.Router();
 router.post("/updatePassword", jwtAuth, userController.updatePassword);
-router.get("/", jwtAuth, authorize("admin"), userController.getAllUser);
+router.get(
+  "/getAllUser",
+  jwtAuth,
+  authorize("admin"),
+  userController.getAllUser
+);
 router.get("/detail/:id", jwtAuth, authorize("admin"), userController.getUser);
 router.get(
   "/userDetail",

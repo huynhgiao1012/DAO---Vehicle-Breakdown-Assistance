@@ -64,7 +64,7 @@ exports.updateUser = catchAsync(async (req, res) => {
     .json({ success: true, message: "Update successfully", data: user });
 });
 exports.getAllUser = catchAsync(async (req, res) => {
-  const data = await User.find({ role: ROLES.CUSTOMER });
+  const data = await User.find({});
   res.status(200).json({
     success: true,
     data,
@@ -73,7 +73,6 @@ exports.getAllUser = catchAsync(async (req, res) => {
 exports.getUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   const data = await User.findById(id);
-  console.log(!data);
   if (!data) {
     throw new ApiError(400, "This user is not available");
   }
