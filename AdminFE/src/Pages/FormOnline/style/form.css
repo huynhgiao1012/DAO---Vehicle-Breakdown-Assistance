@@ -1,0 +1,31 @@
+.formPage {
+  margin-right: 10px;
+}
+
+.formPage h4 {
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.formPage .search .searchTitle {
+  width: 100%;
+}
+
+.green {
+  width: 90px;
+  color: #52c41a;
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  font-size: 12px;
+  padding: 0px 5px;
+}
+
+.orange {
+  width: 70px;
+  color: #fa8c16;
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  padding: 0px 5px;
+  font-size: 12px;
+}
+/*# sourceMappingURL=form.css.map */
