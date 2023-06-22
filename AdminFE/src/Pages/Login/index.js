@@ -1,4 +1,3 @@
-// import React from "react";
 import { notification } from "antd";
 import {
   GlobalOutlined,
@@ -7,139 +6,7 @@ import {
   CloseOutlined,
   DownOutlined,
 } from "@ant-design/icons";
-// import { useNavigate } from "react-router-dom";
-import { useTranslation, withTranslation } from "react-i18next";
-
-// import "./style/login.css";
-// import { useEffect } from "react";
-// import { useLoginMutation } from "../../services/Auth";
-// const LoginComponent = (props) => {
-//   const navigate = useNavigate();
-//   const { i18n } = useTranslation();
-//   const [login] = useLoginMutation();
-//   const menu2 = (
-//     <Menu
-//       items={[
-//         {
-//           key: "1",
-//           label: <a onClick={() => changeLanguage("vi")}>vi Vietnamese</a>,
-//         },
-//         {
-//           key: "2",
-//           label: <a onClick={() => changeLanguage("en")}>en English</a>,
-//         },
-//       ]}
-//     />
-//   );
-//   useEffect(() => {
-//     i18n.changeLanguage(localStorage.getItem("lang"));
-//   }, []);
-//   const changeLanguage = (lang) => {
-//     localStorage.setItem("lang", lang);
-//     i18n.changeLanguage(localStorage.getItem("lang"));
-//   };
-//   const onFinish = async (values) => {
-//     console.log(values);
-//     login({ email: values.username, password: values.password })
-//       .unwrap()
-//       .then((payload) => {
-//         console.log(payload);
-//         if (payload) {
-//           notification.open({
-//             message: i18n.t("Login"),
-//             description: i18n.t("loginMessage1"),
-//             icon: <DownOutlined style={{ color: "green" }} />,
-//           });
-//           navigate("/dashboard");
-//           localStorage.setItem("token", payload.token);
-//         } else {
-//           notification.open({
-//             message: i18n.t("Login"),
-//             description: i18n.t("loginMessage2"),
-//             icon: <CloseOutlined style={{ color: "red" }} />,
-//           });
-//         }
-//       });
-//   };
-//   return (
-//     <div className="loginPage">
-//       <div className="container1">
-//         <div className="dd">
-//           <Dropdown overlay={menu2}>
-//             <a onClick={(e) => e.preventDefault()} href="/#">
-//               <div className="language">
-//                 <GlobalOutlined />
-//               </div>
-//             </a>
-//           </Dropdown>
-//         </div>
-//         <div className="content">
-//           <a href="/login">DAO APPLICATIONS</a>
-//           <span>ONROAD VEHICLE BREAKDOWN ASSISTANCE</span>
-//         </div>
-//         <Form
-//           name="normal_login"
-//           className="login-form"
-//           initialValues={{
-//             remember: true,
-//           }}
-//           onFinish={onFinish}
-//         >
-//           <div className="authen">{i18n.t("Authentication")}</div>
-//           <Form.Item
-//             name="username"
-//             rules={[
-//               {
-//                 required: true,
-//                 message: i18n.t("loginMessage3"),
-//               },
-//             ]}
-//           >
-//             <Input
-//               prefix={<UserOutlined className="site-form-item-icon" />}
-//               placeholder={i18n.t("Username")}
-//             />
-//           </Form.Item>
-//           <Form.Item
-//             name="password"
-//             rules={[
-//               {
-//                 required: true,
-//                 message: i18n.t("loginMessage4"),
-//               },
-//             ]}
-//           >
-//             <Input
-//               prefix={<LockOutlined className="site-form-item-icon" />}
-//               type="password"
-//               placeholder={i18n.t("Password")}
-//             />
-//           </Form.Item>
-//           <Form.Item>
-//             <Form.Item name="remember" valuePropName="checked" noStyle>
-//               <Checkbox>{i18n.t("Remember")}</Checkbox>
-//             </Form.Item>
-//           </Form.Item>
-
-//           <Form.Item>
-//             <Button
-//               type="primary"
-//               htmlType="submit"
-//               className="login-form-button"
-//             >
-//               {i18n.t("Login")}
-//             </Button>
-//           </Form.Item>
-//         </Form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default LoginComponent;
-
 import * as React from "react";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -188,7 +55,6 @@ const defaultTheme = createTheme({
 export default function LoginComponent() {
   const [login] = useLoginMutation();
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
   useEffect(() => {
     localStorage.clear();
   }, []);
@@ -208,16 +74,16 @@ export default function LoginComponent() {
         console.log(payload);
         if (payload) {
           notification.open({
-            message: i18n.t("Login"),
-            description: i18n.t("loginMessage1"),
+            message: "Login",
+            description: "loginMessage1",
             icon: <DownOutlined style={{ color: "green" }} />,
           });
-          navigate("/dashboard");
+          navigate("/home");
           localStorage.setItem("token", payload.token);
         } else {
           notification.open({
-            message: i18n.t("Login"),
-            description: i18n.t("loginMessage2"),
+            message: "Login",
+            description: "loginMessage2",
             icon: <CloseOutlined style={{ color: "red" }} />,
           });
         }
@@ -225,8 +91,8 @@ export default function LoginComponent() {
       .catch((error) => {
         if (error) {
           notification.open({
-            message: i18n.t("Login"),
-            description: i18n.t("loginMessage2"),
+            message: "Login",
+            description: "loginMessage2",
             icon: <CloseOutlined style={{ color: "red" }} />,
           });
         }

@@ -37,7 +37,75 @@ export const userColumns = [
     },
   },
 ];
-
+export const serviceColumns = [
+  { field: "id", headerName: "ID", width: 100 },
+  {
+    field: "garageId",
+    headerName: "GarageId",
+    width: 100,
+  },
+  {
+    field: "garage",
+    headerName: "Garage",
+    width: 300,
+  },
+];
+export const serviceColumns2 = [
+  { field: "id", headerName: "ID", width: 100 },
+  {
+    field: "service",
+    headerName: "Service",
+    width: 100,
+  },
+  {
+    field: "description",
+    headerName: "Description",
+    width: 300,
+  },
+  {
+    field: "price",
+    headerName: "Price",
+    width: 100,
+  },
+];
+export const formColumn = [
+  { field: "id", headerName: "ID", width: 50 },
+  {
+    field: "cusName",
+    headerName: "Customer Name",
+    width: 100,
+  },
+  {
+    field: "cusPhone",
+    headerName: "Customer Phone",
+    width: 100,
+  },
+  {
+    field: "cusAdd",
+    headerName: "Customer Address",
+    width: 400,
+  },
+  {
+    field: "serName",
+    headerName: "Service Name",
+    width: 100,
+  },
+  {
+    field: "date",
+    headerName: "Date",
+    width: 100,
+  },
+  {
+    field: "price",
+    headerName: "Price",
+    width: 100,
+  },
+  {
+    field: "isPaid",
+    headerName: "Payment Status",
+    width: 100,
+  },
+];
 //temporary data
 export const userRows = [
   {

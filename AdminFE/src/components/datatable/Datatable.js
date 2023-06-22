@@ -21,12 +21,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import { useCreateCompanyMutation } from "../../services/Company";
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 700,
+  width: 600,
   bgcolor: "white",
   border: "2px solid #6439ff",
   boxShadow: 24,
@@ -39,6 +40,7 @@ const Datatable = () => {
   const [getAllUser] = useGetAllUserMutation();
   const [deleteUser] = useDeleteUserMutation();
   const [updateUser] = useUpdateUserMutation();
+  const [createUser] = useCreateCompanyMutation();
   const [getUser] = useGetUserMutation();
   const [isEdit, setIsEdit] = useState(false);
   const [form] = Form.useForm();
@@ -164,29 +166,34 @@ const Datatable = () => {
           }
         });
     } else {
-      // const response = await createCodeDispatch(values);
-      // console.log(response.status);
-      // if (response.data.code === 200) {
-      //   notification.open({
-      //     message: "Update Cost File",
-      //     description: "Success",
-      //   });
-      // } else {
-      //   notification.open({
-      //     message: "Request error 500",
-      //     description: "Object reference not set to an instance of an object.",
-      //   });
-      // }
+      await createUser({
+        name: values.Name,
+        email: values.Email,
+        phone: values.Phone,
+        openTime: values.Opentime,
+        closeTime: values.Closetime,
+        long: Number(values.Longitude),
+        lat: Number(values.Latitude),
+        address: values.Address,
+      })
+        .unwrap()
+        .then((payload) => {
+          alert(payload.message);
+          setIsModalOpen(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          alert(error.data.message.duplicate);
+        });
     }
   };
   const handleChange = (SelectChangeEvent) => {
     settab(SelectChangeEvent.target.value);
-    let newArr = [];
+    var newArr = [];
     getAllUser()
       .unwrap()
       .then((payload) => {
         if (payload.success === true) {
-          let newArr = [];
           payload.data.map((val) => {
             newArr.push({
               id: val._id,
@@ -200,35 +207,35 @@ const Datatable = () => {
             });
           });
         }
-      });
-    if (SelectChangeEvent.target.value === 20) {
-      const arr = newArr.filter((val) => {
-        if (val.role === "customer") {
-          return val;
+        if (SelectChangeEvent.target.value === 20) {
+          const arr = newArr.filter((val) => {
+            if (val.role === "customer") {
+              return val;
+            }
+          });
+          setData([]);
+          setData((prev) => [...prev, ...arr]);
+        } else if (SelectChangeEvent.target.value === 30) {
+          const arr = newArr.filter((val) => {
+            if (val.role === "company") {
+              return val;
+            }
+          });
+          setData([]);
+          setData((prev) => [...prev, ...arr]);
+        } else if (SelectChangeEvent.target.value === 40) {
+          const arr = newArr.filter((val) => {
+            if (val.role === "admin") {
+              return val;
+            }
+          });
+          setData([]);
+          setData((prev) => [...prev, ...arr]);
+        } else {
+          setData([]);
+          setData((prev) => [...prev, ...newArr]);
         }
       });
-      setData([]);
-      setData((prev) => [...prev, ...arr]);
-    } else if (SelectChangeEvent.target.value === 30) {
-      const arr = newArr.filter((val) => {
-        if (val.role === "company") {
-          return val;
-        }
-      });
-      setData([]);
-      setData((prev) => [...prev, ...arr]);
-    } else if (SelectChangeEvent.target.value === 40) {
-      const arr = newArr.filter((val) => {
-        if (val.role === "admin") {
-          return val;
-        }
-      });
-      setData([]);
-      setData((prev) => [...prev, ...arr]);
-    } else {
-      setData([]);
-      setData((prev) => [...prev, ...newArr]);
-    }
   };
   const actionColumn = [
     {
@@ -310,81 +317,217 @@ const Datatable = () => {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
+            <Typography
+              style={{
+                textAlign: "center",
+                color: "#6439ff",
+                fontWeight: "bold",
+                marginBottom: 20,
+                fontSize: 22,
+              }}
+            >
+              ADD NEW COMPANY
+            </Typography>
             <Form
               form={form}
               name="form"
-              labelCol={{ span: 6 }}
+              labelCol={{ span: 8 }}
               wrapperCol={{ span: 18 }}
               initialValues={{ remember: true }}
               onFinish={onSubmit}
               autoComplete="off"
-              layout="horizontal"
+              layout="vertical"
+              style={{ marginLeft: 30 }}
             >
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item name="Name" label="Name">
+                  <Form.Item
+                    name="Name"
+                    label="Name"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter name",
+                        type: "string",
+                      },
+                      { whitespace: true },
+                      { min: 3 },
+                    ]}
+                    hasFeedback
+                  >
                     <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
+                      style={{ border: "1px solid #6439ff", width: 220 }}
+                      type="string"
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="Email" label="Email">
+                  <Form.Item
+                    name="Email"
+                    label="Email"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter email",
+                        type: "email",
+                      },
+                      { whitespace: false },
+                    ]}
+                    hasFeedback
+                  >
                     <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="Phone" label="Phone">
-                    <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="Address" label="Address">
-                    <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item name="Opentime" label="Opentime">
-                    <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="Closetime" label="Closetime">
-                    <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
+                      style={{ border: "1px solid #6439ff", width: 220 }}
                     />
                   </Form.Item>
                 </Col>
               </Row>
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item name="Longitude" label="Logitude">
+                  <Form.Item
+                    name="Phone"
+                    label="Phone"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter phone",
+                        type: "string",
+                      },
+                      { whitespace: false },
+                      { min: 10, max: 12 },
+                    ]}
+                    hasFeedback
+                  >
                     <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
+                      style={{ border: "1px solid #6439ff", width: 220 }}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item name="Latitude" label="Latitude">
+                  <Form.Item
+                    name="Address"
+                    label="Address"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter address",
+                        type: "string",
+                      },
+                      { whitespace: true },
+                      { min: 10 },
+                    ]}
+                    hasFeedback
+                  >
                     <Input
-                      style={{ border: "1px solid #100444", width: 200 }}
+                      style={{ border: "1px solid #6439ff", width: 220 }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="Opentime"
+                    label="Opentime"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter open time",
+                        type: "string",
+                      },
+                      { whitespace: false },
+                      { min: 3, max: 4 },
+                    ]}
+                    hasFeedback
+                  >
+                    <Input
+                      style={{ border: "1px solid #6439ff", width: 220 }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="Closetime"
+                    label="Closetime"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter close time",
+                        type: "string",
+                      },
+                      { whitespace: false },
+                      { min: 3, max: 4 },
+                    ]}
+                    hasFeedback
+                  >
+                    <Input
+                      style={{ border: "1px solid #6439ff", width: 220 }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="Longitude"
+                    label="Logitude"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter logitude",
+                      },
+                      { whitespace: false },
+                      { min: 3 },
+                    ]}
+                    hasFeedback
+                  >
+                    <Input
+                      style={{ border: "1px solid #6439ff", width: 220 }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="Latitude"
+                    label="Latitude"
+                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter latitude",
+                      },
+                      { whitespace: false },
+                      { min: 3 },
+                    ]}
+                    hasFeedback
+                  >
+                    <Input
+                      style={{ border: "1px solid #6439ff", width: 220 }}
                     />
                   </Form.Item>
                 </Col>
               </Row>
             </Form>
+            <Button
+              type="primary"
+              htmlType="submit"
+              form="form"
+              style={{
+                width: "90%",
+                textAlign: "center",
+                backgroundColor: "#6439ff",
+                color: "white",
+                margin: "10px 30px",
+              }}
+            >
+              Submit
+            </Button>
           </Box>
         </Modal>
       </div>
@@ -474,78 +617,6 @@ const Datatable = () => {
           )}
         </Form>
       </Drawer>
-      {/* <Modal
-        title="Create Company Account"
-        open={isModalOpen}
-        onCancel={handleClose}
-        width={700}
-        footer={
-          <Button type="primary" htmlType="submit" form="form">
-            Submit
-          </Button>
-        }
-        style={{ padding: "0px 20px", color: "#F2A902" }}
-      >
-        <Form
-          form={form}
-          name="form"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}
-          initialValues={{ remember: true }}
-          onFinish={onSubmit}
-          autoComplete="off"
-          layout="horizontal"
-        >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Name" label="Name">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Email" label="Email">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Phone" label="Phone">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Address" label="Address">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Opentime" label="Opentime">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Closetime" label="Closetime">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Longitude" label="Logitude">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Latitude" label="Latitude">
-                <Input style={{ border: "1px solid #100444", width: 200 }} />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal> */}
     </div>
   );
 };
