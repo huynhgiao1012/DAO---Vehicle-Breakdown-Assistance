@@ -6,10 +6,14 @@ import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import "./i18n";
 import { store } from "./store/index";
+import { DarkModeContextProvider } from "./context/darkModeContext";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
-    <App />
+    <DarkModeContextProvider>
+      <App />
+    </DarkModeContextProvider>
   </Provider>
 );
 

@@ -1,22 +1,14 @@
 // import React from "react";
-// import {
-//   Button,
-//   Checkbox,
-//   Form,
-//   Input,
-//   notification,
-//   Menu,
-//   Dropdown,
-// } from "antd";
-// import {
-//   GlobalOutlined,
-//   UserOutlined,
-//   LockOutlined,
-//   CloseOutlined,
-//   DownOutlined,
-// } from "@ant-design/icons";
+import { notification } from "antd";
+import {
+  GlobalOutlined,
+  UserOutlined,
+  LockOutlined,
+  CloseOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 // import { useNavigate } from "react-router-dom";
-// import { useTranslation, withTranslation } from "react-i18next";
+import { useTranslation, withTranslation } from "react-i18next";
 
 // import "./style/login.css";
 // import { useEffect } from "react";
@@ -162,6 +154,9 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import logo from "../../Image/logo.png";
 import blue from "@mui/material/colors/blue";
+import { useLoginMutation } from "../../services/Auth";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 function Copyright(props) {
   return (
     <Typography
@@ -191,6 +186,12 @@ const defaultTheme = createTheme({
 });
 
 export default function LoginComponent() {
+  const [login] = useLoginMutation();
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -198,6 +199,38 @@ export default function LoginComponent() {
       email: data.get("email"),
       password: data.get("password"),
     });
+    login({
+      email: data.get("email"),
+      password: data.get("password"),
+    })
+      .unwrap()
+      .then((payload) => {
+        console.log(payload);
+        if (payload) {
+          notification.open({
+            message: i18n.t("Login"),
+            description: i18n.t("loginMessage1"),
+            icon: <DownOutlined style={{ color: "green" }} />,
+          });
+          navigate("/dashboard");
+          localStorage.setItem("token", payload.token);
+        } else {
+          notification.open({
+            message: i18n.t("Login"),
+            description: i18n.t("loginMessage2"),
+            icon: <CloseOutlined style={{ color: "red" }} />,
+          });
+        }
+      })
+      .catch((error) => {
+        if (error) {
+          notification.open({
+            message: i18n.t("Login"),
+            description: i18n.t("loginMessage2"),
+            icon: <CloseOutlined style={{ color: "red" }} />,
+          });
+        }
+      });
   };
 
   return (
