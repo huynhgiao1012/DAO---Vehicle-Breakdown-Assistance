@@ -4,6 +4,7 @@ var generator = require("generate-password");
 const EmailService = require("../utils/EmailService");
 const bcrypt = require("bcryptjs");
 const Customer = require("../models/customer");
+const Company = require("../models/company");
 const Account = require("../models/account");
 const { ROLES } = require("../constant");
 const ApiError = require("../utils/ApiError");
@@ -42,13 +43,20 @@ exports.deleteUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(id);
   const customer = await Customer.findOne({ accountId: id });
-  if (!user || !customer) {
+  const company = await Company.findOne({ accountId: id });
+  if (!user) {
     throw new ApiError(400, "This user is not available");
   }
   await user.remove();
-  await customer.remove();
+  if (customer) {
+    await customer.remove();
+  }
+  if (company) {
+    await company.remove();
+  }
   res.status(200).json({
     success: true,
+    message: "Delete successfully !",
     data: user,
   });
 });
