@@ -15,6 +15,12 @@ router.get(
   authorize("company"),
   formController.getAllFormByGarage
 );
+router.get(
+  "/getAllForm/:id",
+  jwtAuth,
+  authorize("admin"),
+  formController.getAllForm
+);
 router.delete(
   "/:id",
   jwtAuth,
