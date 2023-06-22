@@ -37,7 +37,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  useGetAllUserQuery,
+  useGetAllUserMutation,
   useGetUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
@@ -53,7 +53,7 @@ const UserManagement = (props) => {
   const [username, setUsername] = useState(false);
   const [filterInput, setFilterInput] = useState("");
   const [listAccount, setListAccount] = useState([]);
-  const getAllUser = useGetAllUserQuery();
+  const [getAllUser] = useGetAllUserMutation();
   const [getUser] = useGetUserMutation();
   const [updateUser] = useUpdateUserMutation();
   const [deleteUser] = useDeleteUserMutation();

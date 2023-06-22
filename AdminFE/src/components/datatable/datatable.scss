@@ -1,7 +1,13 @@
 .datatable {
   height: 600px;
   padding: 20px;
-
+  .addButton {
+    padding: 2px 5px;
+    border-radius: 5px;
+    color: "#6439ff";
+    border: 1px dotted rgba(103, 20, 220, 0.508);
+    cursor: pointer;
+  }
   .datatableTitle {
     width: 100%;
     font-size: 24px;
