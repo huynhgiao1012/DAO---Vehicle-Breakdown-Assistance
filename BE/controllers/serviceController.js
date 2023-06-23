@@ -19,6 +19,21 @@ exports.createService = catchAsync(async (req, res) => {
     service,
   });
 });
+exports.addService = catchAsync(async (req, res) => {
+  const { type, price, description } = req.body;
+  const { id } = req.params;
+  const service = await Service.create({
+    accountId: id,
+    type,
+    price,
+    description,
+  });
+  res.status(200).json({
+    success: true,
+    message: "Successfull",
+    service,
+  });
+});
 exports.deleteService = catchAsync(async (req, res) => {
   const { id } = req.params;
   const service = await Service.findById(id);
@@ -37,7 +52,7 @@ exports.updateService = catchAsync(async (req, res) => {
   const { type, price, description } = req.body;
   const service = await Service.findByIdAndUpdate(
     id,
-    { type, price, description },
+    { type: type, price: price, description: description },
     { new: true }
   );
   if (!service) {

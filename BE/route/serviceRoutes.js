@@ -18,8 +18,14 @@ router.get(
 router.post(
   "/create",
   jwtAuth,
-  authorize("company", "admin"),
+  authorize("company"),
   serviceController.createService
+);
+router.post(
+  "/add/:id",
+  jwtAuth,
+  authorize("admin"),
+  serviceController.addService
 );
 router.post(
   "/bookingService",
