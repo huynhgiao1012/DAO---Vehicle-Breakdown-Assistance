@@ -1,4 +1,12 @@
-import {View, Text, StyleSheet, FlatList, Modal, Alert} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Modal,
+  Alert,
+  Linking,
+} from 'react-native';
 import React, {useState} from 'react';
 import Header from '../../Components/Header';
 import {TouchableOpacity} from 'react-native';
@@ -331,7 +339,11 @@ export default function GarageFormScreen({route}) {
                 <Text style={styles.modalText}>
                   Customer's Name: {detail[0].customerId.name}
                 </Text>
-                <Text style={styles.modalText}>
+                <Text
+                  style={styles.modalText}
+                  onPress={() =>
+                    Linking.openURL(`tel:${detail[0].customerId.phone}`)
+                  }>
                   Phone: {detail[0].customerId.phone}
                 </Text>
                 <Text style={styles.modalText}>

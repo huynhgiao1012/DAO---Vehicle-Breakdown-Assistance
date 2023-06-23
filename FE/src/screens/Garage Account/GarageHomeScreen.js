@@ -2,43 +2,43 @@ import {View, Text, TouchableOpacity, ActivityIndicator} from 'react-native';
 import React, {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {themeColors} from '../../theme';
-import {useGetCompanyAccountDetailQuery} from '../../services/User';
+import {useGetCompanyAccountDetailMutation} from '../../services/User';
 import {useNavigation} from '@react-navigation/native';
 import {useGetAllFormGarageMutation} from '../../services/OrderForm';
 import {useState} from 'react';
 
 export default function GarageHomeScreen() {
-  const userData = useGetCompanyAccountDetailQuery();
+  const [userData] = useGetCompanyAccountDetailMutation();
   const navigation = useNavigation();
   const [getAllFormGarage] = useGetAllFormGarageMutation();
   const [totalService, setTotalService] = useState(0);
   const [totalBalance, setTotalBalance] = useState(0);
+  const [data, setData] = useState({});
   useEffect(() => {
     try {
-      if (userData.isSuccess === true) {
-        console.log('userData', userData);
-        setTotalService(0);
-        setTotalBalance(0);
-      }
+      userData()
+        .unwrap()
+        .then(payload => {
+          if (payload.success === true) {
+            console.log('userData', payload);
+            setData(prev => ({...prev, ...payload.data}));
+            getAllFormGarage({id: data._id})
+              .unwrap()
+              .then(payload => {
+                setTotalService(payload.data.length);
+                let num = 0;
+                payload.data.map(val => {
+                  num = num + val.price;
+                });
+                setTotalBalance(num);
+              });
+          }
+        });
     } catch (error) {
       return '';
     }
   }, []);
-  useEffect(() => {
-    if (userData.data) {
-      getAllFormGarage({id: userData.currentData.data._id})
-        .unwrap()
-        .then(payload => {
-          setTotalService(payload.data.length);
-          let num = 0;
-          payload.data.map(val => {
-            num = num + val.price;
-          });
-          setTotalBalance(num);
-        });
-    }
-  }, [totalService]);
-  return userData.isLoading === true && !userData.data ? (
+  return data.length === 0 ? (
     <View style={{flex: 1, justifyContent: 'center'}}>
       <ActivityIndicator size="large" color={themeColors.primaryColor} />
     </View>
@@ -54,7 +54,7 @@ export default function GarageHomeScreen() {
             paddingTop: 10,
             marginHorizontal: 50,
           }}>
-          {userData.data ? userData.currentData.data.name : ''}
+          {data ? data.name : ''}
         </Text>
       </View>
       <View style={styles.body}>
@@ -101,7 +101,7 @@ export default function GarageHomeScreen() {
               }}
               onPress={() =>
                 navigation.navigate('GarageService', {
-                  id: userData.currentData.data._id,
+                  id: data._id,
                 })
               }>
               <Text style={styles.buttonText}>Manage Service</Text>
@@ -153,12 +153,8 @@ export default function GarageHomeScreen() {
             width: '95%',
             height: 100,
           }}>
-          <Text style={styles.text3}>
-            Email: {userData.data ? userData.currentData.data.email : ''}
-          </Text>
-          <Text style={styles.text3}>
-            Phone: {userData.data ? userData.currentData.data.phone : ''}
-          </Text>
+          <Text style={styles.text3}>Email: {data ? data.email : ''}</Text>
+          <Text style={styles.text3}>Phone: {data ? data.phone : ''}</Text>
         </View>
       </View>
     </View>

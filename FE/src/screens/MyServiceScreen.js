@@ -25,7 +25,6 @@ export default function MyServiceScreen() {
   const [detail, setDetail] = useState([]);
   const [getFormDetail] = useGetFormDetailMutation();
   const [data, setData] = useState([]);
-  const [refreshing, setRefreshing] = React.useState(false);
   useEffect(() => {
     getAllFOrm()
       .unwrap()
@@ -38,12 +37,12 @@ export default function MyServiceScreen() {
         }
       });
   }, []);
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+  // const onRefresh = React.useCallback(() => {
+  //   setRefreshing(true);
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 2000);
+  // }, []);
   const showModal = async id => {
     var Item = [];
     setDetail([]);
@@ -59,11 +58,7 @@ export default function MyServiceScreen() {
     setIsOpen(true);
   };
   return (
-    <ScrollView
-      style={{flex: 1, backgroundColor: themeColors.white}}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
+    <View style={{flex: 1, backgroundColor: themeColors.white}}>
       <Header />
       <View style={{backgroundColor: themeColors.white}}>
         <Text
@@ -280,7 +275,7 @@ export default function MyServiceScreen() {
           </Modal>
         )}
       </View>
-    </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

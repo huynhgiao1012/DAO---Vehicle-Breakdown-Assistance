@@ -52,9 +52,6 @@ export default function RatingScreen({route}) {
     transform: [{scale: animatedButtonScale}],
   };
   const onSubmitForm = () => {
-    console.log(item);
-    console.log(text);
-    console.log(starRating);
     if (!starRating) {
       Alert.alert('Noification', 'Please drag on the star for rating', [
         {
@@ -72,7 +69,7 @@ export default function RatingScreen({route}) {
       .then(payload => {
         console.log(payload);
         if (payload.success) {
-          navigation.navigate('Main');
+          navigation.navigate('Home');
         }
       });
   };

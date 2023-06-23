@@ -1,7 +1,7 @@
 import React, {memo, useEffect, useState} from 'react';
 import {Rating} from 'react-native-ratings';
 import FastImage from 'react-native-fast-image';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Linking, TouchableOpacity} from 'react-native';
 import {
   INNER_CARD_HEIGHT,
   INNER_CARD_WIDTH,
@@ -10,6 +10,7 @@ import {
 } from '../utils/constants';
 import {themeColors} from '../theme';
 import {useGetAllFbMutation} from '../services/Feedback';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Card = ({item}) => {
   const [getAllFb] = useGetAllFbMutation();
@@ -30,24 +31,22 @@ const Card = ({item}) => {
         }
       });
   }, []);
+  const openDialScreen = num => {
+    if (Platform.OS === 'ios') {
+      number = `telprompt:${num}`;
+    } else {
+      number = `tel:${num}`;
+    }
+    Linking.openURL(number);
+  };
   return (
     <View style={styles.outerCard}>
       <View style={styles.innerCard}>
-        {item?.image == 'NA' ? (
-          <View style={styles.noView}>
-            <Text style={styles.noTxt} numberOfLines={2}>
-              No Photo Available
-            </Text>
-          </View>
-        ) : (
-          <FastImage
-            source={{
-              uri: image,
-            }}
-            style={styles.img}
-            resizeMode={FastImage.resizeMode.stretch}
-          />
-        )}
+        <FastImage
+          source={require('../../assets/images/service.png')}
+          style={styles.img}
+          resizeMode={FastImage.resizeMode.stretch}
+        />
         <View style={styles.right}>
           <View style={styles.top}>
             <Text numberOfLines={2} style={styles.name}>
@@ -67,17 +66,45 @@ const Card = ({item}) => {
                 {rating || 0} ({totalRatings || 0} Ratings)
               </Text>
             </View>
-            <Text numberOfLines={2} style={styles.status}>
-              Email: <Text style={styles.black}>{item?.email}</Text>
-            </Text>
-            <Text style={styles.status} numberOfLines={1}>
-              Phone No: <Text style={styles.black}>{item?.phoneNo}</Text>
-            </Text>
             <Text style={styles.status} numberOfLines={2}>
               Address: <Text style={styles.black}>{item?.address} </Text>
             </Text>
             <Text style={styles.status} numberOfLines={2}>
-              Distance: <Text style={styles.black}>{item?.distance} </Text>
+              Open Time: <Text style={styles.black}>{item?.openTime} </Text>
+            </Text>
+            <Text style={styles.status} numberOfLines={2}>
+              Close Time: <Text style={styles.black}>{item?.closeTime} </Text>
+            </Text>
+            <Text numberOfLines={2} style={styles.status}>
+              Email: <Text style={styles.black}>{item?.email}</Text>
+            </Text>
+            <TouchableOpacity
+              onPress={() => openDialScreen(item?.phoneNo)}
+              style={{
+                borderColor: themeColors.primaryColor,
+                borderRadius: 3,
+                paddingHorizontal: 3,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1,
+                marginTop: 2,
+              }}>
+              <Text>
+                <Icon name="phone" size={11} color={themeColors.primaryColor} />
+              </Text>
+              <Text
+                style={{
+                  fontSize: 11,
+                  padding: 3,
+                  color: themeColors.primaryColor,
+                }}>
+                {item?.phoneNo}
+              </Text>
+            </TouchableOpacity>
+            <Text style={styles.status2} numberOfLines={2}>
+              Distance: <Text style={styles.status2}>{item?.distance} </Text>
             </Text>
           </View>
         </View>
@@ -106,13 +133,13 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     shadowOpacity: 0.3,
     shadowOffset: {x: 2, y: -2},
-    height: 180,
+    height: 200,
     width: INNER_CARD_WIDTH,
     overflow: 'hidden',
     elevation: 6,
     padding: 10,
   },
-  img: {height: '100%', width: '30%', borderRadius: 6},
+  img: {height: '100%', width: '40%', borderRadius: 6},
   noView: {
     height: '100%',
     width: '35%',
@@ -156,6 +183,15 @@ const styles = StyleSheet.create({
     color: themeColors.blue,
     fontWeight: 'bold',
     marginVertical: 1,
+  },
+  status2: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 11,
+    color: themeColors.primaryColor,
+    fontWeight: 'bold',
+    marginVertical: 1,
+    fontStyle: 'italic',
+    alignSelf: 'flex-end',
   },
   black: {color: themeColors.blue, fontWeight: 400},
 });

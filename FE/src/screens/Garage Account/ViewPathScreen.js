@@ -49,7 +49,6 @@ export default function ViewPathScreen({route}) {
       });
   }, []);
   useEffect(() => {
-    console.log('hihi');
     console.log('origins', origins);
     console.log('destinations', destinations);
     if (getSpecificCorCompany.isSuccess === true) {
@@ -99,13 +98,20 @@ export default function ViewPathScreen({route}) {
             latitude: origins && origins.lat,
             longitude: origins && origins.lng,
           }}
-          title="Your Current Place"
-          description="This is your current place"></Marker>
-
+          title="Garage"
+          description="This is garage's position"></Marker>
+        <Marker
+          draggable
+          coordinate={{
+            latitude: destinations && destinations.lat,
+            longitude: destinations && destinations.lng,
+          }}
+          title="Customer's Position"
+          description="This is customer's position"></Marker>
         <Polyline
           coordinates={newCordinates}
           strokeWidth={5}
-          strokeColor={themeColors.primaryColor}
+          strokeColor="#3399ff"
         />
       </MapView>
       <View style={{position: 'absolute', bottom: 20, right: 20}}>

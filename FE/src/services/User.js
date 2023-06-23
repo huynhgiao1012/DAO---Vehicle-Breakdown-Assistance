@@ -29,7 +29,7 @@ export const userApi = createApi({
         url: '/userPoint',
       }),
     }),
-    getCompanyAccountDetail: builder.query({
+    getCompanyAccountDetail: builder.mutation({
       query: () => ({
         url: '/userDetail',
       }),
@@ -52,6 +52,6 @@ export const userApi = createApi({
 export const {
   useGetUserDetailQuery,
   useGetUserPointQuery,
-  useGetCompanyAccountDetailQuery,
+  useGetCompanyAccountDetailMutation,
   useChangePasswordMutation,
 } = userApi;

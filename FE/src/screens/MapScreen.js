@@ -37,7 +37,6 @@ const MapScreen = props => {
   const [distanceMatrix] = useDistanceMatrixMutation();
   const getCorCompany = useGetCorCompanyQuery();
   const [getCompanyDetail] = useGetCompanyDetailMutation();
-  const socketIO = props.socketIO;
   const [region, setRegion] = useState({
     latitude: 10.5369728,
     longitude: 106.6734779,
@@ -185,6 +184,8 @@ const MapScreen = props => {
                   phoneNo: detail.data.phone,
                   email: detail.data.email,
                   distance: val.distance.text,
+                  openTime: detail.companyDetail.openTime,
+                  closeTime: detail.companyDetail.closeTime,
                 };
               }),
             );
@@ -264,9 +265,7 @@ const MapScreen = props => {
   const renderCard = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate('GarageDetail', {id: item.id, socketIO: socketIO})
-        }>
+        onPress={() => navigation.navigate('GarageDetail', {id: item.id})}>
         <Card item={item} />
       </TouchableOpacity>
     );
@@ -425,8 +424,8 @@ const styles = StyleSheet.create({
     bottom: 30,
   },
   icon: {fontSize: 22, color: 'grey'},
-  left: {position: 'absolute', left: 5, zIndex: 10, top: 0},
-  right: {position: 'absolute', right: 5, top: 0},
+  left: {position: 'absolute', left: 5, zIndex: 10, top: -20},
+  right: {position: 'absolute', right: 5, top: -20},
   distance: {
     backgroundColor: themeColors.primaryColor,
     borderWidth: 1,

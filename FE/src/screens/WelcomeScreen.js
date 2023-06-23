@@ -4,7 +4,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {themeColors} from '../theme/index';
 import {useNavigation} from '@react-navigation/native';
 import {StyleSheet} from 'react-native';
-
+import LinearGradient from 'react-native-linear-gradient';
 export default function WelcomeScreen() {
   const navigation = useNavigation();
   return (
@@ -24,11 +24,15 @@ export default function WelcomeScreen() {
             borderTopRightRadius: 50,
             paddingVertical: 50,
           }}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.buttonTitle}>Sign Up</Text>
-          </TouchableOpacity>
+          <LinearGradient
+            colors={[themeColors.primaryColor, themeColors.primaryColor2]}
+            start={{x: 0, y: 0.5}}
+            end={{x: 1, y: 0.5}}
+            style={styles.button}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text style={styles.buttonTitle}>Sign Up</Text>
+            </TouchableOpacity>
+          </LinearGradient>
           <View style={styles.group}>
             <Text style={styles.text3}>Already have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>

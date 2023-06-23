@@ -24,8 +24,8 @@ import {
 import {KEY_TOKEN} from '../utils/constants';
 import * as yup from 'yup';
 import {useEffect, useState} from 'react';
-import {io} from 'socket.io-client';
 import jwt_decode from 'jwt-decode';
+import LinearGradient from 'react-native-linear-gradient';
 const loginValidationSchema = yup.object().shape({
   email: yup
     .string()
@@ -100,190 +100,168 @@ export default function LoginScreen({route}) {
   };
 
   return (
-    <View style={{backgroundColor: themeColors.primaryColor, flex: 1}}>
-      {isLoading && (
-        <Modal isVisible={true} transparent={true}>
+    <LinearGradient
+      style={{backgroundColor: themeColors.primaryColor, flex: 1}}
+      colors={[themeColors.primaryColor, themeColors.primaryColor2]}>
+      <View>
+        {isLoading && (
+          <Modal isVisible={true} transparent={true}>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginVertical: '90%',
+                alignSelf: 'center',
+              }}>
+              <ActivityIndicator size={40} color={themeColors.white} />
+            </View>
+          </Modal>
+        )}
+        <SafeAreaView>
           <View
             style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginVertical: '90%',
-              alignSelf: 'center',
+              display: 'flex',
+              justifyContent: 'flex-start',
             }}>
-            <ActivityIndicator size={40} color={themeColors.white} />
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Icon
+                name="arrow-left"
+                size={26}
+                color={themeColors.white}
+                style={{marginVertical: 10, marginHorizontal: 20}}
+              />
+            </TouchableOpacity>
           </View>
-        </Modal>
-      )}
-      <SafeAreaView>
+          <Image
+            source={require('../../assets/images/logo2.png')}
+            style={{
+              width: 200,
+              height: 200,
+              marginVertical: 10,
+              alignSelf: 'center',
+            }}
+          />
+        </SafeAreaView>
         <View
           style={{
-            display: 'flex',
-            justifyContent: 'flex-start',
+            borderTopLeftRadius: 50,
+            borderTopRightRadius: 50,
+            marginHorizontal: 30,
           }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon
-              name="arrow-left"
-              size={26}
-              color={themeColors.white}
-              style={{marginVertical: 10, marginHorizontal: 20}}
-            />
-          </TouchableOpacity>
-        </View>
-        <Image
-          source={require('../../assets/images/logo2.png')}
-          style={{
-            width: 200,
-            height: 200,
-            marginVertical: 10,
-            alignSelf: 'center',
-          }}
-        />
-      </SafeAreaView>
-      <View
-        style={{
-          borderTopLeftRadius: 50,
-          borderTopRightRadius: 50,
-          marginHorizontal: 30,
-        }}>
-        <Formik
-          validationSchema={loginValidationSchema}
-          onSubmit={values => Login(values)}
-          initialValues={{email: '', password: ''}}>
-          {({errors, handleChange, handleBlur, handleSubmit, touched}) => {
-            return (
-              <View>
-                <View style={styles.title}>
-                  <Text
-                    style={{
-                      color: themeColors.white,
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                    }}>
-                    Email
-                  </Text>
-                  {errors.email && touched.email && (
-                    <Text style={styles.errorText}>*{errors.email}*</Text>
-                  )}
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholderTextColor={themeColors.white}
-                  onChangeText={handleChange('email')}
-                />
-                <View style={styles.title}>
-                  <Text
-                    style={{
-                      color: themeColors.white,
-                      fontSize: 20,
-                      fontWeight: 'bold',
-                    }}>
-                    Password
-                  </Text>
-                  {errors.password && touched.password && (
-                    <Text style={styles.errorText}>*{errors.password}*</Text>
-                  )}
-                </View>
-                <TextInput
-                  secureTextEntry
-                  style={styles.input}
-                  placeholderTextColor={themeColors.white}
-                  onChangeText={handleChange('password')}
-                />
+          <Formik
+            validationSchema={loginValidationSchema}
+            onSubmit={values => Login(values)}
+            initialValues={{email: '', password: ''}}>
+            {({errors, handleChange, handleBlur, handleSubmit, touched}) => {
+              return (
+                <View>
+                  <View style={styles.title}>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        fontSize: 20,
+                        fontWeight: 'bold',
+                      }}>
+                      Email
+                    </Text>
+                    {errors.email && touched.email && (
+                      <Text style={styles.errorText}>*{errors.email}*</Text>
+                    )}
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholderTextColor={themeColors.white}
+                    onChangeText={handleChange('email')}
+                  />
+                  <View style={styles.title}>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        fontSize: 20,
+                        fontWeight: 'bold',
+                      }}>
+                      Password
+                    </Text>
+                    {errors.password && touched.password && (
+                      <Text style={styles.errorText}>*{errors.password}*</Text>
+                    )}
+                  </View>
+                  <TextInput
+                    secureTextEntry
+                    style={styles.input}
+                    placeholderTextColor={themeColors.white}
+                    onChangeText={handleChange('password')}
+                  />
 
-                <TouchableOpacity
-                  className="flex items-end"
-                  onPress={() => navigation.navigate('ForgotPassword')}>
-                  <Text
+                  <TouchableOpacity
+                    className="flex items-end"
+                    onPress={() => navigation.navigate('ForgotPassword')}>
+                    <Text
+                      style={{
+                        alignSelf: 'flex-end',
+                        padding: 10,
+                        color: themeColors.white,
+                        fontStyle: 'italic',
+                      }}>
+                      Forgot Password?
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleSubmit}
                     style={{
-                      alignSelf: 'flex-end',
-                      padding: 10,
-                      color: themeColors.white,
-                      fontStyle: 'italic',
+                      alignSelf: 'center',
+                      backgroundColor: themeColors.blue,
+                      padding: 15,
+                      width: '80%',
+                      borderRadius: 30,
                     }}>
-                    Forgot Password?
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleSubmit}
-                  style={{
-                    alignSelf: 'center',
-                    backgroundColor: themeColors.blue,
-                    padding: 15,
-                    width: '80%',
-                    borderRadius: 30,
-                  }}>
-                  <Text
-                    style={{
-                      color: themeColors.white,
-                      textAlign: 'center',
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                    }}>
-                    Login
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-        </Formik>
-        <Text
-          style={{
-            textAlign: 'center',
-            marginVertical: 10,
-            fontWeight: 'bold',
-            color: themeColors.black,
-          }}>
-          Or
-        </Text>
-        {/* <View
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            flexDirection: 'row',
-          }}>
-          <TouchableOpacity style={{paddingHorizontal: 10}}>
-            <Image
-              source={require('../../assets/icons/google.png')}
-              className="w-10 h-10"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={{paddingHorizontal: 10}}>
-            <Image
-              source={require('../../assets/icons/apple.png')}
-              className="w-10 h-10"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={{paddingHorizontal: 10}}>
-            <Image
-              source={require('../../assets/icons/facebook.png')}
-              className="w-10 h-10"
-            />
-          </TouchableOpacity>
-        </View> */}
-        <View
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            flexDirection: 'row',
-            marginVertical: 8,
-          }}>
-          <Text>Don't have an account?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                color: themeColors.white,
-              }}>
-              {' '}
-              Sign Up
-            </Text>
-          </TouchableOpacity>
+                    <Text
+                      style={{
+                        color: themeColors.white,
+                        textAlign: 'center',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                      }}>
+                      Login
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          </Formik>
+          <Text
+            style={{
+              textAlign: 'center',
+              marginVertical: 10,
+              fontWeight: 'bold',
+              color: themeColors.black,
+            }}>
+            Or
+          </Text>
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignContent: 'center',
+              flexDirection: 'row',
+              marginVertical: 8,
+            }}>
+            <Text>Don't have an account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  color: themeColors.white,
+                }}>
+                {' '}
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 const styles = StyleSheet.create({

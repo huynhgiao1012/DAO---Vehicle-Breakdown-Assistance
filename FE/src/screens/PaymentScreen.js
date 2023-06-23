@@ -23,7 +23,7 @@ export default function PaymentScreen({route}) {
   const onCheckout = async () => {
     // 1. Create a payment intent
     const response = await createPaymentIntent({
-      amount: Math.floor(item.price * 10),
+      amount: Math.floor(item.price * 1),
     });
     if (response.error) {
       Alert.alert('Something went wrong');

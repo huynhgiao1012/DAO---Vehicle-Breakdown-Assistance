@@ -30,6 +30,7 @@ export default function GarageNotiScreen() {
     getUnreadNoti()
       .unwrap()
       .then(payload => {
+        console.log('noti', payload);
         setUnread([]);
         if (payload) {
           setUnread(prev => [...prev, ...payload.data].reverse());

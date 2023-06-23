@@ -13,7 +13,7 @@ import {useGetAllFbMutation} from '../services/Feedback';
 export default function GarageScreen({route}) {
   const [getCompanyDetail] = useGetCompanyDetailMutation();
 
-  const {id, socketIO} = route.params;
+  const {id} = route.params;
   const [data, setData] = useState({
     companyDetail: {
       __v: 0,
@@ -79,7 +79,7 @@ export default function GarageScreen({route}) {
   }, []);
 
   return (
-    <ScrollView>
+    <ScrollView style={{backgroundColor: themeColors.white}}>
       <Header />
       <View style={styles.headerView}>
         <View>
@@ -212,7 +212,7 @@ export default function GarageScreen({route}) {
             SERVICE
           </Text>
         </View>
-        <ServiceList id={id} socketIO={socketIO} />
+        <ServiceList id={id} />
         <View style={styles.title}>
           <Icon
             name="gratipay"
@@ -318,5 +318,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     marginVertical: 10,
+    borderWidth: 1,
+    borderColor: themeColors.gray,
   },
 });

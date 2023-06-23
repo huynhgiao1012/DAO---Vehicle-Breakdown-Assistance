@@ -1,24 +1,34 @@
 import {
   View,
   Text,
-  TouchableOpacity,
-  Image,
+  Linking,
   TextInput,
   StyleSheet,
-  Dimensions,
   ScrollView,
+  Animated,
+  Platform,
+  PermissionsAndroid,
+  ActivityIndicator,
+  TouchableOpacity,
+  Dimensions,
   FlatList,
 } from 'react-native';
 import React from 'react';
+import {useEffect, useState} from 'react';
+import GetLocation from 'react-native-get-location';
 import {themeColors} from '../theme';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useDistanceMatrixMutation} from '../services/Map';
+import {
+  useGetCompanyDetailMutation,
+  useGetCorCompanyQuery,
+} from '../services/Company';
 import {useNavigation} from '@react-navigation/native';
-import {useState} from 'react';
+
 // subscribe for more videos like this :)
 export default function ListScreen() {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
-  const [distanceNum, setDistanceNum] = useState(0);
+  const [distanceNum, setDistanceNum] = useState(10);
   const [markers, setMarkers] = React.useState([]);
   const [distanceMatrix] = useDistanceMatrixMutation();
   const getCorCompany = useGetCorCompanyQuery();
@@ -29,69 +39,161 @@ export default function ListScreen() {
     latitudeDelta: 0.015,
     longitudeDelta: 0.0121,
   });
+  const [places, setPlaces] = useState([]);
   const companyCoordinates = [];
-  const data = [
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 1,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 2,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 3,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 4,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 5,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 6,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 7,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 8,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 9,
-    },
-    {
-      name: 'Jonh Garage',
-      address: 'ABC Street, D City',
-      distance: '10km',
-      id: 10,
-    },
-  ];
+  useEffect(() => {
+    requestPermission();
+  }, []);
+  useEffect(() => {
+    console.log('distanceNum', distanceNum);
+    setMarkers([]);
+    if (getCorCompany.isSuccess) {
+      // console.log('data', getCorCompany.data.data);
+      getCorCompany.data.data.map(val => {
+        const obj = {id: val.accountId, latitude: val.lat, longitude: val.long};
+        companyCoordinates.push(obj);
+      });
+    } else {
+      <View style={{flex: 1, justifyContent: 'center'}}>
+        <ActivityIndicator size="large" color={themeColors.primaryColor} />
+      </View>;
+    }
+    getCurrentLocation();
+  }, [distanceNum]);
+  const requestPermission = async () => {
+    if (Platform.OS == 'android') {
+      getCurrentLocation();
+    } else {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      // console.log(granted);
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) getCurrentLocation();
+      else {
+        alert('notGranted');
+      }
+    }
+  };
+  const getCurrentLocation = () => {
+    GetLocation.getCurrentPosition({
+      enableHighAccuracy: false,
+      timeout: 10000,
+    })
+      .then(location => {
+        setRegion({
+          ...region,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        });
+        apiCall(location.latitude, location.longitude);
+      })
+      .catch(error => {
+        return error;
+      });
+    setLoading(false);
+  };
+  const apiCall = async (latitude, longitude) => {
+    setPlaces([]);
+    try {
+      var string = '';
+      let markerList = [];
+      companyCoordinates.map(val => {
+        if (string.length === 0) {
+          string = val.latitude + ',' + val.longitude;
+        } else {
+          string = string + '%7C' + val.latitude + ',' + val.longitude;
+        }
+      });
+
+      distanceMatrix({
+        latitude: latitude,
+        longitude: longitude,
+        string: string,
+      })
+        .unwrap()
+        .then(async payload => {
+          // console.log('payload', payload.rows[0].elements);
+          const withIndex = await payload.rows[0].elements.map((val, index) => {
+            while (index <= companyCoordinates.length) {
+              const id = companyCoordinates[index].id;
+              return {id: id, ...val};
+            }
+          });
+          const sortedList = withIndex.sort(
+            (a, b) => a.distance.value - b.distance.value,
+          );
+
+          const showedMarker = [];
+          sortedList.map(val => {
+            if (val.distance.value <= distanceNum * 1000)
+              showedMarker.push(val);
+          });
+          console.log('showedMarker', showedMarker);
+          companyCoordinates.map(val => {
+            showedMarker.map(value => {
+              if (val.id === value.id) {
+                const obj = {
+                  ...val,
+                  distance: value.distance,
+                  duration: value.duration,
+                };
+                markerList.push(obj);
+              }
+            });
+          });
+          // console.log('markerList', markerList);
+          const sortedMarker = markerList.sort(
+            (a, b) => a.distance.value - b.distance.value,
+          );
+          // console.log('sortedMarker', sortedMarker);
+          if (!sortedMarker.length) {
+            setPlaces([]);
+          } else {
+            let newMarkers = await Promise.all(
+              sortedMarker.map(async val => {
+                let detail = {};
+                await getCompanyDetail({id: val.id})
+                  .unwrap()
+                  .then(payload => (detail = payload))
+                  .catch(error => {
+                    return error;
+                  });
+                return {
+                  id: detail.data._id,
+                  coordinate: {
+                    latitude: detail.companyDetail.lat,
+                    longitude: detail.companyDetail.long,
+                  },
+                  title: detail.data.name,
+                  address: detail.companyDetail.address || 'Not Available',
+                  image: 'NA',
+                  phoneNo: detail.data.phone,
+                  email: detail.data.email,
+                  distance: val.distance.text,
+                  openTime: detail.companyDetail.openTime,
+                  closeTime: detail.companyDetail.closeTime,
+                };
+              }),
+            );
+            setPlaces(newMarkers);
+            console.log(places);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+  const openDialScreen = num => {
+    if (Platform.OS === 'ios') {
+      number = `telprompt:${num}`;
+    } else {
+      number = `tel:${num}`;
+    }
+    Linking.openURL(number);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.boxHeader}>
@@ -117,19 +219,30 @@ export default function ListScreen() {
           <Text style={styles.text}>50 km</Text>
         </TouchableOpacity>
       </View>
+      <Text
+        style={{
+          color: themeColors.gray60,
+          fontStyle: 'italic',
+          marginHorizontal: 20,
+          fontSize: 18,
+          fontWeight: '600',
+          paddingBottom: 5,
+        }}>
+        Nearby places in {distanceNum}km
+      </Text>
       <FlatList
-        style={{marginBottom: 50}}
+        style={{marginBottom: 150}}
         ItemSeparatorComponent={
           Platform.OS !== 'android' &&
           (({highlighted}) => (
             <View style={[styles.separator, highlighted && {marginLeft: 0}]} />
           ))
         }
-        data={data}
+        data={places.length === 0 ? [] : places}
         renderItem={({item, index, separators}) => (
           <TouchableOpacity
             key={item.id}
-            onPress={() => navigation.navigate('GarageDetail')}>
+            onPress={() => navigation.navigate('GarageDetail', {id: item.id})}>
             <View
               style={{
                 paddingHorizontal: 20,
@@ -142,34 +255,70 @@ export default function ListScreen() {
               }}>
               <Text
                 style={{
-                  paddingBottom: 10,
+                  fontSize: 13,
+                  color: themeColors.white,
+                  fontWeight: '600',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  backgroundColor: themeColors.blue,
+                  padding: 3,
+                  borderTopRightRadius: 20,
+                  borderBottomLeftRadius: 20,
+                  width: 100,
+                  textAlign: 'center',
+                }}>
+                {item.distance}
+              </Text>
+              <Text
+                style={{
                   fontWeight: '900',
                   fontSize: 18,
                   color: themeColors.blue,
+                  width: '70%',
+                  marginTop: 10,
                 }}>
-                {item.name}
+                {item.title}
               </Text>
-              <View
+              <Text
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
+                  fontSize: 14,
+                  color: themeColors.gray60,
+                  fontStyle: 'italic',
                 }}>
+                {item.address}
+              </Text>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: themeColors.blue,
+                  fontStyle: 'italic',
+                }}>
+                Hour Working: {item.openTime} - {item.closeTime}
+              </Text>
+              <View style={{alignSelf: 'flex-end'}}>
                 <Text
                   style={{
-                    fontSize: 16,
-                    color: themeColors.gray60,
+                    fontSize: 14,
+                    color: themeColors.primaryColor,
+                    fontWeight: '700',
                   }}>
-                  {item.address}
+                  Email: {item.email}
                 </Text>
-                <Text
+                <TouchableOpacity
+                  onPress={() => openDialScreen(item?.phoneNo)}
                   style={{
-                    fontSize: 16,
-                    color: themeColors.gray60,
-                    fontWeight: '800',
+                    marginTop: 2,
                   }}>
-                  {item.distance}
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: themeColors.primaryColor,
+                      fontWeight: '700',
+                    }}>
+                    Phone: {item.phoneNo}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
