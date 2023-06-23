@@ -16,6 +16,12 @@ router.get(
   formController.getAllFormByGarage
 );
 router.get(
+  "/getAllFormAdmin",
+  jwtAuth,
+  authorize("admin"),
+  formController.getAllFormAdmin
+);
+router.get(
   "/getAllForm/:id",
   jwtAuth,
   authorize("admin"),

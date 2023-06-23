@@ -88,6 +88,19 @@ exports.getAllForm = catchAsync(async (req, res) => {
     data,
   });
 });
+exports.getAllFormAdmin = catchAsync(async (req, res) => {
+  const data = await orderForm
+    .find()
+    .populate("customerId", "name email phone _id")
+    .populate("serviceId", "type price description _id");
+  if (!data) {
+    throw new ApiError(400, "Form is unavailable");
+  }
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
 exports.getFormDetail = catchAsync(async (req, res) => {
   const { id } = req.params;
   const data = await orderForm

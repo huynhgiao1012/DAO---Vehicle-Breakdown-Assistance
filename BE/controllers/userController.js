@@ -63,8 +63,6 @@ exports.deleteUser = catchAsync(async (req, res) => {
 exports.updateUser = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { name, phone } = req.body;
-  console.log("name", name);
-  console.log("phone", phone);
   const user = await User.findByIdAndUpdate(
     id,
     { name: name, phone: phone },
