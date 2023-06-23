@@ -42,15 +42,15 @@ const style = {
 };
 const Datatable = () => {
   const [data, setData] = useState([]);
-  const [isDelete, setIsDelete] = useState(true);
   const [service, setService] = useState([]);
   const [orderForm, setForm] = useState([]);
   const [getAllUser] = useGetAllUserMutation();
-  const [getUser] = useGetUserMutation();
   const [getService] = useGetCompanyServiceMutation();
+  const [deleteService] = useDeleteServiceMutation();
   const [getAllForm] = useGetAllFormMutation();
   const [updateService] = useUpdateServiceMutation();
   const [addService] = useAddServiceMutation();
+  const [serviceId, setServiceId] = useState("");
   const [isCreate, setIsCreate] = useState(false);
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,6 +103,8 @@ const Datatable = () => {
   const handleClose = () => {
     setOpen(false);
     setIsModalOpen(false);
+    setIsCreate(false);
+    form.resetFields();
   };
 
   const loadData = () => {
@@ -154,8 +156,19 @@ const Datatable = () => {
     }
   }, []);
 
-  const handleEdit = (id) => {
-    // handleOpen(id);
+  const handleDelete = (id) => {
+    deleteService({ id: id })
+      .unwrap()
+      .then((payload) => {
+        if (payload.success === true) {
+          notification.open({
+            message: "Delete service",
+            description: payload.message,
+          });
+          handleClose();
+        }
+      })
+      .catch((error) => console.log(error));
   };
   const handleViewService = (id) => {
     setOpen(true);
@@ -172,6 +185,9 @@ const Datatable = () => {
             description: val.description,
             price: val.price,
           });
+        });
+        form.setFieldsValue({
+          GarageId: id,
         });
         setService((prev) => [...prev, ...newArr]);
       })
@@ -204,6 +220,7 @@ const Datatable = () => {
 
   const createService = () => {
     form.setFieldsValue({
+      Id: "",
       Service: "",
       Description: "",
       Price: "",
@@ -215,7 +232,6 @@ const Datatable = () => {
     service.map((val) => {
       if (val.id === id[0]) {
         form.setFieldsValue({
-          GarageId: val.garageId,
           Id: val.id,
           Service: val.service,
           Description: val.description,
@@ -239,8 +255,16 @@ const Datatable = () => {
               message: "Update service",
               description: "Success",
             });
-            setOpen(false);
+            handleClose();
           } else {
+            notification.open({
+              message: "Update service",
+              description: "False",
+            });
+          }
+        })
+        .catch((error) => {
+          if (error) {
             notification.open({
               message: "Update service",
               description: "False",
@@ -261,7 +285,7 @@ const Datatable = () => {
               message: "Create service",
               description: "Success",
             });
-            setOpen(false);
+            handleClose();
           } else {
             notification.open({
               message: "Update service",
@@ -292,13 +316,6 @@ const Datatable = () => {
             >
               View Order Form
             </div>
-
-            {/* <div
-              className="editButton"
-              onClick={() => handleEdit(params.row.id)}
-            >
-              Update Detail
-            </div> */}
           </div>
         );
       },
@@ -341,15 +358,21 @@ const Datatable = () => {
         open={open}
         bodyStyle={{
           paddingBottom: 80,
-          marginTop: 50,
+          marginTop: 10,
         }}
       >
+        <Typography
+          style={{ fontSize: 14, fontStyle: "italic", color: "#bbbbbb" }}
+        >
+          *Click this button to create service*
+        </Typography>
         <Button
           onClick={createService}
           style={{
             backgroundColor: "#6439ff",
             color: "white",
             marginBottom: 20,
+            width: 220,
           }}
         >
           Create Service
@@ -368,9 +391,11 @@ const Datatable = () => {
             pageSize={9}
             rowsPerPageOptions={[9]}
             disableVirtualization
-            onRowSelectionModelChange={(item) => viewSevice(item)}
+            onRowSelectionModelChange={(item) => {
+              viewSevice(item);
+              setServiceId(item[0]);
+            }}
             disableMultipleSelection={true}
-            rowSelection={isDelete}
           />
           <Form
             form={form}
@@ -468,7 +493,7 @@ const Datatable = () => {
               </Col>
             </Row>
             <Row gutter={16}>
-              <Col span={24}>
+              <Col span={12}>
                 <Button
                   type="primary"
                   htmlType="submit"
@@ -481,6 +506,19 @@ const Datatable = () => {
                   }}
                 >
                   Submit
+                </Button>
+              </Col>
+              <Col span={12}>
+                <Button
+                  onClick={() => handleDelete(serviceId)}
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    backgroundColor: "#6439ff",
+                    width: "100%",
+                  }}
+                >
+                  Delete
                 </Button>
               </Col>
             </Row>

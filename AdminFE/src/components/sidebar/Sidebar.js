@@ -11,12 +11,16 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
-
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
+  const navigate = useNavigate();
+  const logOut = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
   return (
     <div className="sidebar">
       <div className="top">
@@ -54,7 +58,7 @@ const Sidebar = () => {
             <AccountCircleOutlinedIcon className="icon" />
             <span>Admin Profile</span>
           </li>
-          <li>
+          <li onClick={() => logOut()}>
             <ExitToAppIcon className="icon" />
             <span>Logout</span>
           </li>

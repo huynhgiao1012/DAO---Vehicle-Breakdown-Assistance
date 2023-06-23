@@ -57,6 +57,10 @@ export default function LoginComponent() {
   const navigate = useNavigate();
   useEffect(() => {
     localStorage.clear();
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+    window.history.forward();
   }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -73,26 +77,28 @@ export default function LoginComponent() {
       .then((payload) => {
         console.log(payload);
         if (payload) {
-          notification.open({
-            message: "Login",
-            description: "loginMessage1",
-            icon: <DownOutlined style={{ color: "green" }} />,
-          });
-          navigate("/home");
-          localStorage.setItem("token", payload.token);
-        } else {
-          notification.open({
-            message: "Login",
-            description: "loginMessage2",
-            icon: <CloseOutlined style={{ color: "red" }} />,
-          });
+          if (payload.role === "admin") {
+            notification.open({
+              message: "Login",
+              description: "Successfully",
+              icon: <DownOutlined style={{ color: "green" }} />,
+            });
+            navigate("/home");
+            localStorage.setItem("token", payload.token);
+          } else {
+            notification.open({
+              message: "Login",
+              description: "Failed ! Don't have permission",
+              icon: <CloseOutlined style={{ color: "red" }} />,
+            });
+          }
         }
       })
       .catch((error) => {
         if (error) {
           notification.open({
             message: "Login",
-            description: "loginMessage2",
+            description: "Failed",
             icon: <CloseOutlined style={{ color: "red" }} />,
           });
         }

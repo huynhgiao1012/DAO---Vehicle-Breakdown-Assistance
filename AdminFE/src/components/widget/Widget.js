@@ -3,15 +3,42 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import { useGetAllUserMutation } from "../../services/User";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useGetAllFormAdminMutation } from "../../services/OrderForm";
 const Widget = ({ type }) => {
   let data;
-
+  const [getAllUser] = useGetAllUserMutation();
+  const [getAllForm] = useGetAllFormAdminMutation();
+  const [userAmount, setUserAmount] = useState(0);
+  const [formAmount, setFormAmount] = useState(0);
+  const [balance, setBalance] = useState(0);
+  useEffect(() => {
+    getAllUser()
+      .unwrap()
+      .then((payload) => {
+        setUserAmount(payload.data.length);
+      })
+      .catch();
+    getAllForm()
+      .unwrap()
+      .then((payload) => {
+        setFormAmount(payload.data.length);
+        let num = 0;
+        payload.data.map((val) => {
+          num = num + val.price;
+        });
+        setBalance(num);
+      })
+      .catch();
+  }, []);
   switch (type) {
     case "user":
       data = {
         title: "USERS",
         isMoney: false,
-        amount: 100,
+        amount: userAmount,
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -27,7 +54,7 @@ const Widget = ({ type }) => {
       data = {
         title: "ORDERS",
         isMoney: false,
-        amount: 100,
+        amount: formAmount,
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -43,7 +70,7 @@ const Widget = ({ type }) => {
       data = {
         title: "BALANCE",
         isMoney: true,
-        amount: 100,
+        amount: balance,
         icon: (
           <AccountBalanceWalletOutlinedIcon
             className="icon"
@@ -64,7 +91,7 @@ const Widget = ({ type }) => {
       <div className="left">
         <span className="title">{data.title}</span>
         <span className="counter">
-          {data.isMoney && "$"} {data.amount}
+          {data.amount} {data.isMoney && "$"}
         </span>
         <span className="link">{data.link}</span>
       </div>

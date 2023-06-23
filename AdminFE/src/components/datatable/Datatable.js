@@ -109,6 +109,12 @@ const Datatable = () => {
           });
           setData((prev) => [...prev, ...newArr]);
         }
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          localStorage.clear();
+          navigate("/login");
+        }
       });
     if (getAllUser.error) {
       <Alert severity="error">
@@ -514,20 +520,40 @@ const Datatable = () => {
                 </Col>
               </Row>
             </Form>
-            <Button
-              type="primary"
-              htmlType="submit"
-              form="form"
+            <div
               style={{
-                width: "90%",
-                textAlign: "center",
-                backgroundColor: "#6439ff",
-                color: "white",
-                margin: "10px 30px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              Submit
-            </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                form="form"
+                style={{
+                  width: "90%",
+                  textAlign: "center",
+                  backgroundColor: "#6439ff",
+                  color: "white",
+                  margin: "10px 30px",
+                }}
+              >
+                Submit
+              </Button>
+              <Button
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  width: "90%",
+                  textAlign: "center",
+                  backgroundColor: "#6439ff",
+                  color: "white",
+                  margin: "10px 30px",
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
           </Box>
         </Modal>
       </div>
