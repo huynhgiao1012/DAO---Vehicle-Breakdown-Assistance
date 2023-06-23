@@ -24,8 +24,8 @@ export const serviceApi = createApi({
       }),
     }),
     addService: builder.mutation({
-      query: (payload) => ({
-        url: "/create",
+      query: ({ id, ...payload }) => ({
+        url: `/add/${id}`,
         method: "POST",
         body: payload,
         headers: {
@@ -56,7 +56,6 @@ export const serviceApi = createApi({
 // auto-generated based on the defined endpoints
 export const {
   useGetCompanyServiceMutation,
-  useBookingServiceMutation,
   useAddServiceMutation,
   useDeleteServiceMutation,
   useUpdateServiceMutation,

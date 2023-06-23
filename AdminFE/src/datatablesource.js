@@ -60,7 +60,7 @@ export const serviceColumns2 = [
   {
     field: "description",
     headerName: "Description",
-    width: 300,
+    width: 150,
   },
   {
     field: "price",

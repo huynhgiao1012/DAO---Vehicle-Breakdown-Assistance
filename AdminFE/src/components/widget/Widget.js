@@ -3,21 +3,15 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-
 const Widget = ({ type }) => {
   let data;
-
-  //temporary
-  const amount = 100;
-  const diff = 20;
 
   switch (type) {
     case "user":
       data = {
         title: "USERS",
         isMoney: false,
-        link: "See all users",
+        amount: 100,
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -33,7 +27,7 @@ const Widget = ({ type }) => {
       data = {
         title: "ORDERS",
         isMoney: false,
-        link: "View all orders",
+        amount: 100,
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -45,24 +39,11 @@ const Widget = ({ type }) => {
         ),
       };
       break;
-    case "earning":
-      data = {
-        title: "EARNINGS",
-        isMoney: true,
-        link: "View net earnings",
-        icon: (
-          <MonetizationOnOutlinedIcon
-            className="icon"
-            style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
-          />
-        ),
-      };
-      break;
     case "balance":
       data = {
         title: "BALANCE",
         isMoney: true,
-        link: "See details",
+        amount: 100,
         icon: (
           <AccountBalanceWalletOutlinedIcon
             className="icon"
@@ -83,14 +64,14 @@ const Widget = ({ type }) => {
       <div className="left">
         <span className="title">{data.title}</span>
         <span className="counter">
-          {data.isMoney && "$"} {amount}
+          {data.isMoney && "$"} {data.amount}
         </span>
         <span className="link">{data.link}</span>
       </div>
       <div className="right">
         <div className="percentage positive">
           <KeyboardArrowUpIcon />
-          {diff} %
+          10%
         </div>
         {data.icon}
       </div>

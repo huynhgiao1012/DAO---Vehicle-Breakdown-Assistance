@@ -20,9 +20,14 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { useGetCompanyServiceMutation } from "../../services/Service";
+import {
+  useGetCompanyServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+  useAddServiceMutation,
+} from "../../services/Service";
 import { useGetAllFormMutation } from "../../services/OrderForm";
-
+const { TextArea } = Input;
 const style = {
   position: "absolute",
   top: "50%",
@@ -37,82 +42,67 @@ const style = {
 };
 const Datatable = () => {
   const [data, setData] = useState([]);
-  const [tab, settab] = useState(10);
+  const [isDelete, setIsDelete] = useState(true);
   const [service, setService] = useState([]);
   const [orderForm, setForm] = useState([]);
   const [getAllUser] = useGetAllUserMutation();
   const [getUser] = useGetUserMutation();
   const [getService] = useGetCompanyServiceMutation();
   const [getAllForm] = useGetAllFormMutation();
-  const [isService, setIsService] = useState(false);
+  const [updateService] = useUpdateServiceMutation();
+  const [addService] = useAddServiceMutation();
+  const [isCreate, setIsCreate] = useState(false);
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const handleOpen = (id) => {
-    if (isService) {
-      setOpen(true);
-      getService({ id: id })
-        .unwrap()
-        .then((payload) => {
-          setService([]);
-          let newArr = [];
-          payload.data.map((val, index) => {
-            newArr.push({
-              id: val._id,
-              service: val.type,
-              description: val.description,
-              price: val.price,
-            });
-          });
-          setService((prev) => [...prev, ...newArr]);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      setIsModalOpen(true);
-      getAllForm({ id: id })
-        .unwrap()
-        .then((payload) => {
-          console.log(payload);
-          setForm([]);
-          let newArr = [];
-          payload.data.map((val, index) => {
-            newArr.push({
-              id: val._id,
-              cusName: val.customerId.name,
-              cusPhone: val.customerId.phone,
-              cusAdd: val.address,
-              serName: val.serviceId.type,
-              date: val.date.slice(0, 9).split("-").reverse().join("/"),
-              price: val.price,
-              isPaid: val.isPaid === true ? "Paid" : "Unpaid",
-            });
-          });
-          setForm((prev) => [...prev, ...newArr]);
-        })
-        .catch((error) => console.log(error));
-    }
-    // getUser({ id: id })
-    //   .unwrap()
-    //   .then((payload) => {
-    //     console.log(payload);
-    //     form.setFieldsValue({
-    //       Id: payload.data._id,
-    //       Name: payload.data.name,
-    //       Email: payload.data.email,
-    //       Phone: payload.data.phone,
-    //       Status: payload.data.isActive === true ? "Active" : "Inactive",
-    //       Role: payload.data.role,
-    //     });
-    //   });
-  };
+  // const handleOpen = (id) => {
+  //   if (isService) {
+  //     setOpen(true);
+  //     getService({ id: id })
+  //       .unwrap()
+  //       .then((payload) => {
+  //         setService([]);
+  //         let newArr = [];
+  //         payload.data.map((val, index) => {
+  //           newArr.push({
+  //             id: val._id,
+  //             service: val.type,
+  //             description: val.description,
+  //             price: val.price,
+  //           });
+  //         });
+  //         setService((prev) => [...prev, ...newArr]);
+  //       })
+  //       .catch((error) => console.log(error));
+  //   } else {
+  //     setIsModalOpen(true);
+  //     getAllForm({ id: id })
+  //       .unwrap()
+  //       .then((payload) => {
+  //         console.log(payload);
+  //         setForm([]);
+  //         let newArr = [];
+  //         payload.data.map((val, index) => {
+  //           newArr.push({
+  //             id: val._id,
+  //             cusName: val.customerId.name,
+  //             cusPhone: val.customerId.phone,
+  //             cusAdd: val.address,
+  //             serName: val.serviceId.type,
+  //             date: val.date.slice(0, 9).split("-").reverse().join("/"),
+  //             price: val.price,
+  //             isPaid: val.isPaid === true ? "Paid" : "Unpaid",
+  //           });
+  //         });
+  //         setForm((prev) => [...prev, ...newArr]);
+  //       })
+  //       .catch((error) => console.log(error));
+  //   }
+  // };
   const handleClose = () => {
-    setIsService(false);
-    if (isService) {
-      setOpen(false);
-    } else {
-      setIsModalOpen(false);
-    }
+    setOpen(false);
+    setIsModalOpen(false);
   };
 
   const loadData = () => {
@@ -163,78 +153,124 @@ const Datatable = () => {
       navigate("/login");
     }
   }, []);
-  const handleDelete = async (id) => {
-    // await deleteUser({ id: id })
-    //   .unwrap()
-    //   .then((payload) => {
-    //     if (payload.success) {
-    //       <Alert severity="success">{payload.message}</Alert>;
-    //     }
-    //   });
-    // setData(data.filter((item) => item.id !== id));
-    // loadData();
-  };
+
   const handleEdit = (id) => {
-    handleOpen(id);
+    // handleOpen(id);
   };
   const handleViewService = (id) => {
-    handleOpen(id);
-    setIsService(true);
+    setOpen(true);
+    getService({ id: id })
+      .unwrap()
+      .then((payload) => {
+        setService([]);
+        let newArr = [];
+        payload.data.map((val, index) => {
+          newArr.push({
+            id: val._id,
+            garageId: val.accountId,
+            service: val.type,
+            description: val.description,
+            price: val.price,
+          });
+        });
+        setService((prev) => [...prev, ...newArr]);
+      })
+      .catch((error) => console.log(error));
   };
   const handleViewForm = (id) => {
-    handleOpen(id);
-  };
-  const handleCreate = () => {
     setIsModalOpen(true);
+    getAllForm({ id: id })
+      .unwrap()
+      .then((payload) => {
+        console.log(payload);
+        setForm([]);
+        let newArr = [];
+        payload.data.map((val, index) => {
+          newArr.push({
+            id: val._id,
+            cusName: val.customerId.name,
+            cusPhone: val.customerId.phone,
+            cusAdd: val.address,
+            serName: val.serviceId.type,
+            date: val.date.slice(0, 9).split("-").reverse().join("/"),
+            price: val.price,
+            isPaid: val.isPaid === true ? "Paid" : "Unpaid",
+          });
+        });
+        setForm((prev) => [...prev, ...newArr]);
+      })
+      .catch((error) => console.log(error));
   };
-  const createService = () => {};
-  const editService = () => {};
-  const deleteService = () => {};
+
+  const createService = () => {
+    form.setFieldsValue({
+      Service: "",
+      Description: "",
+      Price: "",
+    });
+    setIsCreate(true);
+  };
+
+  const viewSevice = (id) => {
+    service.map((val) => {
+      if (val.id === id[0]) {
+        form.setFieldsValue({
+          GarageId: val.garageId,
+          Id: val.id,
+          Service: val.service,
+          Description: val.description,
+          Price: val.price,
+        });
+      }
+    });
+  };
   const onSubmit = async (values) => {
-    // console.log(values);
-    // if (isEdit) {
-    //   await updateUser({
-    //     id: values.Id,
-    //     name: values.Name,
-    //     phone: values.Phone,
-    //   })
-    //     .unwrap()
-    //     .then((payload) => {
-    //       if (payload.success === true) {
-    //         setOpen(false);
-    //         notification.open({
-    //           message: "Update profile",
-    //           description: "Success",
-    //         });
-    //         loadData();
-    //       } else {
-    //         notification.open({
-    //           message: "Update profile",
-    //           description: "False",
-    //         });
-    //       }
-    //     });
-    // } else {
-    //   await createUser({
-    //     name: values.Name,
-    //     email: values.Email,
-    //     phone: values.Phone,
-    //     openTime: values.Opentime,
-    //     closeTime: values.Closetime,
-    //     long: Number(values.Longitude),
-    //     lat: Number(values.Latitude),
-    //     address: values.Address,
-    //   })
-    //     .unwrap()
-    //     .then((payload) => {
-    //       alert(payload.message);
-    //       setIsModalOpen(false);
-    //     })
-    //     .catch((error) => {
-    //       console.log(error);
-    //       alert(error.data.message.duplicate);
-    //     });
-    // }
+    if (isCreate === false) {
+      await updateService({
+        id: values.Id,
+        type: values.Service,
+        price: values.Price,
+        description: values.Description,
+      })
+        .unwrap()
+        .then(async (payload) => {
+          if (payload.success === true) {
+            notification.open({
+              message: "Update service",
+              description: "Success",
+            });
+            setOpen(false);
+          } else {
+            notification.open({
+              message: "Update service",
+              description: "False",
+            });
+          }
+        });
+    } else {
+      await addService({
+        id: values.GarageId,
+        type: values.Service,
+        price: values.Price,
+        description: values.Description,
+      })
+        .unwrap()
+        .then((payload) => {
+          if (payload.success === true) {
+            notification.open({
+              message: "Create service",
+              description: "Success",
+            });
+            setOpen(false);
+          } else {
+            notification.open({
+              message: "Update service",
+              description: "False",
+            });
+          }
+        })
+        .catch((error) => console.log(error));
+    }
   };
   const actionColumn = [
     {
@@ -257,49 +293,18 @@ const Datatable = () => {
               View Order Form
             </div>
 
-            <div
+            {/* <div
               className="editButton"
               onClick={() => handleEdit(params.row.id)}
             >
               Update Detail
-            </div>
+            </div> */}
           </div>
         );
       },
     },
   ];
-  const actionColumn2 = [
-    {
-      field: "action",
-      headerName: "Action",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div className="cellAction">
-            <div
-              className="viewButton"
-              onClick={() => createService(params.row.id)}
-            >
-              View
-            </div>
-            <div
-              className="deleteButton"
-              onClick={() => deleteService(params.row.id)}
-            >
-              Delete
-            </div>
 
-            <div
-              className="editButton"
-              onClick={() => editService(params.row.id)}
-            >
-              Edit
-            </div>
-          </div>
-        );
-      },
-    },
-  ];
   return (
     <div className="datatable">
       <DataGrid
@@ -319,7 +324,6 @@ const Datatable = () => {
         >
           <Box sx={style}>
             <DataGrid
-              // getRowHeight={() => "auto"}
               className="datagrid"
               rows={orderForm}
               columns={formColumn}
@@ -331,8 +335,8 @@ const Datatable = () => {
         </Modal>
       </div>
       <Drawer
-        title={isService ? "SERVICE" : "ORDER FORM"}
-        width={900}
+        title={"SERVICE"}
+        width={910}
         onClose={handleClose}
         open={open}
         bodyStyle={{
@@ -340,73 +344,148 @@ const Datatable = () => {
           marginTop: 50,
         }}
       >
-        <DataGrid
-          className="datagrid"
-          rows={service}
-          columns={serviceColumns2.concat(actionColumn2)}
-          pageSize={9}
-          rowsPerPageOptions={[9]}
-          disableVirtualization
-        />
-        {/* <Form
-          form={form}
-          name="form"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 18 }}
-          initialValues={{ remember: true }}
-          onFinish={onSubmit}
-          autoComplete="off"
-          layout="vertical"
+        <Button
+          onClick={createService}
+          style={{
+            backgroundColor: "#6439ff",
+            color: "white",
+            marginBottom: 20,
+          }}
         >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Id" label="Id">
-                <Input
-                  style={{ border: "1px solid #100444", width: 220 }}
-                  readOnly={true}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Role" label="Role">
-                <Input
-                  style={{ border: "1px solid #100444", width: 220 }}
-                  readOnly={true}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Name" label="Name">
-                <Input style={{ border: "1px solid #100444", width: 220 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Email" label="Email">
-                <Input
-                  style={{ border: "1px solid #100444", width: 220 }}
-                  readOnly={true}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item name="Phone" label="Phone">
-                <Input style={{ border: "1px solid #100444", width: 220 }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item name="Status" label="Status">
-                <Input
-                  style={{ border: "1px solid #100444", width: 220 }}
-                  readOnly={true}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form> */}
+          Create Service
+        </Button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <DataGrid
+            className="datagrid"
+            rows={service}
+            columns={serviceColumns2}
+            pageSize={9}
+            rowsPerPageOptions={[9]}
+            disableVirtualization
+            onRowSelectionModelChange={(item) => viewSevice(item)}
+            disableMultipleSelection={true}
+            rowSelection={isDelete}
+          />
+          <Form
+            form={form}
+            name="form"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 30 }}
+            initialValues={{ remember: true }}
+            onFinish={onSubmit}
+            autoComplete="off"
+            layout="vertical"
+            style={{ marginLeft: 20 }}
+          >
+            <Row gutter={16}>
+              <Col span={24}>
+                <Typography
+                  style={{
+                    color: "#6439ff",
+                    fontWeight: "bolder",
+                    fontSize: 20,
+                    marginBottom: 10,
+                  }}
+                >
+                  Service Detail
+                </Typography>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="Id"
+                  label="Id"
+                  style={{ fontWeight: "bolder" }}
+                >
+                  <Input
+                    style={{
+                      border: "1px solid #100444",
+                      width: 150,
+                      color: "#e7e7e7",
+                    }}
+                    readOnly
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="GarageId"
+                  label="GarageId"
+                  style={{ fontWeight: "bolder" }}
+                >
+                  <Input
+                    style={{
+                      border: "1px solid #100444",
+                      width: 140,
+                      color: "#e7e7e7",
+                    }}
+                    readOnly
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="Service"
+                  label="Service"
+                  style={{ fontWeight: "bolder" }}
+                >
+                  <Input style={{ border: "1px solid #100444", width: 300 }} />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="Description"
+                  label="Description"
+                  style={{ fontWeight: "bolder" }}
+                >
+                  <TextArea
+                    style={{ border: "1px solid #100444", width: 300 }}
+                    autoSize={{ minRows: 2, maxRows: 6 }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="Price"
+                  label="Price"
+                  style={{ fontWeight: "bolder" }}
+                >
+                  <Input style={{ border: "1px solid #100444", width: 300 }} />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  form="form"
+                  style={{
+                    textAlign: "center",
+                    color: "white",
+                    backgroundColor: "#6439ff",
+                    width: "100%",
+                  }}
+                >
+                  Submit
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </div>
       </Drawer>
     </div>
   );
