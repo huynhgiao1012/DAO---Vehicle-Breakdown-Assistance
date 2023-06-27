@@ -226,7 +226,7 @@ export default function GarageFormScreen({route}) {
       </View>
       {/* LIST */}
       <FlatList
-        data={form}
+        data={form.reverse()}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => openModal(item._id)}>
             <View style={styles.item}>

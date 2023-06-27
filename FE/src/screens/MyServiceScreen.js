@@ -57,6 +57,17 @@ export default function MyServiceScreen() {
     setDetail(prev => [...prev, ...Item]);
     setIsOpen(true);
   };
+  const listFooter = () => {
+    return (
+      <View
+        style={{
+          width: '100%',
+          height: 30,
+          backgroundColor: themeColors.white,
+          marginTop: 20,
+        }}></View>
+    );
+  };
   return (
     <View style={{flex: 1, backgroundColor: themeColors.white}}>
       <Header />
@@ -72,7 +83,7 @@ export default function MyServiceScreen() {
           Booked Service
         </Text>
         <FlatList
-          style={{backgroundColor: 'white'}}
+          style={{backgroundColor: 'white', marginBottom: 100}}
           ItemSeparatorComponent={
             Platform.OS !== 'android' &&
             (({highlighted}) => (
@@ -82,6 +93,7 @@ export default function MyServiceScreen() {
             ))
           }
           data={data}
+          ListFooterComponent={listFooter}
           renderItem={({item, index, separators}) => (
             <TouchableOpacity
               key={item._id}

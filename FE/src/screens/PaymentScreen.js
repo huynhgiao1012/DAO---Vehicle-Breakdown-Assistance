@@ -11,12 +11,15 @@ import {useStripe} from '@stripe/stripe-react-native';
 import {useEffect} from 'react';
 import {StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useUpdateUserPointMutation} from '../services/User';
 export default function PaymentScreen({route}) {
   const {item} = route.params;
   const navigation = useNavigation();
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
   const [payment] = usePaymentMutation();
   const {initPaymentSheet, presentPaymentSheet} = useStripe();
+  const [updatePoint] = useUpdateUserPointMutation();
+
   useEffect(() => {
     // console.log(item);
   }, []);
@@ -53,6 +56,11 @@ export default function PaymentScreen({route}) {
     }
 
     // 4. If payment ok -> create the order
+    updatePoint({point: 10})
+      .unwrap()
+      .then(payload => {
+        console.log(payload);
+      });
     payment({id: item._id})
       .unwrap()
       .then(payload => {

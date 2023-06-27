@@ -6,11 +6,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {useGetUserDetailQuery, useGetUserPointQuery} from '../services/User';
 import {useEffect} from 'react';
 import {useState} from 'react';
+import {TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 export default function MyInfo() {
   const userData = useGetUserDetailQuery();
   const userPoint = useGetUserPointQuery();
   const [isLoading, setIsLoading] = useState(true);
+  const navigation = useNavigation();
   LogBox.ignoreAllLogs();
   useEffect(() => {
     try {
@@ -110,33 +113,61 @@ export default function MyInfo() {
       </View>
       <View
         style={{
-          backgroundColor: themeColors.white,
-          marginHorizontal: 20,
-          borderRadius: 20,
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 15,
-          marginVertical: 15,
+          justifyContent: 'center',
+          alignItems: 'center',
         }}>
-        <Text
+        <View
           style={{
-            fontSize: 18,
-            color: themeColors.primaryColor,
-            fontWeight: 'bold',
-            paddingVertical: 10,
+            backgroundColor: themeColors.white,
+            marginHorizontal: 20,
+            borderRadius: 15,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingHorizontal: 15,
+            marginVertical: 15,
+            width: '40%',
           }}>
-          Point:
-        </Text>
-        <Text
+          <Text
+            style={{
+              fontSize: 18,
+              color: themeColors.primaryColor,
+              fontWeight: 'bold',
+              paddingVertical: 10,
+            }}>
+            Point:
+          </Text>
+          <Text
+            style={{
+              fontSize: 18,
+              color: themeColors.primaryColor,
+              fontWeight: 'bold',
+              paddingVertical: 10,
+            }}>
+            {userPoint.data ? userPoint.currentData.data.point : ''}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('GarageChangePass')}
           style={{
-            fontSize: 18,
-            color: themeColors.primaryColor,
-            fontWeight: 'bold',
-            paddingVertical: 10,
+            backgroundColor: themeColors.blue,
+            width: '45%',
+            borderRadius: 15,
+            marginRight: 20,
           }}>
-          {userPoint.data ? userPoint.currentData.data.point : ''}
-        </Text>
+          <Text
+            style={{
+              fontSize: 18,
+              color: themeColors.white,
+              fontWeight: 'bold',
+              paddingVertical: 10,
+              textAlign: 'center',
+            }}>
+            Change Password
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

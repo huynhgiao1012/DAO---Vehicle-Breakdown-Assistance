@@ -159,33 +159,30 @@ export default function LoginScreen({route}) {
                   <View style={styles.title}>
                     <Text
                       style={{
-                        color: themeColors.white,
+                        color: themeColors.blue,
                         fontSize: 20,
                         fontWeight: 'bold',
                       }}>
                       Email
                     </Text>
-                    {errors.email && touched.email && (
-                      <Text style={styles.errorText}>*{errors.email}*</Text>
-                    )}
                   </View>
                   <TextInput
                     style={styles.input}
                     placeholderTextColor={themeColors.white}
                     onChangeText={handleChange('email')}
                   />
+                  {errors.email && touched.email && (
+                    <Text style={styles.errorText}>*{errors.email}*</Text>
+                  )}
                   <View style={styles.title}>
                     <Text
                       style={{
-                        color: themeColors.white,
+                        color: themeColors.blue,
                         fontSize: 20,
                         fontWeight: 'bold',
                       }}>
                       Password
                     </Text>
-                    {errors.password && touched.password && (
-                      <Text style={styles.errorText}>*{errors.password}*</Text>
-                    )}
                   </View>
                   <TextInput
                     secureTextEntry
@@ -193,7 +190,9 @@ export default function LoginScreen({route}) {
                     placeholderTextColor={themeColors.white}
                     onChangeText={handleChange('password')}
                   />
-
+                  {errors.password && touched.password && (
+                    <Text style={styles.errorText}>*{errors.password}*</Text>
+                  )}
                   <TouchableOpacity
                     className="flex items-end"
                     onPress={() => navigation.navigate('ForgotPassword')}>
@@ -201,8 +200,9 @@ export default function LoginScreen({route}) {
                       style={{
                         alignSelf: 'flex-end',
                         padding: 10,
-                        color: themeColors.white,
+                        color: themeColors.blue,
                         fontStyle: 'italic',
+                        fontWeight: 'bold',
                       }}>
                       Forgot Password?
                     </Text>
@@ -230,15 +230,7 @@ export default function LoginScreen({route}) {
               );
             }}
           </Formik>
-          <Text
-            style={{
-              textAlign: 'center',
-              marginVertical: 10,
-              fontWeight: 'bold',
-              color: themeColors.black,
-            }}>
-            Or
-          </Text>
+
           <View
             style={{
               display: 'flex',
@@ -252,7 +244,7 @@ export default function LoginScreen({route}) {
               <Text
                 style={{
                   fontWeight: 'bold',
-                  color: themeColors.white,
+                  color: themeColors.blue,
                 }}>
                 {' '}
                 Sign Up

@@ -37,11 +37,11 @@ const signUpValidationSchema = yup.object().shape({
 export default function SignUpScreen() {
   const navigation = useNavigation();
   const [registerQuery, {isLoading}] = useRegisterMutation();
-  const Register = data => {
-    registerQuery(data)
+  const Register = async data => {
+    await registerQuery(data)
       .then(payload => {
         console.log('payload', payload);
-        if (payload) {
+        if (payload.data) {
           Alert.alert(
             payload.message,
             'Please verify your account before login!',
@@ -53,6 +53,12 @@ export default function SignUpScreen() {
               },
             ],
           );
+        } else {
+          Alert.alert('SIGN UP', payload.error.data.message.duplicate, [
+            {
+              text: 'OK',
+            },
+          ]);
         }
       })
       .catch(error => {

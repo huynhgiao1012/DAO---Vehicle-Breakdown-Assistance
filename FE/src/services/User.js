@@ -44,6 +44,16 @@ export const userApi = createApi({
         },
       }),
     }),
+    updateUserPoint: builder.mutation({
+      query: payload => ({
+        url: `/updateUserPoint`,
+        method: 'PATCH',
+        body: payload,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      }),
+    }),
   }),
 });
 
@@ -54,4 +64,5 @@ export const {
   useGetUserPointQuery,
   useGetCompanyAccountDetailMutation,
   useChangePasswordMutation,
+  useUpdateUserPointMutation,
 } = userApi;
