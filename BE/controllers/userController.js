@@ -115,6 +115,22 @@ exports.getUserPoint = catchAsync(async (req, res) => {
     data,
   });
 });
+exports.updateUserPoint = catchAsync(async (req, res) => {
+  const id = req.user.id;
+  const { point } = req.body;
+  const Point = await Customer.findOne({ accountId: id });
+  const data = await Customer.findOneAndUpdate(
+    { accountId: id },
+    { point: Number(point) + Number(Point.point) }
+  );
+  if (!data) {
+    throw new ApiError(400, "This user is not available");
+  }
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
 exports.updatePassword = catchAsync(async (req, res) => {
   const { email } = req.user;
   const { oldPassword, newPassword } = req.body;

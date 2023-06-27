@@ -2,6 +2,7 @@ const catchAsync = require("../middleware/async");
 const orderForm = require("../models/orderForm");
 const Service = require("../models/service");
 const ApiError = require("../utils/ApiError");
+const customer = require("../models/customer");
 const { io } = require("socket.io-client");
 // _id.valueOf() --> lấy id từ object id
 exports.createService = catchAsync(async (req, res) => {
@@ -109,6 +110,7 @@ exports.bookingService = catchAsync(async (req, res) => {
     price: price,
     note: note,
   });
+
   res.status(200).json({
     success: true,
     booking,

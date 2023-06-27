@@ -23,6 +23,12 @@ router.get(
   authorize("customer", "company"),
   userController.getUserPoint
 );
+router.patch(
+  "/updateUserPoint",
+  jwtAuth,
+  authorize("customer"),
+  userController.updateUserPoint
+);
 router.patch("/:id", jwtAuth, authorize("admin"), userController.updateUser);
 router.delete("/:id", jwtAuth, authorize("admin"), userController.deleteUser);
 module.exports = router;
