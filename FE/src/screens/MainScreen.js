@@ -120,6 +120,8 @@ const MainScreen = ({route}) => {
           setStatus('form');
         } else if (navigation.getState().index === 2) {
           setStatus('noti');
+        } else if (navigation.getState().index === 3) {
+          setStatus('newfeeds');
         } else {
           setStatus('info');
         }
@@ -163,6 +165,8 @@ const MainScreen = ({route}) => {
               iconName = focused
                 ? 'information-circle'
                 : 'information-circle-outline';
+            } else if (rn === 'Newfeeds') {
+              iconName = focused ? 'newspaper' : 'newspaper-outline';
             }
             // You can return any component that you like here!
             return <Icon name={iconName} size={size} color={color} />;
@@ -190,6 +194,11 @@ const MainScreen = ({route}) => {
       <Tab.Screen
         name="Notification"
         component={NotiScreen}
+        options={{headerShown: false}}
+      />
+      <Tab.Screen
+        name="Newfeeds"
+        component={InfoScreen}
         options={{headerShown: false}}
       />
       <Tab.Screen
