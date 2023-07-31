@@ -24,7 +24,7 @@ const AccountSchema = new Schema(
       type: String,
       unique: true,
       require: [true, "Phone number is required"],
-      unique:  true
+      unique: true,
     },
     password: {
       type: String,
@@ -40,6 +40,9 @@ const AccountSchema = new Schema(
       type: String,
       enum: ROLES,
       default: ROLES.CUSTOMER,
+    },
+    img: {
+      type: String,
     },
     isActive: {
       type: Boolean,

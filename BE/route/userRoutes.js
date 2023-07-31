@@ -29,6 +29,17 @@ router.patch(
   authorize("customer"),
   userController.updateUserPoint
 );
-router.patch("/:id", jwtAuth, authorize("admin"), userController.updateUser);
+router.patch(
+  "/:id",
+  jwtAuth,
+  authorize("admin", "customer", "company"),
+  userController.updateUser
+);
+router.patch(
+  "/",
+  jwtAuth,
+  authorize("admin", "customer", "company"),
+  userController.updateUserDetail
+);
 router.delete("/:id", jwtAuth, authorize("admin"), userController.deleteUser);
 module.exports = router;

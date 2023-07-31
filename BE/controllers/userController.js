@@ -75,6 +75,25 @@ exports.updateUser = catchAsync(async (req, res) => {
     .status(200)
     .json({ success: true, message: "Update successfully", data: user });
 });
+exports.updateUserDetail = catchAsync(async (req, res) => {
+  const id = req.user.id;
+  const { name, phone } = req.body;
+  const data = await User.findById(id);
+  if (!data) {
+    throw new ApiError(404, "This user is not available");
+  }
+  const user = await User.findByIdAndUpdate(
+    id,
+    { name: name, phone: phone },
+    { new: true }
+  );
+  if (!user) {
+    throw new ApiError(400, "This user is not available");
+  }
+  res
+    .status(200)
+    .json({ success: true, message: "Update successfully", data: user });
+});
 exports.getAllUser = catchAsync(async (req, res) => {
   const data = await User.find({});
   res.status(200).json({
@@ -131,6 +150,7 @@ exports.updateUserPoint = catchAsync(async (req, res) => {
     data,
   });
 });
+
 exports.updatePassword = catchAsync(async (req, res) => {
   const { email } = req.user;
   const { oldPassword, newPassword } = req.body;
